@@ -53,3 +53,24 @@ scl_spantree <- function (edges)
     }
     return (tree)
 }
+
+
+#' scl_components
+#'
+#' Get component vector of tree edges
+#'
+#' @param tree result of \link{scl_spantree}
+#'
+#' @return Modified version of \code{tree}, with additional \code{comp} column
+#' enumerating the component numbers
+#' @export
+scl_components <- function (tree)
+{
+    tree$id <- seq (nrow (tree))
+    cmps <- rcpp_get_component_vector (tree)
+    tibble::tibble (id = as.numeric (cmps$edge_id),
+                    comp = cmps$edge_component) %>%
+        dplyr::arrange (id) %>%
+        dplyr::left_join (tree, ., by = "id") %>%
+        dplyr::select (from, to, d, comp)
+}
