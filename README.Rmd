@@ -36,7 +36,7 @@ devtools::install_github("mpadge/spatialcluster")
 
 ## Usage
 
-```{r load, echo = FALSE}
+```{r load, echo = FALSE, message = FALSE}
 devtools::load_all (".", export_all = FALSE)
 ```
 ```{r fake-load, eval = FALSE}
@@ -53,6 +53,7 @@ edges
 ncl <- 12 # desired number of clusters/components
 tree <- scl_spantree (edges) %>%
     scl_cuttree (edges, ncl = ncl)
+tree
 ```
 The clusters resulting from the cutting the spanning tree can then be viewed
 with:

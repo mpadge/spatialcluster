@@ -19,8 +19,6 @@ devtools::install_github("mpadge/spatialcluster")
 Usage
 -----
 
-    #> Loading spatialcluster
-
 ``` r
 library (spatialcluster)
 ```
@@ -35,21 +33,36 @@ edges
 #> # A tibble: 274 x 3
 #>     from    to     d
 #>    <int> <int> <dbl>
-#>  1    44    39 0.996
-#>  2    28    32 0.993
-#>  3     1     4 0.989
-#>  4    37    34 0.989
-#>  5    47    27 0.987
-#>  6    17    24 0.980
-#>  7    14    43 0.978
-#>  8    32    19 0.977
-#>  9    18    22 0.974
-#> 10    32    28 0.970
+#>  1    11    22 0.995
+#>  2    13    20 0.992
+#>  3     1    22 0.983
+#>  4     6    10 0.973
+#>  5     9    12 0.972
+#>  6    11    30 0.965
+#>  7    38    14 0.964
+#>  8    49    50 0.960
+#>  9    11     1 0.957
+#> 10    37    28 0.951
 #> # ... with 264 more rows
 # get tree with component numbers
 ncl <- 12 # desired number of clusters/components
 tree <- scl_spantree (edges) %>%
     scl_cuttree (edges, ncl = ncl)
+tree
+#> # A tibble: 38 x 3
+#>     from    to  comp
+#>    <int> <int> <dbl>
+#>  1    45    25    3.
+#>  2     6    21    2.
+#>  3    14    34    3.
+#>  4    18    38    4.
+#>  5    31     9    4.
+#>  6    37    25    3.
+#>  7    44    46    2.
+#>  8    31    29    4.
+#>  9    10    38    4.
+#> 10    39    32    3.
+#> # ... with 28 more rows
 ```
 
 The clusters resulting from the cutting the spanning tree can then be viewed with:
