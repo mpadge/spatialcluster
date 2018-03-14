@@ -18,8 +18,8 @@ matrix:
           dist: trusty
         - os: osx
           r: release
-        - os: osx
-          r: devel
+          #- os: osx
+          #r: devel
 
 r_github_packages:
       - jimhester/covr
