@@ -34,3 +34,31 @@ You can install spatialcluster from github with:
 devtools::install_github("mpadge/spatialcluster")
 ```
 
+## Usage
+
+```{r load, echo = FALSE}
+devtools::load_all (".", export_all = FALSE)
+```
+```{r fake-load, eval = FALSE}
+library (spatialcluster)
+```
+```{r}
+xy <- matrix (runif (100), ncol = 2)
+edges <- scl_edges (xy)
+# add some fake data to the edges
+edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
+   dplyr::arrange (desc (d))
+edges
+# get tree with component numbers
+ncl <- 12 # desired number of clusters/components
+tree <- scl_spantree (edges) %>%
+    scl_cuttree (edges, ncl = ncl)
+```
+The clusters resulting from the cutting the spanning tree can then be viewed
+with:
+```{r, echo = FALSE}
+xy <- tibble::tibble (x = xy [, 1], y = xy [, 2])
+```
+```{r plot}
+g <- scl_plot (tree, xy)
+```
