@@ -16,3 +16,13 @@ enumerating the component numbers
 \description{
 Get component vector of tree edges
 }
+\examples{
+xy <- matrix (runif (100), ncol = 2)
+edges <- scl_edges (xy)
+# add some fake data to the edges
+edges \%<>\% dplyr::mutate (d = runif (nrow (.))) \%>\%
+   dplyr::arrange (desc (d))
+tree <- scl_spantree (edges) # plain tree; no components
+ncl <- 8 # desired number of clusters/components
+tree <- scl_cuttree (tree, edges, ncl = ncl) # tree with component numbers
+}

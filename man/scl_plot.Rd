@@ -17,3 +17,17 @@ scl_plot(tree, xy)
 \description{
 plot cluster groups
 }
+\examples{
+xy <- matrix (runif (100), ncol = 2)
+edges <- scl_edges (xy)
+# add some fake data to the edges
+edges \%<>\% dplyr::mutate (d = runif (nrow (.))) \%>\%
+   dplyr::arrange (desc (d))
+# get tree with component numbers
+ncl <- 12 # desired number of clusters/components
+tree <- scl_spantree (edges) \%>\%
+    scl_cuttree (edges, ncl = ncl)
+xy <- tibble::tibble (x = xy [, 1], y = xy [, 2])
+g <- scl_plot (tree, xy)
+graphics.off ()
+}

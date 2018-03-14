@@ -12,8 +12,7 @@
 #' xy <- matrix (runif (100), ncol = 2)
 #' edges <- scl_edges (xy)
 #' # add some fake data to the edges
-#' edges %<>% dplyr::mutate (d = runif (nrow (.)),
-#'                           id = seq (nrow (.))) %>%
+#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
 #'    dplyr::arrange (desc (d))
 #' tree <- scl_spantree (edges)
 #' \dontrun{
@@ -54,6 +53,35 @@ scl_spantree <- function (edges)
     return (tree)
 }
 
+#' scl_cuttree
+#'
+#' Cut a tree generated with \link{scl_spantree} into a specified number of
+#' clusters or components
+#'
+#' @param tree result of \link{scl_spantree}
+#' @param edges A set of edges resulting from \link{scl_edges}, but with
+#' additional data specifying edge weights, distances, or desired properties
+#' from which to construct the tree
+#' @param ncl Number of clusters or components into which tree is to be cut
+#'
+#' @return A tree
+#' @export
+#' @examples
+#' xy <- matrix (runif (100), ncol = 2)
+#' edges <- scl_edges (xy)
+#' # add some fake data to the edges
+#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
+#'    dplyr::arrange (desc (d))
+#' tree <- scl_spantree (edges)
+#' ncl <- 8 # desired number of clusters/components
+#' tree <- scl_cuttree (tree, edges, ncl = ncl)
+scl_cuttree <- function (tree, edges, ncl)
+{
+    tree %<>% left_join (edges, by = c ("from", "to"))
+    n <- nrow (tree)
+    tree <- tree [ncl:n, ]
+    scl_components (tree)
+}
 
 #' scl_components
 #'
@@ -64,6 +92,15 @@ scl_spantree <- function (edges)
 #' @return Modified version of \code{tree}, with additional \code{comp} column
 #' enumerating the component numbers
 #' @export
+#' @examples
+#' xy <- matrix (runif (100), ncol = 2)
+#' edges <- scl_edges (xy)
+#' # add some fake data to the edges
+#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
+#'    dplyr::arrange (desc (d))
+#' tree <- scl_spantree (edges) # plain tree; no components
+#' ncl <- 8 # desired number of clusters/components
+#' tree <- scl_cuttree (tree, edges, ncl = ncl) # tree with component numbers
 scl_components <- function (tree)
 {
     tree$id <- seq (nrow (tree))
@@ -72,5 +109,5 @@ scl_components <- function (tree)
                     comp = cmps$edge_component) %>%
         dplyr::arrange (id) %>%
         dplyr::left_join (tree, ., by = "id") %>%
-        dplyr::select (from, to, d, comp)
+        dplyr::select (from, to, comp)
 }
