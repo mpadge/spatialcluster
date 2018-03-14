@@ -2,4 +2,27 @@
 
 language: R
 sudo: false
+warnings_are_errors: true
 cache: packages
+
+matrix:
+    allow_failures: # temporarily enabled. TODO: disable
+        -os: osx
+    include:
+        - os: linux
+          r: release
+          dist: trusty # 14.04
+          env: R_CODECOV=true
+        - os: linux
+          r: devel
+          dist: trusty
+        - os: osx
+          r: release
+        - os: osx
+          r: devel
+
+r_github_packages:
+      - jimhester/covr
+
+after_success:
+      - Rscript -e 'covr::codecov()'
