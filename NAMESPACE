@@ -2,6 +2,8 @@
 
 export(scl_edges)
 export(scl_spantree)
+importFrom(dplyr,arrange)
+importFrom(dplyr,mutate)
 importFrom(dplyr,rename)
 importFrom(magrittr,"%<>%")
 importFrom(magrittr,"%>%")

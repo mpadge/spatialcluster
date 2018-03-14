@@ -21,8 +21,9 @@ Generate a spanning tree from a set of edges
 xy <- matrix (runif (100), ncol = 2)
 edges <- scl_edges (xy)
 # add some fake data to the edges
-edges \%<>\% mutate (d = runif (nrow (.)), id = seq (nrow (.))) \%>\%
-   arrange (desc (d))
+edges \%<>\% dplyr::mutate (d = runif (nrow (.)),
+                          id = seq (nrow (.))) \%>\%
+   dplyr::arrange (desc (d))
 tree <- scl_spantree (edges)
 \dontrun{
 # plot the tree
