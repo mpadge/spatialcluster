@@ -56,7 +56,6 @@ scl_hulls <- function (tree, xy)
 #'     scl_cuttree (edges, ncl = ncl)
 #' xy <- tibble::tibble (x = xy [, 1], y = xy [, 2])
 #' g <- scl_plot (tree, xy)
-#' graphics.off ()
 scl_plot <- function (tree, xy)
 {
     hulls <- scl_hulls (tree, xy)

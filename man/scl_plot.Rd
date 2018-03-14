@@ -29,5 +29,4 @@ tree <- scl_spantree (edges) \%>\%
     scl_cuttree (edges, ncl = ncl)
 xy <- tibble::tibble (x = xy [, 1], y = xy [, 2])
 g <- scl_plot (tree, xy)
-graphics.off ()
 }
