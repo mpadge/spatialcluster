@@ -68,7 +68,8 @@ scl_plot <- function (tree, xy)
         xy %<>% dplyr::mutate (v = seq (nrow (xy)))
     names (xy) [1:2] <- c ("x", "y")
 
-    cl_cols <- ggthemes::solarized_pal (accent = "blue") (nc) %>%
+    ggthemes::solarized_pal (accent = "blue") (8)
+    cl_cols <- rainbow (nc) %>%
         tibble::as.tibble () %>%
         dplyr::mutate (comp = seq (nc)) %>%
         dplyr::rename (col = value)
