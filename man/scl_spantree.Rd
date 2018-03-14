@@ -17,3 +17,19 @@ A tree
 \description{
 Generate a spanning tree from a set of edges
 }
+\examples{
+xy <- matrix (runif (100), ncol = 2)
+edges <- scl_edges (xy)
+# add some fake data to the edges
+edges \%<>\% mutate (d = runif (nrow (.)), id = seq (nrow (.))) \%>\%
+   arrange (desc (d))
+tree <- scl_spantree (edges)
+\dontrun{
+# plot the tree
+plot (xy, pch = 19)
+with (edges, segments (xy [from, 1], xy [from, 2], xy [to, 1], xy [to, 2],
+                       col = "gray", lty = 2))
+with (tree, segments (xy [from, 1], xy [from, 2], xy [to, 1], xy [to, 2],
+                      col = "red", lwd = 4))
+}
+}

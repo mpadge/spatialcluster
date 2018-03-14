@@ -17,3 +17,15 @@ denotes the start and end of an edge
 \description{
 Generate triangulated edges between a set of input points
 }
+\examples{
+# xy can be matrix, data.frame, or tibble:
+xy <- matrix (runif (100), ncol = 2) \%>\%
+    tibble::as.tibble () \%>\%
+    dplyr::rename (x = V1, y = V2)
+edges <- scl_edges (xy)
+# plot edges:
+\dontrun{
+plot (xy, pch = 19)
+with (edges, segments (xy$x [from], xy$y [from], xy$x [to], xy$y [to]))
+}
+}
