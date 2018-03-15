@@ -17,33 +17,6 @@ void add_to_v2e_map (vert2edge_map_t &vert2edge_map, const vertex_id_t vid,
     }
 }
 
-void erase_from_v2e_map (vert2edge_map_t &vert2edge_map, const vertex_id_t vid,
-        const edge_id_t eid)
-{
-    std::unordered_set <edge_id_t> edge_ids = vert2edge_map [vid];
-    if (edge_ids.find (eid) != edge_ids.end ())
-    {
-        edge_ids.erase (eid);
-        vert2edge_map [vid] = edge_ids;
-    }
-}
-
-//' graph_has_components
-//'
-//' Does a graph have a vector of connected component IDs? Only used in
-//' \code{sample_one_vertex}
-//' @noRd
-bool graph_has_components (const Rcpp::DataFrame &graph)
-{
-    Rcpp::CharacterVector graph_names = graph.attr ("names");
-    for (auto n: graph_names)
-        if (n == "component")
-            return true;
-
-    return false;
-}
-
-
 //' graph_from_df
 //'
 //' Convert a standard graph data.frame into an object of class graph. Graphs

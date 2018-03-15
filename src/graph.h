@@ -64,11 +64,6 @@ typedef std::unordered_map <vertex_id_t,
 void add_to_v2e_map (vert2edge_map_t &vert2edge_map, const vertex_id_t vid,
         const edge_id_t eid);
 
-void erase_from_v2e_map (vert2edge_map_t &vert2edge_map, const vertex_id_t vid,
-        const edge_id_t eid);
-
-bool graph_has_components (const Rcpp::DataFrame &graph);
-
 void graph_from_df (const Rcpp::DataFrame &gr, vertex_map_t &vm,
         edge_map_t &edge_map, vert2edge_map_t &vert2edge_map);
 
