@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: person("Mark", "Padgham", email = "mark.padgham@email.com", role = c("aut", "cre"))
 Description: R port of redcap (Regionalization with dynamically constrained
     agglomerative clustering and partitioning).
-Depends: R (>= 3.4.0)
+Depends: R (>= 3.3.0)
 License: GPL-3
 Encoding: UTF-8
 NeedsCompilation: yes
@@ -16,13 +16,15 @@ Imports:
     magrittr,
     methods,
     Rcpp (>= 0.12.6),
+    RcppArmadillo,
     spatstat,
     tibble,
     tripack
 Suggests:
     testthat
 LinkingTo:
-    Rcpp
+    Rcpp,
+    RcppArmadillo
 SystemRequirements:
     C++11,
 RoxygenNote: 6.0.1

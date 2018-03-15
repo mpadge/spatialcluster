@@ -9,7 +9,9 @@
 #include <string> // stoi
 #include <cmath> // round
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+
 
 const float INFINITE_FLOAT =  std::numeric_limits<float>::max ();
 const double INFINITE_DOUBLE =  std::numeric_limits<double>::max ();
