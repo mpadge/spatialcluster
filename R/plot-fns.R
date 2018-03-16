@@ -3,7 +3,7 @@
 #' Calculate convex hulls around clusters, mostly cribbed from
 #' osmplotr/R/add-osm-groups.R
 #'
-#' @param tree Spanning tree obtained from \link{scl_components}
+#' @param tree Spanning tree obtained from \link{scl_cluster}
 #' @param xy Matrix of spatial coordinates of points indexed by \code{tree}.
 #' @return tibble of (id, x, y), where the coordinates trace the convex hulls
 #' for each cluster id
@@ -40,11 +40,12 @@ scl_hulls <- function (tree, xy)
 #'
 #' plot cluster groups
 #' 
-#' @param tree Spanning tree obtained from \link{scl_components}
+#' @param tree Spanning tree obtained from \link{scl_cluster}
 #' @param xy Matrix of spatial coordinates of points indexed by \code{tree}.
 #' @return (Invisible) \link{ggplot2} object containing the plot
 #' @export
 #' @examples
+#' \dontrun{
 #' xy <- matrix (runif (100), ncol = 2)
 #' edges <- scl_edges (xy)
 #' # add some fake data to the edges
@@ -56,6 +57,7 @@ scl_hulls <- function (tree, xy)
 #'     scl_cuttree (edges, ncl = ncl)
 #' xy <- tibble::tibble (x = xy [, 1], y = xy [, 2])
 #' g <- scl_plot (tree, xy)
+#' }
 scl_plot <- function (tree, xy)
 {
     hulls <- scl_hulls (tree, xy)

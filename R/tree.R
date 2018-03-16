@@ -2,27 +2,13 @@
 #'
 #' Generate a spanning tree from a set of edges
 #'
-#' @param edges A set of edges resulting from \link{scl_edges}, but with
-#' additional data specifying edge weights, distances, or desired properties
-#' from which to construct the tree
+#' @param edges A set of edges resulting from \link{scl_edges}, which are sorted
+#' in ascending order according to user-specified data. The only aspect of that
+#' data which affect tree construction is this order, so only the set of
+#' \code{edges} are needed here
 #'
 #' @return A tree
-#' @export
-#' @examples
-#' xy <- matrix (runif (100), ncol = 2)
-#' edges <- scl_edges (xy)
-#' # add some fake data to the edges
-#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
-#'    dplyr::arrange (desc (d))
-#' tree <- scl_spantree (edges)
-#' \dontrun{
-#' # plot the tree
-#' plot (xy, pch = 19)
-#' with (edges, segments (xy [from, 1], xy [from, 2], xy [to, 1], xy [to, 2],
-#'                        col = "gray", lty = 2))
-#' with (tree, segments (xy [from, 1], xy [from, 2], xy [to, 1], xy [to, 2],
-#'                       col = "red", lwd = 4))
-#' }
+#' @noRd
 scl_spantree <- function (edges)
 {
     n <- edges %>%
@@ -64,50 +50,13 @@ scl_spantree <- function (edges)
 #' from which to construct the tree
 #' @param ncl Number of clusters or components into which tree is to be cut
 #'
-#' @return A tree
-#' @export
-#' @examples
-#' xy <- matrix (runif (100), ncol = 2)
-#' edges <- scl_edges (xy)
-#' # add some fake data to the edges
-#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
-#'    dplyr::arrange (desc (d))
-#' tree <- scl_spantree (edges)
-#' ncl <- 8 # desired number of clusters/components
-#' tree <- scl_cuttree (tree, edges, ncl = ncl)
+#' @return Two trees, \code{tree_in} containing the desired cut portion, and
+#' \code{tree_out} the excised portion, retained here to enable later
+#' reconstruction of full-tree for subsequent re-cutting.
+#' @noRd
 scl_cuttree <- function (tree, edges, ncl)
 {
     tree %<>% left_join (edges, by = c ("from", "to"))
     n <- nrow (tree)
-    tree <- tree [ncl:n, ]
-    scl_components (tree)
-}
-
-#' scl_components
-#'
-#' Get component vector of tree edges
-#'
-#' @param tree result of \link{scl_spantree}
-#'
-#' @return Modified version of \code{tree}, with additional \code{comp} column
-#' enumerating the component numbers
-#' @export
-#' @examples
-#' xy <- matrix (runif (100), ncol = 2)
-#' edges <- scl_edges (xy)
-#' # add some fake data to the edges
-#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
-#'    dplyr::arrange (desc (d))
-#' tree <- scl_spantree (edges) # plain tree; no components
-#' ncl <- 8 # desired number of clusters/components
-#' tree <- scl_cuttree (tree, edges, ncl = ncl) # tree with component numbers
-scl_components <- function (tree)
-{
-    tree$id <- seq (nrow (tree))
-    cmps <- rcpp_get_component_vector (tree)
-    tibble::tibble (id = as.numeric (cmps$edge_id),
-                    comp = cmps$edge_component) %>%
-        dplyr::arrange (id) %>%
-        dplyr::left_join (tree, ., by = "id") %>%
-        dplyr::select (from, to, comp)
+    list (tree_in = tree [ncl:n, ], tree_out = tree [1:(n - 1),])
 }

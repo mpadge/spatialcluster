@@ -2,7 +2,7 @@
 #'
 #' @name spatialcluster
 #' @docType package
-#' @importFrom dplyr arrange filter left_join mutate rename
+#' @importFrom dplyr arrange desc filter left_join mutate rename
 #' @importFrom ggplot2 aes ggplot geom_point geom_polygon
 #' @importFrom ggthemes solarized_pal
 #' @importFrom grDevices rainbow

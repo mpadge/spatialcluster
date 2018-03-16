@@ -13,6 +13,7 @@
     utils::globalVariables ("to")
     utils::globalVariables ("clnum")
     utils::globalVariables ("comp")
+    utils::globalVariables ("desc")
     utils::globalVariables ("value")
 
     invisible ()

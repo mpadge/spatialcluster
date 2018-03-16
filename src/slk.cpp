@@ -58,6 +58,9 @@ bool does_edge_connect (arma::Mat <unsigned short> &contig_mat,
 int find_shortest_connection (uint_map_t edge2cl_map,
         uint_map_t cl2edge_map)
 {
+    int shortest;
+
+    return shortest;
 }
 
 

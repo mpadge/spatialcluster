@@ -7,7 +7,7 @@
 scl_plot(tree, xy)
 }
 \arguments{
-\item{tree}{Spanning tree obtained from \link{scl_components}}
+\item{tree}{Spanning tree obtained from \link{scl_cluster}}
 
 \item{xy}{Matrix of spatial coordinates of points indexed by \code{tree}.}
 }
@@ -18,6 +18,7 @@ scl_plot(tree, xy)
 plot cluster groups
 }
 \examples{
+\dontrun{
 xy <- matrix (runif (100), ncol = 2)
 edges <- scl_edges (xy)
 # add some fake data to the edges
@@ -29,4 +30,5 @@ tree <- scl_spantree (edges) \%>\%
     scl_cuttree (edges, ncl = ncl)
 xy <- tibble::tibble (x = xy [, 1], y = xy [, 2])
 g <- scl_plot (tree, xy)
+}
 }
