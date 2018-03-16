@@ -19,16 +19,13 @@
 #' clustered points.
 #' @export
 #' @examples
-#' \dontrun{
-#' xy <- matrix (runif (100), ncol = 2)
-#' edges <- scl_edges (xy)
-#' # add some fake data to the edges
-#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
-#'    dplyr::arrange (desc (d))
-#' tree <- scl_spantree (edges) # plain tree; no components
-#' ncl <- 8 # desired number of clusters/components
-#' tree <- scl_cuttree (tree, edges, ncl = ncl) # tree with component numbers
-#' }
+#' n <- 20
+#' xy <- matrix (runif (2 * n), ncol = 2)
+#' dmat <- matrix (runif (n ^ 2), ncol = n)
+#' scl <- scl_cluster (xy, dmat, ncl = 4)
+#' # Thos clusters will by default be constructed by connecting edges with the
+#' # lowest (\code{shortest}) values of \code{dmat}, and will differ from
+#' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE)
 scl_cluster <- function (xy, dmat, ncl, shortest = TRUE)
 {
     xy <- scl_tbl (xy)

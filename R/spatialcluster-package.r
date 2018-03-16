@@ -5,6 +5,7 @@
 #' @importFrom dplyr arrange desc filter left_join mutate rename
 #' @importFrom ggplot2 aes ggplot geom_point geom_polygon
 #' @importFrom ggthemes solarized_pal
+#' @importFrom graphics plot
 #' @importFrom grDevices rainbow
 #' @importFrom magrittr %>% %<>%
 #' @importFrom methods is

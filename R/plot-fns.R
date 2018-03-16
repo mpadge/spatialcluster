@@ -36,38 +36,25 @@ scl_hulls <- function (tree, xy)
     return (bdry)
 }
 
-#' scl_plot
-#'
-#' plot cluster groups
-#' 
-#' @param tree Spanning tree obtained from \link{scl_cluster}
-#' @param xy Matrix of spatial coordinates of points indexed by \code{tree}.
-#' @return (Invisible) \link{ggplot2} object containing the plot
+#' plot.scl
+#' @method plot scl
+#' @param x object to be plotted
+#' @param ... ignored here
 #' @export
 #' @examples
-#' \dontrun{
-#' xy <- matrix (runif (100), ncol = 2)
-#' edges <- scl_edges (xy)
-#' # add some fake data to the edges
-#' edges %<>% dplyr::mutate (d = runif (nrow (.))) %>%
-#'    dplyr::arrange (desc (d))
-#' # get tree with component numbers
-#' ncl <- 12 # desired number of clusters/components
-#' tree <- scl_spantree (edges) %>%
-#'     scl_cuttree (edges, ncl = ncl)
-#' xy <- tibble::tibble (x = xy [, 1], y = xy [, 2])
-#' g <- scl_plot (tree, xy)
-#' }
-scl_plot <- function (tree, xy)
+#' n <- 20
+#' xy <- matrix (runif (2 * n), ncol = 2)
+#' dmat <- matrix (runif (n ^ 2), ncol = n)
+#' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = TRUE)
+#' plot (scl)
+#' # Connect clusters according to highest (\code{shortest = FALSE}) values of
+#' # \coce{dmat}:
+#' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE)
+#' plot (scl)
+plot.scl <- function (x, ...)
 {
-    hulls <- scl_hulls (tree, xy)
-    nc <- length (unique (tree$comp))
-
-    if (is (xy, "tbl_df"))
-        xy <- tibble::as.tibble (xy)
-    if (ncol (xy) == 2)
-        xy %<>% dplyr::mutate (v = seq (nrow (xy)))
-    names (xy) [1:2] <- c ("x", "y")
+    hulls <- scl_hulls (x$tree, x$xy)
+    nc <- length (unique (x$tree$comp))
 
     ggthemes::solarized_pal (accent = "blue") (8)
     cl_cols <- rainbow (nc) %>%
@@ -75,13 +62,14 @@ scl_plot <- function (tree, xy)
         dplyr::mutate (comp = seq (nc)) %>%
         dplyr::rename (col = value)
 
-    tree <- dplyr::left_join (tree, cl_cols, by = "comp")
-    edge2vert <- dplyr::bind_rows (dplyr::select (tree, c (from, comp)) %>%
+    tree <- dplyr::left_join (x$tree, cl_cols, by = "comp")
+    edge2vert <- dplyr::bind_rows (dplyr::select (x$tree, c (from, comp)) %>%
                                        dplyr::rename (v = from),
-                                   dplyr::select (tree, c (to, comp)) %>%
+                                   dplyr::select (x$tree, c (to, comp)) %>%
                                        dplyr::rename (v = to)) %>%
                 dplyr::arrange (v) %>%
                 unique ()
+    xy <- x$xy
     xy %<>% dplyr::mutate (v = seq (nrow (xy))) %>%
         dplyr::left_join (edge2vert, by = "v") %>%
         dplyr::mutate (comp = ifelse (is.na (comp), 1, comp + 1)) %>%
