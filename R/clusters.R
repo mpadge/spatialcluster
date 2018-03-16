@@ -35,7 +35,7 @@ scl_cluster <- function (xy, dmat, ncl, shortest = TRUE)
     {
         message ("scl_cluster is for initial cluster construction; ",
                  "passing to scl_recluster")
-        scl_recluster (xy)
+        scl_recluster (xy, ncl = ncl)
     } else
     {
         xy <- scl_tbl (xy)
