@@ -56,7 +56,6 @@ plot.scl <- function (x, ...)
     hulls <- scl_hulls (x$tree, x$xy)
     nc <- length (unique (x$tree$comp))
 
-    ggthemes::solarized_pal (accent = "blue") (8)
     cl_cols <- rainbow (nc) %>%
         tibble::as.tibble () %>%
         dplyr::mutate (comp = seq (nc)) %>%

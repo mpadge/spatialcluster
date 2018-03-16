@@ -3,6 +3,7 @@
 S3method(plot,scl)
 export("%>%")
 export(scl_cluster)
+export(scl_recluster)
 importFrom(dplyr,arrange)
 importFrom(dplyr,desc)
 importFrom(dplyr,filter)
