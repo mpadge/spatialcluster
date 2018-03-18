@@ -1,8 +1,9 @@
+// binary search tree, from
+// from https://gist.github.com/mgechev/5911348
 #include <iostream>
 #include <math.h>
 using namespace std;
 
-// from https://gist.github.com/mgechev/5911348
 
 template <class T>
 struct Node {
