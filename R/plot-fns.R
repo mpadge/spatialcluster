@@ -56,9 +56,11 @@ plot.scl <- function (x, ...)
     hulls <- scl_hulls (x$tree, x$xy)
     nc <- length (unique (x$tree$comp))
 
+    # comp in cl_cols is + 1 because xy below increases cluster numbers by 1 to
+    # allocate cl_num == 1 to unassigned points
     cl_cols <- rainbow (nc) %>%
         tibble::as.tibble () %>%
-        dplyr::mutate (comp = seq (nc)) %>%
+        dplyr::mutate (comp = seq (nc) + 1) %>%
         dplyr::rename (col = value)
 
     tree <- dplyr::left_join (x$tree, cl_cols, by = "comp")
@@ -73,14 +75,13 @@ plot.scl <- function (x, ...)
         dplyr::left_join (edge2vert, by = "v") %>%
         dplyr::mutate (comp = ifelse (is.na (comp), 1, comp + 1)) %>%
         dplyr::left_join (cl_cols, by = "comp") %>%
-        dplyr::mutate (col = ifelse (is.na (col), "#222222", col))
+        dplyr::mutate (col = ifelse (is.na (col), "#333333FF", col))
 
     hull_aes <- ggplot2::aes (x = x, y = y, group = id)
     hull_width <- 0.5
-    g <- ggplot2::ggplot (xy, ggplot2::aes (x = x,
-                                            y = y,
-                                            colour = col)) +
-        ggplot2::geom_point (size = 5, show.legend = FALSE) +
+    g <- ggplot2::ggplot (xy, ggplot2::aes (x = x, y = y)) + 
+        ggplot2::geom_point (size = 5, color = xy$col,
+                             show.legend = FALSE) +
         ggplot2::geom_polygon (data = hulls,
                                mapping = hull_aes,
                                colour = cl_cols$col [hulls$id],
