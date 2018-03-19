@@ -2,6 +2,7 @@
 #'
 #' @name spatialcluster
 #' @docType package
+#' @importFrom alphahull ashape
 #' @importFrom dplyr arrange desc filter left_join mutate rename
 #' @importFrom ggplot2 aes ggplot geom_point geom_polygon
 #' @importFrom ggthemes solarized_pal
@@ -13,6 +14,7 @@
 #' @importFrom stats na.omit
 #' @importFrom tibble tibble as.tibble
 #' @importFrom tripack neighbours tri.mesh
+#' @importFrom utils tail
 #' @useDynLib spatialcluster, .registration = TRUE
 NULL
 

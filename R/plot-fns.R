@@ -36,10 +36,77 @@ scl_hulls <- function (tree, xy)
     return (bdry)
 }
 
+#' scl_ahulls
+#'
+#' Calculate alpha hulls around clusters via the \pkg{alphahull} package
+#'
+#' @param tree Spanning tree obtained from \link{scl_cluster}
+#' @param xy Matrix of spatial coordinates of points indexed by \code{tree}.
+#' @param alpha Parameter used to create alpha hulls
+#' @return tibble of (id, x, y), where the coordinates trace the convex hulls
+#' for each cluster id
+#' @noRd
+scl_ahulls <- function (tree, xy, alpha = 0.1)
+{
+    xymat <- as.matrix (xy)
+    ncomp <- length (unique (tree$comp))
+    bdry <- list ()
+    for (i in seq (ncomp))
+    {
+        if (length (which (tree$comp == i)) > 2)
+        {
+            xyi <- tree %>%
+                dplyr::filter (comp == i) %>%
+                dplyr::select (from, to) %>%
+                unlist () %>%
+                unique () %>%
+                sort () %>%
+                xymat [., ]
+
+            a <- alphahull::ashape (xyi, alpha = 0.2)$edges %>%
+                data.frame ()
+
+            xy <- rbind (data.frame (ind = a$ind1, x = a$x1, y = a$y1),
+                         data.frame (ind = a$ind2, x = a$x2, y = a$y2)) %>%
+                    unique () %>%
+                    dplyr::arrange (ind)
+            inds <- data.frame (ind1 = a$ind1, ind2 = a$ind2)
+            # Then just have to wrap those around xy:
+            # TODO: Find a better way to do this!
+            ind_seq <- as.numeric (inds [1, ])
+            inds <- inds [-1, ]
+            while (nrow (inds) > 0)
+            {
+                j <- which (inds$ind1 == tail (ind_seq, n = 1))
+                if (length (j) > 0)
+                {
+                    ind_seq <- c (ind_seq, inds [j, 2])
+                } else
+                {
+                    j <- which (inds$ind2 == tail (ind_seq, n = 1))
+                    ind_seq <- c (ind_seq, inds [j, 1])
+                }
+                inds <- inds [-j, , drop = FALSE]
+            }
+            indx <- match (ind_seq, xy$ind)
+            xy <- xy [match (ind_seq, xy$ind), ]
+            bdry [[i]] <- cbind (i, xy$x, xy$y)
+        }
+    }
+    bdry <- data.frame (do.call (rbind, bdry))
+    names (bdry) <- c ("id", "x", "y")
+    return (bdry)
+}
+
 #' plot.scl
 #' @method plot scl
 #' @param x object to be plotted
 #' @param tree Should the spanning tree be overlaid on the clusters?
+#' @param convex Should hull be convex? If not, the \code{ashape} routine from
+#' the \pkg{alphahull} package is used to generate non-convex hulls, generated
+#' with the \code{hull_alpha} parameter
+#' @param hull_alpha alpha value of non-convex hulls (see ?alphashape::ashape
+#' for details).
 #' @param ... ignored here
 #' @export
 #' @examples
@@ -54,9 +121,13 @@ scl_hulls <- function (tree, xy)
 #' plot (scl)
 #' # overlay the spanning tree used to generate the clusters:
 #' plot (scl, tree = TRUE)
-plot.scl <- function (x, ..., tree = FALSE)
+plot.scl <- function (x, ..., tree = FALSE, convex = FALSE, hull_alpha = 0.1)
 {
-    hulls <- scl_hulls (x$tree, x$xy)
+    if (convex)
+        hulls <- scl_hulls (x$tree, x$xy)
+    else
+        hulls <- scl_ahulls (x$tree, x$xy, alpha = hull_alpha)
+
     nc <- length (unique (x$tree$comp))
 
     # comp in cl_cols is + 1 because xy below increases cluster numbers by 1 to

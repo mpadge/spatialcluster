@@ -22,6 +22,7 @@
     utils::globalVariables ("xto")
     utils::globalVariables ("yfr")
     utils::globalVariables ("yto")
+    utils::globalVariables ("ind")
 
     invisible ()
 }
