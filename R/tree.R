@@ -1,6 +1,7 @@
-#' scl_spantree
+#' scl_spantree_O1
 #'
-#' Generate a spanning tree from a set of edges
+#' Generate a spanning tree from first-order relationships expressed via a set
+#' of edges
 #'
 #' @param edges A set of edges resulting from \link{scl_edges}, which are sorted
 #' in ascending order according to user-specified data. The only aspect of that
@@ -9,7 +10,49 @@
 #'
 #' @return A tree
 #' @noRd
-scl_spantree <- function (edges)
+scl_spantree_O1 <- function (edges)
+{
+    n <- edges %>%
+        dplyr::select (from, to) %>%
+        unlist () %>%
+        max ()
+    tree <- tibble::tibble (from = integer(), to = integer())
+    clusters <- tibble::tibble (id = seq (n), clnum = seq (n))
+
+    # make the minimal tree:
+    for (e in seq (nrow (edges)))
+    {
+        clf <- clusters$clnum [edges$from [e]]
+        clt <- clusters$clnum [edges$to [e]]
+        if (clf != clt)
+        {
+            cli <- min (c (clf, clt))
+            clj <- max (c (clf, clt))
+            clusters %<>% dplyr::mutate (clnum = replace (clnum,
+                                                          clnum == clj,
+                                                          cli))
+            tree %<>% dplyr::bind_rows (tibble::tibble (from = edges$from [e],
+                                                        to = edges$to [e]))
+        }
+        if (length (unique (clusters$clnum)) == 1)
+            break
+    }
+    return (tree)
+}
+
+#' scl_spantree_alk
+#'
+#' Generate a spanning tree from full-order, average linkage clustering (ALK)
+#' relationships expressed via a set of edges
+#'
+#' @param edges A set of edges resulting from \link{scl_edges}, which are sorted
+#' in ascending order according to user-specified data. The only aspect of that
+#' data which affect tree construction is this order, so only the set of
+#' \code{edges} are needed here
+#'
+#' @return A tree
+#' @noRd
+scl_spantree_alk <- function (edges)
 {
     n <- edges %>%
         dplyr::select (from, to) %>%

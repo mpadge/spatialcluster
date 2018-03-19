@@ -4,7 +4,8 @@
 \alias{scl_cluster}
 \title{scl_cluster}
 \usage{
-scl_cluster(xy, dmat, ncl, shortest = TRUE)
+scl_cluster(xy, dmat, ncl, full_order = TRUE, linkage = "single",
+  shortest = TRUE)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
@@ -16,6 +17,12 @@ has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 columns.}
 
 \item{ncl}{Desired number of clusters}
+
+\item{full_order}{If \code{FALSE}, build spanning trees from first-order
+relationships only, otherwise build from full-order relationships (see Note).}
+
+\item{linkage}{One of \code{"single"}, \code{"average"}, or
+\code{"complete"}; see Note.}
 
 \item{shortest}{If \code{TRUE}, the \code{dmat} is interpreted as distances
 such that lower values are preferentially selected; if \code{FALSE}, then
@@ -32,12 +39,21 @@ rather than calculating clusters anew.
 \description{
 Cluster spatial data
 }
+\note{
+Please refer to the original REDCAP paper ('Regionalization with
+dynamically constrained agglomerative clustering and partitioning (REDCAP)',
+by D. Guo (2008), Int.J.Geo.Inf.Sci 22:801-823) for details of the
+\code{full_order} and \code{linkage} parameters. This paper clearly
+demonstrates the general inferiority of spanning trees constructed from
+first-order relationships. It is therefore strongly recommended that the default
+\code{full_order = TRUE} be used at all times.
+}
 \examples{
 n <- 20
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
-scl <- scl_cluster (xy, dmat, ncl = 4)
+scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
 # Thos clusters will by default be constructed by connecting edges with the
 # lowest (\\code{shortest}) values of \\code{dmat}, and will differ from
-scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE)
+scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 }

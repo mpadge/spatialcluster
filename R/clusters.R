@@ -9,6 +9,10 @@
 #' has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 #' columns.
 #' @param ncl Desired number of clusters
+#' @param full_order If \code{FALSE}, build spanning trees from first-order
+#' relationships only, otherwise build from full-order relationships (see Note).
+#' @param linkage One of \code{"single"}, \code{"average"}, or
+#' \code{"complete"}; see Note.
 #' @param shortest If \code{TRUE}, the \code{dmat} is interpreted as distances
 #' such that lower values are preferentially selected; if \code{FALSE}, then
 #' higher values of \code{dmat} are interpreted to indicate stronger
@@ -20,17 +24,28 @@
 #' to be re-cut to a different number of clusters via \link{scl_recluster},
 #' rather than calculating clusters anew.
 #'
+#' @note Please refer to the original REDCAP paper ('Regionalization with
+#' dynamically constrained agglomerative clustering and partitioning (REDCAP)',
+#' by D. Guo (2008), Int.J.Geo.Inf.Sci 22:801-823) for details of the
+#' \code{full_order} and \code{linkage} parameters. This paper clearly
+#' demonstrates the general inferiority of spanning trees constructed from
+#' first-order relationships. It is therefore strongly recommended that the default
+#' \code{full_order = TRUE} be used at all times.
+#'
 #' @export
 #' @examples
 #' n <- 20
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
-#' scl <- scl_cluster (xy, dmat, ncl = 4)
+#' scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
 #' # Thos clusters will by default be constructed by connecting edges with the
 #' # lowest (\code{shortest}) values of \code{dmat}, and will differ from
-#' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE)
-scl_cluster <- function (xy, dmat, ncl, shortest = TRUE)
+#' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
+scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
+                         shortest = TRUE)
 {
+    linkage <- scl_linkage_type (linkage)
+
     if (is (xy, "scl"))
     {
         message ("scl_cluster is for initial cluster construction; ",
@@ -40,7 +55,18 @@ scl_cluster <- function (xy, dmat, ncl, shortest = TRUE)
     {
         xy <- scl_tbl (xy)
         edges <- scl_edges (xy, dmat, shortest)
-        tree_full <- scl_spantree (edges)
+        if (!full_order)
+        {
+            tree_full <- scl_spantree_O1 (edges)
+        } else
+        {
+            if (linkage == "single")
+            {
+            } else
+            {
+                stop ("Only single linkage implemented at the moment.")
+            }
+        }
         trees <- scl_cuttree (tree_full, edges, ncl)
 
         tree = tree_components (trees$tree_in)
@@ -83,7 +109,7 @@ tree_components <- function (tree)
 #' n <- 20
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
-#' scl <- scl_cluster (xy, dmat, ncl = 4)
+#' scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
 #' plot (scl)
 #' scl <- scl_recluster (scl, ncl = 5)
 #' plot (scl)

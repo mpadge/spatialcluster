@@ -31,3 +31,19 @@ scl_tbl <- function (xy)
     }
     tibble::as.tibble (xy)
 }
+
+#' scl_linkage_type
+#'
+#' Convert \code{linkage} string arg to matching type
+#' @param linkage Type of linkage
+#' @return Strict match to one of three options
+#' @noRd
+scl_linkage_type <- function (linkage)
+{
+    linkages <- c ("single", "average", "complete")
+    i <- grep (linkage, linkages, ignore.case = TRUE)
+    if (length (i) == 0)
+        stop ("linkage must be one of (single, average, complete)")
+
+    return (linkages [i])
+}
