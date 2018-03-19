@@ -45,7 +45,7 @@ scl_hulls <- function (tree, xy)
 #' n <- 20
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
-#' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = TRUE, full_order = FALSE)
+#' scl <- scl_cluster (xy, dmat, ncl = 4)
 #' plot (scl)
 #' # Connect clusters according to highest (\code{shortest = FALSE}) values of
 #' # \coce{dmat}:

@@ -27,7 +27,7 @@ Re-cut a spatial cluster tree (\code{scl}) at a different number of clusters.
 n <- 20
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
-scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
+scl <- scl_cluster (xy, dmat, ncl = 4)
 plot (scl)
 scl <- scl_recluster (scl, ncl = 5)
 plot (scl)

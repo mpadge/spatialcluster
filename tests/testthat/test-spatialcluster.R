@@ -12,13 +12,19 @@ test_that("cluster", {
               scl2 <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE,
                                    full_order = FALSE)
               expect_true (!identical (scl, scl2))
+              scl3 <- scl_cluster (xy, dmat, ncl = 4, linkage = "single")
+              expect_true (!identical (scl, scl3))
+
+              expect_error (s <- scl_cluster (xy, dmat, ncl = 4,
+                                                linkage = "average"),
+                              "Only single linkage implemented at the moment")
 })
 
 test_that("recluster", {
               n <- 20
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
-              scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
+              scl <- scl_cluster (xy, dmat, ncl = 4)
               scl2 <- scl_recluster (scl, ncl = 3)
               expect_message ( scl3 <- scl_cluster (scl, ncl = 3),
                               "scl_cluster is for initial cluster")
@@ -30,7 +36,7 @@ test_that("plot", {
               n <- 20
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
-              scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
+              scl <- scl_cluster (xy, dmat, ncl = 4)
               g <- plot (scl)
               expect_is (g, "ggplot")
 })

@@ -4,7 +4,7 @@
 \alias{scl_cluster}
 \title{scl_cluster}
 \usage{
-scl_cluster(xy, dmat, ncl, full_order = FALSE, linkage = "single",
+scl_cluster(xy, dmat, ncl, full_order = TRUE, linkage = "single",
   shortest = TRUE)
 }
 \arguments{
@@ -52,8 +52,11 @@ first-order relationships. It is therefore strongly recommended that the default
 n <- 20
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
-scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
-# Thos clusters will by default be constructed by connecting edges with the
+scl <- scl_cluster (xy, dmat, ncl = 4)
+# Those clusters will by default be constructed by connecting edges with the
 # lowest (\\code{shortest}) values of \\code{dmat}, and will differ from
-scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
+scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE)
+# using 'full_order = FALSE' constructs clusters from first-order
+# relationships only; not recommended, but possible nevertheless:
+scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
 }
