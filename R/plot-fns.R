@@ -63,7 +63,7 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
                 sort () %>%
                 xymat [., ]
 
-            a <- alphahull::ashape (xyi, alpha = 0.2)$edges %>%
+            a <- alphahull::ashape (xyi, alpha = alpha)$edges %>%
                 data.frame ()
 
             xy <- rbind (data.frame (ind = a$ind1, x = a$x1, y = a$y1),
