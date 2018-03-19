@@ -41,4 +41,4 @@ scl <- scl_cluster (xy, dmat, ncl = 4)
 plot (scl)
 ```
 
-![](README-real-run-1.png)
+![](README-plot-1.png)

@@ -63,7 +63,7 @@ library (spatialcluster)
 scl <- scl_cluster (xy, dmat, ncl = 4)
 plot (scl)
 ```
-```{r real-run, echo = FALSE}
+```{r plot, echo = FALSE}
 scl <- scl_cluster (xy, dmat, ncl = 4)
 plot (scl)
 ```
