@@ -4,12 +4,14 @@
 \alias{plot.scl}
 \title{plot.scl}
 \usage{
-\method{plot}{scl}(x, ...)
+\method{plot}{scl}(x, ..., tree = FALSE)
 }
 \arguments{
 \item{x}{object to be plotted}
 
 \item{...}{ignored here}
+
+\item{tree}{Should the spanning tree be overlaid on the clusters?}
 }
 \description{
 plot.scl
@@ -24,4 +26,6 @@ plot (scl)
 # \\coce{dmat}:
 scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 plot (scl)
+# overlay the spanning tree used to generate the clusters:
+plot (scl, tree = TRUE)
 }

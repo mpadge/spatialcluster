@@ -137,7 +137,7 @@ unsigned int identify_graph_components (vertex_map_t &v,
 //' numbers
 //' @noRd
 // [[Rcpp::export]]
-Rcpp::List rcpp_get_component_vector (const Rcpp::DataFrame &graph)
+Rcpp::List rcpp_get_component_vector (const Rcpp::DataFrame graph)
 {
     vertex_map_t vertices;
     edge_map_t edge_map;

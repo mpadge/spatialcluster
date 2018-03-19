@@ -39,6 +39,7 @@ scl_hulls <- function (tree, xy)
 #' plot.scl
 #' @method plot scl
 #' @param x object to be plotted
+#' @param tree Should the spanning tree be overlaid on the clusters?
 #' @param ... ignored here
 #' @export
 #' @examples
@@ -51,7 +52,9 @@ scl_hulls <- function (tree, xy)
 #' # \coce{dmat}:
 #' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
-plot.scl <- function (x, ...)
+#' # overlay the spanning tree used to generate the clusters:
+#' plot (scl, tree = TRUE)
+plot.scl <- function (x, ..., tree = FALSE)
 {
     hulls <- scl_hulls (x$tree, x$xy)
     nc <- length (unique (x$tree$comp))
@@ -63,7 +66,6 @@ plot.scl <- function (x, ...)
         dplyr::mutate (comp = seq (nc) + 1) %>%
         dplyr::rename (col = value)
 
-    tree <- dplyr::left_join (x$tree, cl_cols, by = "comp")
     edge2vert <- dplyr::bind_rows (dplyr::select (x$tree, c (from, comp)) %>%
                                        dplyr::rename (v = from),
                                    dplyr::select (x$tree, c (to, comp)) %>%
@@ -89,6 +91,22 @@ plot.scl <- function (x, ...)
                                alpha = 0.1,
                                size = hull_width) +
         ggthemes::theme_solarized ()
+
+    if (tree)
+    {
+        the_tree <- x$tree %>%
+            dplyr::select (from, to, d) %>%
+            dplyr::bind_rows (x$tree_rest) %>%
+            dplyr::distinct ()
+        the_tree$xfr <- xy$x [the_tree$from]
+        the_tree$yfr <- xy$y [the_tree$from]
+        the_tree$xto <- xy$x [the_tree$to]
+        the_tree$yto <- xy$y [the_tree$to]
+        g <- g + ggplot2::geom_segment (ggplot2::aes (x = xfr, y = yfr,
+                                                      xend = xto, yend = yto),
+                                        colour = "#333333FF", data = the_tree)
+    }
+
     print (g)
     invisible (g)
 }

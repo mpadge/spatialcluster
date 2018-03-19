@@ -39,4 +39,6 @@ test_that("plot", {
               scl <- scl_cluster (xy, dmat, ncl = 4)
               g <- plot (scl)
               expect_is (g, "ggplot")
+              g2 <- plot (scl, tree = TRUE)
+              expect_true (!identical (g, g2))
 })

@@ -49,5 +49,5 @@ void merge_clusters (
         int merge_to);
 
 Rcpp::IntegerVector rcpp_slk (
-        const Rcpp::DataFrame &gr_full,
-        Rcpp::DataFrame &gr);
+        const Rcpp::DataFrame gr_full,
+        const Rcpp::DataFrame gr);

@@ -18,6 +18,10 @@
     utils::globalVariables ("desc")
     utils::globalVariables ("value")
     utils::globalVariables ("na.omit")
+    utils::globalVariables ("xfr")
+    utils::globalVariables ("xto")
+    utils::globalVariables ("yfr")
+    utils::globalVariables ("yto")
 
     invisible ()
 }

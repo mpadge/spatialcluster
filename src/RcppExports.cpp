@@ -7,24 +7,24 @@
 using namespace Rcpp;
 
 // rcpp_get_component_vector
-Rcpp::List rcpp_get_component_vector(const Rcpp::DataFrame& graph);
+Rcpp::List rcpp_get_component_vector(const Rcpp::DataFrame graph);
 RcppExport SEXP _spatialcluster_rcpp_get_component_vector(SEXP graphSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::DataFrame& >::type graph(graphSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type graph(graphSEXP);
     rcpp_result_gen = Rcpp::wrap(rcpp_get_component_vector(graph));
     return rcpp_result_gen;
 END_RCPP
 }
 // rcpp_slk
-Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame& gr_full, Rcpp::DataFrame& gr);
+Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr);
 RcppExport SEXP _spatialcluster_rcpp_slk(SEXP gr_fullSEXP, SEXP grSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::DataFrame& >::type gr_full(gr_fullSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type gr(grSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr_full(gr_fullSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
     rcpp_result_gen = Rcpp::wrap(rcpp_slk(gr_full, gr));
     return rcpp_result_gen;
 END_RCPP

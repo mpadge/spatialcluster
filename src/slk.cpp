@@ -194,15 +194,23 @@ void merge_clusters (
 //' @noRd
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_slk (
-        const Rcpp::DataFrame &gr_full,
-        Rcpp::DataFrame &gr)
+        const Rcpp::DataFrame gr_full,
+        const Rcpp::DataFrame gr)
 {
-    Rcpp::IntegerVector from_full = gr_full ["from"];
-    Rcpp::IntegerVector to_full = gr_full ["to"];
+    Rcpp::IntegerVector from_full_ref = gr_full ["from"];
+    Rcpp::IntegerVector to_full_ref = gr_full ["to"];
     Rcpp::NumericVector d_full = gr_full ["d"];
-    Rcpp::IntegerVector from = gr ["from"];
-    Rcpp::IntegerVector to = gr ["to"];
+    Rcpp::IntegerVector from_ref = gr ["from"];
+    Rcpp::IntegerVector to_ref = gr ["to"];
     Rcpp::NumericVector d = gr ["d"];
+
+    // Rcpp classes are always passed by reference, so cloning is necessary to
+    // avoid modifying the original data.frames.
+    Rcpp::IntegerVector from_full = Rcpp::clone (from_full_ref);
+    Rcpp::IntegerVector to_full = Rcpp::clone (to_full_ref);
+    Rcpp::IntegerVector from = Rcpp::clone (from_ref);
+    Rcpp::IntegerVector to = Rcpp::clone (to_ref);
+
     // Index vectors are 1-indexed, so
     from_full = from_full - 1;
     to_full = to_full - 1;

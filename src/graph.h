@@ -70,4 +70,4 @@ void graph_from_df (const Rcpp::DataFrame &gr, vertex_map_t &vm,
 unsigned int identify_graph_components (vertex_map_t &v,
         std::unordered_map <vertex_id_t, unsigned int> &com);
 
-Rcpp::List rcpp_get_component_vector (const Rcpp::DataFrame &graph);
+Rcpp::List rcpp_get_component_vector (const Rcpp::DataFrame graph);

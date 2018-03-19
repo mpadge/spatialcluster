@@ -54,7 +54,7 @@ scl_spantree_O1 <- function (edges)
 #' @noRd
 scl_spantree_slk <- function (edges_all, edges_nn)
 {
-    clusters <- rcpp_slk (edges_all, edges_nn)
+    clusters <- rcpp_slk (edges_all, edges_nn) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
 }
