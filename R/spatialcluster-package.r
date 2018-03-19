@@ -10,6 +10,7 @@
 #' @importFrom magrittr %>% %<>%
 #' @importFrom methods is
 #' @importFrom spatstat convexhull ppp
+#' @importFrom stats na.omit
 #' @importFrom tibble tibble as.tibble
 #' @importFrom tripack neighbours tri.mesh
 #' @useDynLib spatialcluster, .registration = TRUE

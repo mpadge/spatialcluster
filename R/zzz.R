@@ -9,12 +9,15 @@
     utils::globalVariables ("id")
     utils::globalVariables ("v")
     utils::globalVariables ("V1")
+    utils::globalVariables ("V2")
+    utils::globalVariables ("V3")
     utils::globalVariables ("from")
     utils::globalVariables ("to")
     utils::globalVariables ("clnum")
     utils::globalVariables ("comp")
     utils::globalVariables ("desc")
     utils::globalVariables ("value")
+    utils::globalVariables ("na.omit")
 
     invisible ()
 }

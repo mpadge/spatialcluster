@@ -41,7 +41,7 @@
 #' # Thos clusters will by default be constructed by connecting edges with the
 #' # lowest (\code{shortest}) values of \code{dmat}, and will differ from
 #' scl <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
-scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
+scl_cluster <- function (xy, dmat, ncl, full_order = FALSE, linkage = "single",
                          shortest = TRUE)
 {
     linkage <- scl_linkage_type (linkage)
@@ -54,20 +54,22 @@ scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
     } else
     {
         xy <- scl_tbl (xy)
-        edges <- scl_edges (xy, dmat, shortest)
+        edges_nn <- scl_edges_nn (xy, dmat, shortest)
         if (!full_order)
         {
-            tree_full <- scl_spantree_O1 (edges)
+            tree_full <- scl_spantree_O1 (edges_nn)
         } else
         {
             if (linkage == "single")
             {
+                edges_all <- scl_edges_all (xy, dmat, shortest)
+                tree_full <- scl_spantree_slk (edges_all, edges_nn)
             } else
             {
                 stop ("Only single linkage implemented at the moment.")
             }
         }
-        trees <- scl_cuttree (tree_full, edges, ncl)
+        trees <- scl_cuttree (tree_full, edges_nn, ncl)
 
         tree = tree_components (trees$tree_in)
 

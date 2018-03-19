@@ -35,3 +35,32 @@ rcpp_get_component_vector <- function(graph) {
     .Call(`_spatialcluster_rcpp_get_component_vector`, graph)
 }
 
+#' initial contiguity and distance matrices. The contiguity matrix is between
+#' clusters, so is constantly modified, whereas the distance matrix is between
+#' edges, so is fixed at load time.
+#' @noRd
+NULL
+
+#' find shortest connection between two clusters
+#' @param from, to, d the columns of the edge graph
+#' @param d_mat distance matrix between all edges (not between clusters!)
+#' @param cl2vert_map map of list of all (from, to, d) edges for each cluster
+#' @param cfrom Number of cluster which is to be merged
+#' @param cto Number of cluster with which it is to be merged
+#' @noRd
+NULL
+
+#' merge two clusters in the contiguity matrix, reducing the size of the matrix
+#' by one row and column.
+#' @noRd
+NULL
+
+#' rcpp_slk
+#'
+#' Full-order single linkage cluster redcap algorithm
+#'
+#' @noRd
+rcpp_slk <- function(gr_full, gr) {
+    .Call(`_spatialcluster_rcpp_slk`, gr_full, gr)
+}
+

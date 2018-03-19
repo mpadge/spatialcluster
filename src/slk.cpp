@@ -2,184 +2,260 @@
 #include "slk.h"
 
 unsigned int get_n (
-    Rcpp::IntegerVector &from,
-    Rcpp::IntegerVector &to)
+    const Rcpp::IntegerVector &from,
+    const Rcpp::IntegerVector &to)
 {
     std::set <unsigned int> nodes;
+    int max_node = 0;
     for (auto i: from)
+    {
         nodes.insert (i);
+        if (i > max_node)
+            max_node = i;
+    }
     for (auto i: to)
+    {
         nodes.insert (i);
+        if (i > max_node)
+            max_node = i;
+    }
+    if (nodes.size () != (static_cast <unsigned int> (max_node) + 1))
+        Rcpp::stop ("vertex numbers are discontinuous");
+
     return nodes.size ();
 }
 
 //' initial contiguity and distance matrices. The contiguity matrix is between
 //' clusters, so is constantly modified, whereas the distance matrix is between
 //' edges, so is fixed at load time.
+//' @noRd
 void mats_init (
-        const Rcpp::DataFrame &gr,
+        const Rcpp::IntegerVector &from,
+        const Rcpp::IntegerVector &to,
+        const Rcpp::NumericVector &d,
         arma::Mat <unsigned short> &contig_mat,
         arma::Mat <double> &d_mat,
         const unsigned int n)
 {
-    Rcpp::IntegerVector from = gr ["from"];
-    Rcpp::IntegerVector to = gr ["to"];
-    Rcpp::NumericVector d = gr ["d"];
-
     contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
-    d_mat = arma::zeros <arma::Mat <double> > (n, n);
+    //d_mat = arma::zeros <arma::Mat <double> > (n, n);
+    d_mat.resize (n, n);
+    d_mat.fill (INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
-        contig_mat [from [i], to [i]] = 1;
-        contig_mat [to [i], from [i]] = 1;
+        contig_mat (from [i], to [i]) = 1;
+        contig_mat (to [i], from [i]) = 1;
+        d_mat (from [i], to [i]) = d [i];
+        d_mat (to [i], from [i]) = d [i];
+    }
+}
+
+void dmat_full_init (
+        const Rcpp::IntegerVector &from, // here, from_full, etc.
+        const Rcpp::IntegerVector &to,
+        const Rcpp::NumericVector &d,
+        arma::Mat <double> &d_mat, // here, d_mat_full
+        const unsigned int n)
+{
+    //d_mat = arma::zeros <arma::Mat <double> > (n, n);
+    d_mat.resize (n, n);
+    d_mat.fill (INFINITE_DOUBLE);
+
+    for (int i = 0; i < from.length (); i++)
+    {
         d_mat [from [i], to [i]] = d [i];
         d_mat [to [i], from [i]] = d [i];
     }
 }
 
 void sets_init (
-        const Rcpp::DataFrame &gr,
-        uint_map_t &edge2cl_map,
-        uint_set_map_t &cl2edge_map)
+        const Rcpp::IntegerVector &from,
+        const Rcpp::IntegerVector &to,
+        uint_map_t &vert2cl_map,
+        uint_set_map_t &cl2vert_map)
 {
-    Rcpp::IntegerVector from = gr ["from"];
-    Rcpp::IntegerVector to = gr ["to"];
-
-    edge2cl_map.clear ();
-    cl2edge_map.clear ();
-
-    unsigned int clnum = 0;
+    vert2cl_map.clear ();
+    cl2vert_map.clear ();
 
     for (int i = 0; i < from.length (); i++)
     {
         std::set <unsigned int> eset;
         eset.insert (from [i]);
-        cl2edge_map.emplace (from [i], eset);
-        edge2cl_map.emplace (i, clnum++);
+        cl2vert_map.emplace (from [i], eset);
     }
+    const unsigned int n = get_n (from, to);
+    // Initially assign all verts to clusters of same number:
+    for (unsigned int i = 0; i < n; i++)
+        vert2cl_map.emplace (i, i);
 }
 
-//' merge two clusters in the contiguity matrix, reducing the size of the matrix
-//' by one row and column.
-bool merge_clusters (
-        arma::Mat <unsigned short> &contig_mat,
-        uint_map_t &edge2cl_map,
-        uint_set_map_t &cl2edge_map,
-        int i,
-        int merge_from,
-        int merge_to)
-{
-    bool merged = false;
-    if (contig_mat [i, merge_from] == 1 && // TODO: <- or!
-            contig_mat [merge_from, i] == 1 &&
-            contig_mat [merge_to, i] == 1 &&
-            contig_mat [merge_from, i] == 1)
-    {
-        contig_mat [i, merge_from] = 1;
-        contig_mat [merge_from, i] = 1;
-        contig_mat [merge_to, i] = 1;
-        contig_mat [merge_from, i] = 1;
-        contig_mat.shed_row (merge_from);
-        contig_mat.shed_col (merge_from);
-
-        std::set <unsigned int> edges_i = cl2edge_map.at (merge_from);
-        cl2edge_map.erase (merge_from);
-        std::set <unsigned int> edges_j = cl2edge_map.at (merge_to);
-        for (auto e: edges_i)
-            edges_j.insert (e);
-        cl2edge_map [merge_to] = edges_j;
-
-        merged = true;
-    }
-
-    return merged;
-}
-
-//' does the edge ei from graph_full connect two contiguous clusters?
-bool does_edge_connect (
-        arma::Mat <unsigned short> &contig_mat,
-        uint_map_t edge2cl_map,
-        Rcpp::IntegerVector &from,
-        Rcpp::IntegerVector &to,
-        int ei)
-{
-    //int cl_fr = edge2cl_map.at [from [ei]],
-    //    cl_to = edge2cl_map.at [to [ei]];
-
-    //return (contig_mat [cl_fr, cl_to] == 1);
-    return false;
-}
-
+//' find shortest connection between two clusters
+//' @param from, to, d the columns of the edge graph
+//' @param d_mat distance matrix between all edges (not between clusters!)
+//' @param cl2vert_map map of list of all (from, to, d) edges for each cluster
+//' @param cfrom Number of cluster which is to be merged
+//' @param cto Number of cluster with which it is to be merged
+//' @noRd
 int find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,
         Rcpp::NumericVector &d,
-        uint_map_t edge2cl_map,
-        uint_set_map_t cl2edge_map,
-        int merge_from,
-        int merge_to)
+        arma::Mat <double> &d_mat,
+        uint_set_map_t &cl2vert_map,
+        int cfrom,
+        int cto)
 {
-    std::set <unsigned int> edges_i = cl2edge_map.at (merge_from);
-    std::set <unsigned int> edges_j = cl2edge_map.at (merge_to);
+    std::set <unsigned int> verts_i = cl2vert_map.at (cfrom);
+    std::set <unsigned int> verts_j = cl2vert_map.at (cto);
 
     double dmin = INFINITE_DOUBLE;
-    int shortest = INFINITE_INT;
+    int short_i = INFINITE_INT, short_j = INFINITE_INT;
 
-    for (int i = 0; i < from.length (); i++)
-        if (d (from [i], to [i]) < dmin)
+    for (auto i: verts_i)
+        for (auto j: verts_j)
         {
-            dmin = d (from [i], to [i]);
-            shortest = i;
+            if (d_mat (i, j) < dmin)
+            {
+                dmin = d_mat (i, j);
+                short_i = i;
+                short_j = j;
+            } else if (d_mat (j, i) < dmin)
+            {
+                dmin = d_mat (j, i);
+                short_i = j;
+                short_j = i;
+            }
         }
-       
+    if (dmin == INFINITE_DOUBLE)
+        Rcpp::stop ("no minimal distance; this should not happen");
+
+    // convert short_i and short_j to a single edge 
+    // TODO: Make a std::map of vert2dist to avoid this loop
+    int shortest = INFINITE_INT;
+    for (int i = 0; i < from.length (); i++)
+    {
+        if (from [i] == short_i && to [i] == short_j)
+        {
+            shortest = i;
+            break;
+        }
+    }
+    if (shortest == INFINITE_INT)
+        Rcpp::stop ("shite");
 
     return shortest;
 }
 
+//' merge two clusters in the contiguity matrix, reducing the size of the matrix
+//' by one row and column.
+//' @noRd
+void merge_clusters (
+        arma::Mat <unsigned short> &contig_mat,
+        uint_map_t &vert2cl_map,
+        uint_set_map_t &cl2vert_map,
+        int cluster_from,
+        int cluster_to)
+{
+    // Set all contig_mat (cluster_from, .) to 1
+    for (unsigned int j = 0; j < contig_mat.n_rows; j++)
+    {
+        if (contig_mat (cluster_from, j) == 1 ||
+                contig_mat (j, cluster_from) == 1)
+        {
+            contig_mat (cluster_to, j) = 1;
+            contig_mat (j, cluster_to) = 1;
+        }
+    }
+
+    std::set <unsigned int> verts_from = cl2vert_map.at (cluster_from),
+        verts_to = cl2vert_map.at (cluster_to);
+
+    for (auto vi: verts_from)
+        for (auto vj: verts_to)
+        {
+            contig_mat (vi, vj) = contig_mat (vj, vi) = 1;
+        }
+
+    // then re-number all cluster numbers in cl2vert 
+    cl2vert_map.erase (cluster_from);
+    for (auto v: verts_from)
+        verts_to.insert (v);
+    cl2vert_map.at (cluster_to) = verts_to;
+    // and in vert2cl:
+    for (auto v: verts_from)
+        vert2cl_map [v] = cluster_to;
+}
 
 //' rcpp_slk
 //'
 //' Full-order single linkage cluster redcap algorithm
 //'
 //' @noRd
-void rcpp_slk (
-        const Rcpp::DataFrame &grfull,
+// [[Rcpp::export]]
+Rcpp::IntegerVector rcpp_slk (
+        const Rcpp::DataFrame &gr_full,
         Rcpp::DataFrame &gr)
 {
+    Rcpp::IntegerVector from_full = gr_full ["from"];
+    Rcpp::IntegerVector to_full = gr_full ["to"];
+    Rcpp::NumericVector d_full = gr_full ["d"];
     Rcpp::IntegerVector from = gr ["from"];
     Rcpp::IntegerVector to = gr ["to"];
     Rcpp::NumericVector d = gr ["d"];
+    // Index vectors are 1-indexed, so
+    from_full = from_full - 1;
+    to_full = to_full - 1;
+    from = from - 1;
+    to = to - 1;
 
     const unsigned int n = get_n (from, to);
+    const unsigned int nf = get_n (from_full, to_full);
 
     arma::Mat <unsigned short> contig_mat;
-    arma::Mat <double> d_mat;
-    uint_map_t edge2cl_map;
-    uint_set_map_t cl2edge_map;
+    arma::Mat <double> d_mat, d_mat_full;
+    uint_map_t vert2cl_map;
+    uint_set_map_t cl2vert_map;
 
-    mats_init (gr, contig_mat, d_mat, n);
-    sets_init (gr, edge2cl_map, cl2edge_map);
+    mats_init (from, to, d, contig_mat, d_mat, n);
+    dmat_full_init (from_full, to_full, d_full, d_mat_full, nf);
+    sets_init (from, to, vert2cl_map, cl2vert_map);
 
-    std::set <unsigned int> the_tree;
-    int i = 0;
-    while (the_tree.size () < n)
+    /* The contiguity matrix retains is shape, so is always indexed by the
+     * (from, to) vectors. Merging clusters simply switches additional entries
+     * from  0 to 1.
+     */
+
+    std::unordered_set <unsigned int> the_tree;
+    int e = 0; // edge number in gr_full
+    while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
-        unsigned int efrom = edge2cl_map.at (i),
-                     eto = edge2cl_map.at (i);
-        if (contig_mat [efrom, eto] > 0)
+        int vfrom = from_full (e), vto = to_full (e); // vertex numbers
+        if (vert2cl_map.find (vfrom) != vert2cl_map.end () &&
+                vert2cl_map.find (vto) != vert2cl_map.end ())
         {
-            unsigned int ishort = find_shortest_connection (from, to, d,
-                    edge2cl_map, cl2edge_map, efrom, eto);
-            the_tree.insert (ishort);
-            unsigned int cli = edge2cl_map.at (efrom),
-                         clj = edge2cl_map.at (eto);
-            merge_clusters (contig_mat, edge2cl_map, cl2edge_map,
-                    i, cli, clj);
-            i = 0;
+            int cfrom = vert2cl_map.at (vfrom), cto = vert2cl_map.at (vto);
+            if (cfrom != cto && contig_mat (vfrom, vto) > 0)
+            {
+                unsigned int ishort = find_shortest_connection (from, to, d, d_mat,
+                        cl2vert_map, cfrom, cto);
+                the_tree.insert (ishort);
+                merge_clusters (contig_mat, vert2cl_map, cl2vert_map,
+                        cfrom, cto);
+                e = 0;
+            } else
+            {
+                e++;
+            }
         } else
         {
-            i++;
+            e++;
         }
+        //if (e == from_full.length ())
+        //    break;
     }
+
+    std::vector <int> treevec (the_tree.begin (), the_tree.end ());
+
+    return Rcpp::wrap (treevec);
 }

@@ -1,10 +1,10 @@
-#' scl_edges
+#' scl_edges_nn
 #'
-#' Generate triangulated edges between a set of input points
+#' Generate triangulated nearest-neighbour edges between a set of input points
 #'
 #' @inheritParams scl_cluster
 #' @noRd
-scl_edges <- function (xy, dmat, shortest = TRUE)
+scl_edges_nn <- function (xy, dmat, shortest = TRUE)
 {
     nbs <- dplyr::select (xy, c (x, y)) %>%
         tripack::tri.mesh () %>%
@@ -14,11 +14,33 @@ scl_edges <- function (xy, dmat, shortest = TRUE)
     edges <- lapply (seq (n), function (i)
                      cbind (i, nbs [[i]])) %>%
             do.call (rbind, .) %>%
-            as.tibble () %>%
-            rename (from = i, to = V1)
+            tibble::as.tibble () %>%
+            dplyr::rename (from = i, to = V1)
 
     index <- (edges$to - 1) * nrow (dmat) + edges$from
     edges$d <- dmat [index]
+
+    if (shortest)
+        edges %<>% dplyr::arrange (d)
+    else
+        edges %<>% dplyr::arrange (dplyr::desc (d))
+
+    return (edges)
+}
+
+#' scl_edges_all
+#'
+#' Generate full set of edges between a set of input points
+#'
+#' @inheritParams scl_cluster
+#' @noRd
+scl_edges_all <- function (xy, dmat, shortest = TRUE)
+{
+    n <- nrow (dmat)
+    edges <- cbind (seq (n), rep (seq (n), each = n), as.vector (dmat)) %>%
+        tibble::as.tibble () %>%
+        dplyr::rename (from = V1, to = V2, d = V3) %>%
+        na.omit ()
 
     if (shortest)
         edges %<>% dplyr::arrange (d)

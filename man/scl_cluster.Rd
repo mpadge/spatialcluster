@@ -4,7 +4,7 @@
 \alias{scl_cluster}
 \title{scl_cluster}
 \usage{
-scl_cluster(xy, dmat, ncl, full_order = TRUE, linkage = "single",
+scl_cluster(xy, dmat, ncl, full_order = FALSE, linkage = "single",
   shortest = TRUE)
 }
 \arguments{

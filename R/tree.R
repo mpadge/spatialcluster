@@ -40,46 +40,23 @@ scl_spantree_O1 <- function (edges)
     return (tree)
 }
 
-#' scl_spantree_alk
+#' scl_spantree_slk
 #'
-#' Generate a spanning tree from full-order, average linkage clustering (ALK)
+#' Generate a spanning tree from full-order, single linkage clustering (ALK)
 #' relationships expressed via a set of edges
 #'
-#' @param edges A set of edges resulting from \link{scl_edges}, which are sorted
-#' in ascending order according to user-specified data. The only aspect of that
-#' data which affect tree construction is this order, so only the set of
-#' \code{edges} are needed here
+#' @param edges_all A set of ALL edges resulting from \link{scl_edges_all},
+#' which are sorted in ascending order according to user-specified data.
+#' @param edges_nn A equivalent set of nearest neighbour edges only, resulting
+#' from \link{scl_edges_nn}.
 #'
 #' @return A tree
 #' @noRd
-scl_spantree_alk <- function (edges)
+scl_spantree_slk <- function (edges_all, edges_nn)
 {
-    n <- edges %>%
-        dplyr::select (from, to) %>%
-        unlist () %>%
-        max ()
-    tree <- tibble::tibble (from = integer(), to = integer())
-    clusters <- tibble::tibble (id = seq (n), clnum = seq (n))
-
-    # make the minimal tree:
-    for (e in seq (nrow (edges)))
-    {
-        clf <- clusters$clnum [edges$from [e]]
-        clt <- clusters$clnum [edges$to [e]]
-        if (clf != clt)
-        {
-            cli <- min (c (clf, clt))
-            clj <- max (c (clf, clt))
-            clusters %<>% dplyr::mutate (clnum = replace (clnum,
-                                                          clnum == clj,
-                                                          cli))
-            tree %<>% dplyr::bind_rows (tibble::tibble (from = edges$from [e],
-                                                        to = edges$to [e]))
-        }
-        if (length (unique (clusters$clnum)) == 1)
-            break
-    }
-    return (tree)
+    clusters <- rcpp_slk (edges_all, edges_nn)
+    tibble::tibble (from = edges_nn$from [clusters],
+                    to = edges_nn$to [clusters])
 }
 
 #' scl_cuttree
