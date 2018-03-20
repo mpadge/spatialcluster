@@ -164,3 +164,39 @@ void clear (Tree <T> *node)
         delete node;
     }
 }
+
+/* affirm no memory leaks:
+#include <random>
+
+// clang++ -fsanitize=undefined bst.cpp -o junk
+// valgrind --tool=memcheck --leak-check=full ./junk
+
+int main()
+{
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(0.0,1.0);
+
+	//Tree <double> *root = newTreeNode(1.0);
+	Tree <double> *tree;
+    
+    for (int i = 0; i < 1000; i++)
+    {
+        if (i == 0)
+            tree = newTreeNode (distribution (generator));
+        else
+            insertTreeNode(tree, distribution (generator));
+    }
+
+    std::cout << "tree (min, max) = (" << treeMin (tree) << ", " <<
+        treeMax (tree) << ")" << std::endl;
+    
+    deleteKey (tree, treeMin (tree));
+    deleteKey (tree, treeMax (tree));
+    std::cout << "  ---> (" << treeMin (tree) << ", " <<
+        treeMax (tree) << ")" << std::endl;
+
+    clear(tree);
+
+	return 0;
+}
+*/
