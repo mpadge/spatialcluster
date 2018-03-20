@@ -1,57 +1,54 @@
-#pragma once
+/* binary search tree adapted from
+ * http://www.bogotobogo.com/cplusplus/binarytree.php,
+ * and used here just to extract minimal and maximal values */
 
-#include <map>
-#include <algorithm> // min_element
 #include <iostream>
-#include <deque>
-#include <climits>
-#include <vector>
-#include <random>
-#include <ctime>
-
-
-/* Binary Tree */
 
 template <typename T>
 struct Tree
 {
 	T data;
-	Tree *left = nullptr;
-	Tree *right = nullptr;  
-	Tree *parent = nullptr;  
+	Tree *left;
+	Tree *right;  
+	Tree *parent;  
 };
 
 template <typename T>
-Tree <T> *newTreeNode(T data) 
+Tree <T> *newTreeNode (T data) 
 {
 	Tree <T> *node = new Tree <T>;
 	node->data = data;
-	node->left = NULL;
-	node->right = NULL;
-	node->parent = NULL;
+	node->left = nullptr;
+	node->right = nullptr;
+	node->parent = nullptr;
 
 	return node;
 }
 
 template <typename T>
-void insertTreeNode(Tree <T> *node, T data)
+void insertTreeNode (Tree <T> *node, T dat)
 {
 	Tree <T> *newNode = new Tree <T>;
-	newNode->data = data;
-	newNode->left = NULL;
-	newNode->right = NULL;
-	while(node) {
-	    if(data <= node->data) {
-		    if(node->left == NULL) {
+	newNode->data = dat;
+	newNode->left = nullptr;
+	newNode->right = nullptr;
+	while (node)
+    {
+	    if (dat <= node->data)
+        {
+		    if (node->left == nullptr)
+            {
 			    newNode->parent = node;
 		        node->left = newNode;
 		        return;
 		    }
 		    else
-		    node = node->left;
-	    }
-	    else {
-		    if(node->right == NULL) {
+                node = node->left;
+        }
+	    else
+        {
+		    if (node->right == nullptr)
+            {
 				newNode->parent = node;
 		        node->right = newNode;
 		        return;
@@ -63,101 +60,107 @@ void insertTreeNode(Tree <T> *node, T data)
 }
 
 template <typename T>
-Tree <T> *getNode(Tree <T> *node, T data)
+Tree <T> *getNode (Tree <T> *node, T dat)
 {
-	if(node == NULL) return node;
-	if(data < node->data) 
-		return getNode(node->left,data);
-	else if( data > node->data)
-		return getNode(node->right, data);
+	if (node == nullptr)
+        return node;
+
+	if (dat < node->data) 
+		return getNode (node->left,dat);
+	else if ( dat > node->data)
+		return getNode (node->right, dat);
 	else
 		return node;
 }
 
 template <typename T>
-T treeMin(Tree <T> *node)
+T treeMin (Tree <T> *node)
 {
-	while(node->left) {
+	while (node->left)
 		node = node->left;
-	}
+
 	return node->data;
 }
 
 template <typename T>
-T treeMax(Tree <T> *node)
+T treeMax (Tree <T> *node)
 {
-	while(node->right) {
+	while (node->right)
 		node = node->right;
-	}
+
 	return node->data;
 }
 
 template <typename T>
-void printTreeInOrder(Tree <T> *node)
+T predecessorInOrder (Tree <T> *node)
 {
-	if(node == NULL) return;
+	if (node->left) 
+		return treeMax (node->left);
 
-	printTreeInOrder(node->left);
-    std::cout << node->data << " ";
-	printTreeInOrder(node->right);
+	Tree <T> *y = node->parent;
+	while (node == y->left)
+    {
+		node = y;
+		y = y->parent;
+	}
+
+	return y->data;
 }
 
 template <typename T>
-void deleteKey(Tree <T> *root, T data)
+void deleteKey (Tree <T> *root, T dat)
 {
 	Tree <T> *node, *p, *child, *pred;
-	// get the node for the key
-	node = getNode(root, data);
+	node = getNode (root, dat);
 
-	// leaf node - just delete the node
-	if(node->left == NULL && node->right == NULL) {
-		if(node->parent) p = node->parent;
-		if(node == p->left) 
-			p->left = NULL;
+	if (node->left == nullptr && node->right == nullptr)
+    {
+		if (node->parent) p = node->parent;
+		if (node == p->left) 
+			p->left = nullptr;
 		else
-			p->right = NULL;
+			p->right = nullptr;
 		delete node;
 		return;
 	}
 
-	// two children - replace it with its predecessor and delete
-	if(node->left && node->right) {
-		T ch_pred = predecessorInOrder(node);
-		pred = getNode(root, ch_pred);
-		if(pred->parent->left == pred) 
-			pred->parent->left = NULL;
-		else if(pred->parent->right == pred) 
-			pred->parent->right = NULL;
+	if (node->left && node->right)
+    {
+		T ch_pred = predecessorInOrder (node);
+		pred = getNode (root, ch_pred);
+		if (pred->parent->left == pred) 
+			pred->parent->left = nullptr;
+		else if (pred->parent->right == pred) 
+			pred->parent->right = nullptr;
 		node->data = pred->data;
 		delete pred;
 		return;
 	}
 
-	// only one child 
-	// replace it with its child and delete
-	if(node->left) 
+	if (node->left) 
 		child = node->left;
-	else if(node->right)
+	else if (node->right)
 		child = node->right;
 	p = node->parent;
-	if(p->left && p->left == node) {
+	if (p->left && p->left == node)
+    {
 		p->left = child;
 	}
-	else if (p->right && p->right == node) {
+	else if (p->right && p->right == node)
+    {
 		p->right = child;
 	}
 	child->parent = p;
 	delete node;
-	return;
 }
 
 template <typename T>
-void clear(Tree <T> *node)
+void clear (Tree <T> *node)
 {
-    if(node != NULL) {
-        clear(node->left);
-        clear(node->right);
+    if (node != nullptr)
+    {
+        clear (node->left);
+        clear (node->right);
         delete node;
     }
 }
-
