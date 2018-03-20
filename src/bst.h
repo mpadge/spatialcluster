@@ -110,7 +110,8 @@ T predecessorInOrder (Tree <T> *node)
 template <typename T>
 void deleteKey (Tree <T> *root, T dat)
 {
-	Tree <T> *node, *p, *child, *pred;
+	Tree <T> *node = nullptr, *p = nullptr,
+         *child = nullptr, *pred = nullptr;
 	node = getNode (root, dat);
 
 	if (node->left == nullptr && node->right == nullptr)
