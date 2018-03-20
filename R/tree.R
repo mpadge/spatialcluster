@@ -78,5 +78,31 @@ scl_cuttree <- function (tree, edges, ncl)
 {
     tree %<>% left_join (edges, by = c ("from", "to"))
     n <- nrow (tree)
-    list (tree_in = tree [ncl:n, ], tree_out = tree [1:(n - 1),])
+
+    # define component as > 2 members, and cut tree until that is attained, or
+    # until tree is only calculated from < half the points
+    ncomps <- 1
+    ncli <- ncl - 1
+    ncmax <- 0
+    while (ncomps < ncl & ncli < (n / 2))
+    {
+        ncli <- ncli + 1
+        cmp <- tree_components (tree [ncli:nrow (tree), ])$comp
+        ncomps <- length (which (table (cmp) > 2))
+
+        if (ncomps > ncmax)
+        {
+            ncmax <- ncomps
+            ncl_max <- ncli
+        }
+    }
+    if (ncli >= (n / 2))
+    {
+        message ("Only able to cut tree into maximum of ", ncmax,
+                 " components")
+        ncli <- ncl_max
+    }
+
+    list (tree_in = tree [ncli:n, ], tree_out = tree [1:(ncli - 1),],
+          ncl = ncli)
 }
