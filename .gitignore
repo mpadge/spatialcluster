@@ -35,3 +35,4 @@ vignettes/*.pdf
 # vim files
 *.swp
 *.un~
+.Rproj.user
