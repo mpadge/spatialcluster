@@ -1,27 +1,33 @@
 context("tree")
-test_that("cluster", {
-              n <- 20
+test_that("scl structure", {
+              n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
-              scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
+              scl <- scl_cluster (xy, dmat, ncl = 4)
               expect_is (scl, "scl")
-              expect_equal (scl$ncl, 4)
+              expect_true (scl$pars$ncl >= 4)
               expect_true (all (names (scl) %in%
-                                c ("xy", "tree", "tree_rest", "ncl")))
+                                c ("xy", "tree", "tree_rest", "pars")))
               expect_true (nrow (scl$tree) < n)
-              scl2 <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE,
-                                   full_order = FALSE)
-              expect_true (!identical (scl, scl2))
-              scl3 <- scl_cluster (xy, dmat, ncl = 4, linkage = "single")
-              expect_true (!identical (scl, scl3))
+})
 
-              expect_error (s <- scl_cluster (xy, dmat, ncl = 4,
-                                                linkage = "average"),
-                              "Only single linkage implemented at the moment")
+test_that("scl methods",{
+              n <- 100
+              xy <- matrix (runif (2 * n), ncol = 2)
+              dmat <- matrix (runif (n ^ 2), ncol = n)
+              scl1 <- scl_cluster (xy, dmat, ncl = 4, shortest = FALSE)
+              scl2 <- scl_cluster (xy, dmat, ncl = 4, shortest = TRUE)
+              expect_true (!identical (scl1, scl2))
+
+              # these are the default pars:
+              scl3 <- scl_cluster (xy, dmat, ncl = 4, full_order = TRUE)
+              expect_true (!identical (scl1, scl2))
+              scl4 <- scl_cluster (xy, dmat, ncl = 4, linkage = "single")
+              expect_true (identical (scl3, scl4))
 })
 
 test_that("recluster", {
-              n <- 20
+              n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
               scl <- scl_cluster (xy, dmat, ncl = 4)
@@ -33,7 +39,7 @@ test_that("recluster", {
 })
 
 test_that("plot", {
-              n <- 20
+              n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
               scl <- scl_cluster (xy, dmat, ncl = 4)

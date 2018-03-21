@@ -74,11 +74,17 @@ scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
         }
         trees <- scl_cuttree (tree_full, edges_nn, ncl)
 
-        tree = tree_components (trees$tree_in)
+        tree <- tree_components (trees$tree_in)
+
+        # meta-data:
+        pars <- list (ncl = ncl,
+                      cl_order = c ("single", "full") [match (full_order,
+                                                              c (FALSE, TRUE))],
+                      linkage = linkage)
 
         structure (list (xy = xy, tree = tree,
                          tree_rest = trees$tree_out,
-                         ncl = ncl),
+                         pars = pars),
                    class = "scl")
     }
 }
@@ -133,8 +139,8 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
 
     # cut tree:
     n <- nrow (tree_full)
-    tree_rest = tree_full [1:(n - 1), ]
-    tree = tree_components (tree_full [ncl:n, ])
+    tree_rest <- tree_full [1:(n - 1), ]
+    tree <- tree_components (tree_full [ncl:n, ])
 
     structure (list (xy = scl$xy,
                      tree = tree,

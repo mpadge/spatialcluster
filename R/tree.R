@@ -103,6 +103,7 @@ scl_cuttree <- function (tree, edges, ncl)
         ncli <- ncl_max
     }
 
-    list (tree_in = tree [ncli:n, ], tree_out = tree [1:(ncli - 1),],
+    list (tree_in = tree [ncli:n, ],
+          tree_out = tree [1:(ncli - 1), ],
           ncl = ncli)
 }
