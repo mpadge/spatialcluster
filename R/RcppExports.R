@@ -35,12 +35,6 @@ rcpp_get_component_vector <- function(graph) {
     .Call(`_spatialcluster_rcpp_get_component_vector`, graph)
 }
 
-#' initial contiguity and distance matrices. The contiguity matrix is between
-#' clusters, so is constantly modified, whereas the distance matrix is between
-#' edges, so is fixed at load time.
-#' @noRd
-NULL
-
 #' find shortest connection between two clusters
 #' @param from, to, d the columns of the edge graph
 #' @param d_mat distance matrix between all edges (not between clusters!)

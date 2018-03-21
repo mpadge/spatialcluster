@@ -21,3 +21,9 @@ typedef std::string vertex_id_t, edge_id_t;
 typedef std::unordered_map <unsigned int,
     std::unordered_set <unsigned int> > int2ints_map_t;
 
+typedef arma::Mat <unsigned short> sint_mat_t;
+
+typedef std::unordered_map <unsigned int, unsigned int> uint_map_t;
+typedef std::unordered_map <unsigned int,
+        std::set <unsigned int> > uint_set_map_t;
+
