@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "slk.h"
 
+// --------- SINGLE LINKAGE CLUSTER ----------------
+
 //' find shortest connection between two clusters
 //' @param from, to, d the columns of the edge graph
 //' @param d_mat distance matrix between all edges (not between clusters!)

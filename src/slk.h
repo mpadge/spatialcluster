@@ -1,5 +1,7 @@
 #pragma once
 
+// --------- SINGLE LINKAGE CLUSTER ----------------
+
 int find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,

@@ -42,7 +42,7 @@ scl_spantree_O1 <- function (edges)
 
 #' scl_spantree_slk
 #'
-#' Generate a spanning tree from full-order, single linkage clustering (ALK)
+#' Generate a spanning tree from full-order, single linkage clustering (SLK)
 #' relationships expressed via a set of edges
 #'
 #' @param edges_all A set of ALL edges resulting from \link{scl_edges_all},
@@ -57,6 +57,24 @@ scl_spantree_slk <- function (edges_all, edges_nn)
     clusters <- rcpp_slk (edges_all, edges_nn) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
+}
+
+#' scl_spantree_alk
+#'
+#' Generate a spanning tree from full-order, average linkage clustering (ALK)
+#' relationships expressed via a set of edges
+#'
+#' @param edges A set of nearest neighbour edges resulting from
+#' \link{scl_edges_nn}, which are sorted in ascending order according to
+#' user-specified data.
+#'
+#' @return A tree
+#' @noRd
+scl_spantree_alk <- function (edges)
+{
+    clusters <- rcpp_alk (edges) + 1
+    tibble::tibble (from = edges$from [clusters],
+                    to = edges$to [clusters])
 }
 
 #' scl_cuttree
