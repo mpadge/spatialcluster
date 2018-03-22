@@ -26,4 +26,6 @@ typedef arma::Mat <unsigned short> sint_mat_t;
 typedef std::unordered_map <unsigned int, unsigned int> uint_map_t;
 typedef std::unordered_map <unsigned int,
         std::set <unsigned int> > uint_set_map_t;
+typedef std::unordered_map <unsigned int, double> intd_map_t;
+typedef std::unordered_map <double, unsigned int> dint_map_t;
 
