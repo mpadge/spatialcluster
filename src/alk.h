@@ -1,5 +1,7 @@
 // --------- AVERAGE LINKAGE CLUSTER ----------------
 
+#include <unordered_set>
+
 struct Edge_tree
 {
     unsigned int n;

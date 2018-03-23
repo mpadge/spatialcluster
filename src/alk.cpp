@@ -79,6 +79,7 @@ void edge_tree_step (Edge_tree * edge_tree,
     the_tree.insert (ishort);
 
     // Then merge clusters and update inter-cluster avg_dists
+    std::unordered_set <double> removed_dists;
     for (auto cl: edge_tree->cl2vert_map)
     {
         if (cl.first != cfrom && cl.first != cto)
@@ -100,19 +101,37 @@ void edge_tree_step (Edge_tree * edge_tree,
                     edge_tree->contig_mat (cl.first, cto) == 1)
             {
                 edge_tree->contig_mat (cl.first, cfrom) = 1;
+                edge_tree->contig_mat (cfrom, cl.first) = 1;
                 edge_tree->contig_mat (cl.first, cto) = 1;
+                edge_tree->contig_mat (cto, cl.first) = 1;
+
                 std::set <unsigned int> verts_from = 
-                    edge_tree->cl2vert_map.at (cfrom),
+                    edge_tree->cl2vert_map.at (cl.first),
                     verts_to = edge_tree->cl2vert_map.at (cto);
                 for (auto vi: verts_from)
                     for (auto vj: verts_to)
                     {
-                        Tree <double> * T = treeGetNode (edge_tree->tree,
-                                edge_tree->dmat (vi, vj));
-                        if (T->data != edge_tree->dmat (vi, vj))
-                            Rcpp::stop ("shite");
-                        //treeDeleteNode (edge_tree->tree, 
-                        //        edge_tree->dmat (vi, vj));
+                        double tempd = edge_tree->dmat (vi, vj);
+                        // TODO: tempd should never be INFINITE_DOUBLE here -
+                        // check out why that happens and FIX!
+                        if (tempd < INFINITE_DOUBLE &&
+                                removed_dists.find (tempd) == removed_dists.end ())
+                        {
+                            removed_dists.emplace (tempd);
+                            treeDeleteNode (edge_tree->tree, tempd);
+                        }
+                    }
+                verts_to = edge_tree->cl2vert_map.at (cfrom);
+                for (auto vi: verts_from)
+                    for (auto vj: verts_to)
+                    {
+                        double tempd = edge_tree->dmat (vi, vj);
+                        if (tempd < INFINITE_DOUBLE &&
+                                removed_dists.find (tempd) == removed_dists.end ())
+                        {
+                            removed_dists.emplace (tempd);
+                            treeDeleteNode (edge_tree->tree, tempd);
+                        }
                     }
                 // finally, add the new dist to the bst
                 treeInsertNode (edge_tree->tree,
@@ -149,6 +168,7 @@ Rcpp::IntegerVector rcpp_alk (
     std::unordered_set <unsigned int> the_tree;
     edge_tree_step (&edge_tree, from, to, d, the_tree);
 
+    /*
     Rcpp::Rcout << "tree has [" << treeSize (edge_tree.tree) << "] nodes " <<
         "; and maps have [" << edge_tree.edgewt2id_map.size () << ", " <<
         edge_tree.id2edgewt_map.size () << "] entries" << std::endl;
@@ -162,6 +182,7 @@ Rcpp::IntegerVector rcpp_alk (
         T = treeSuccesorInOrder (T);
     }
     Rcpp::Rcout << T->data << std::endl;
+    */
 
     treeClear (edge_tree.tree);
 
