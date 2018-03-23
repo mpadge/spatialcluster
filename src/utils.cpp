@@ -1,6 +1,9 @@
 #include "common.h"
 #include "utils.h"
 
+// Note that all matrices **CAN** be asymmetrical, and so are always indexed
+// (from, to)
+
 unsigned int get_n (
     const Rcpp::IntegerVector &from,
     const Rcpp::IntegerVector &to)
@@ -45,9 +48,7 @@ void mats_init (
     for (int i = 0; i < from.length (); i++)
     {
         contig_mat (from [i], to [i]) = 1;
-        contig_mat (to [i], from [i]) = 1;
         d_mat (from [i], to [i]) = d [i];
-        d_mat (to [i], from [i]) = d [i];
     }
 }
 
@@ -65,7 +66,6 @@ void dmat_full_init (
     for (int i = 0; i < from.length (); i++)
     {
         d_mat [from [i], to [i]] = d [i];
-        d_mat [to [i], from [i]] = d [i];
     }
 }
 
@@ -112,6 +112,7 @@ int find_shortest_connection (
     double dmin = INFINITE_DOUBLE;
     int short_i = INFINITE_INT, short_j = INFINITE_INT;
 
+    // from and to here are not direction, so need to examine both directions
     for (auto i: verts_i)
         for (auto j: verts_j)
         {

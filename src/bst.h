@@ -97,6 +97,16 @@ T treeMin (Tree <T> *node)
 	return node->data;
 }
 
+// returns Tree instead of min value
+template <typename T>
+Tree <T> * treeMinTree (Tree <T> *node)
+{
+	while (node->left)
+		node = node->left;
+
+	return node;
+}
+
 template <typename T>
 T treeMax (Tree <T> *node)
 {
@@ -107,11 +117,10 @@ T treeMax (Tree <T> *node)
 }
 
 template <typename T>
-Tree <T> *treeSuccesorInOrder (Tree <T> *node)
+Tree <T> * treeSuccesorInOrder (Tree <T> *node)
 {
-    /* if the node has right child, seccessor is Tree-Minimum */
     if (node->right != nullptr)
-        return node->right;
+        return treeMinTree (node->right);
 
     Tree <T> *y = node->parent;
     while (y != nullptr && node == y->right)
@@ -126,11 +135,11 @@ Tree <T> *treeSuccesorInOrder (Tree <T> *node)
 template <typename T>
 T treePredecessorInOrder (Tree <T> *node)
 {
-	if (node->left) 
+	if (node->left != nullptr) 
 		return treeMax (node->left);
 
 	Tree <T> *y = node->parent;
-	while (node == y->left)
+	while (y != nullptr && node == y->left)
     {
 		node = y;
 		y = y->parent;
@@ -159,8 +168,8 @@ void treeDeleteNode (Tree <T> *root, T dat)
 
 	if (node->left && node->right)
     {
-		T ch_pred = treePredecessorInOrder (node);
-		pred = treeGetNode (root, ch_pred);
+		T dat_pred = treePredecessorInOrder (node);
+		pred = treeGetNode (root, dat_pred);
 		if (pred->parent->left == pred) 
 			pred->parent->left = nullptr;
 		else if (pred->parent->right == pred) 

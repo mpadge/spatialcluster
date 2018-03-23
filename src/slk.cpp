@@ -17,8 +17,7 @@ void merge_clusters (
     // Set all contig_mat (cluster_from, .) to 1
     for (unsigned int j = 0; j < contig_mat.n_rows; j++)
     {
-        if (contig_mat (cluster_from, j) == 1 ||
-                contig_mat (j, cluster_from) == 1)
+        if (contig_mat (cluster_from, j) == 1 )
         {
             contig_mat (cluster_to, j) = 1;
             contig_mat (j, cluster_to) = 1;
@@ -31,6 +30,7 @@ void merge_clusters (
     for (auto vi: verts_from)
         for (auto vj: verts_to)
         {
+            // not directonal here, so need both directions:
             contig_mat (vi, vj) = contig_mat (vj, vi) = 1;
         }
 

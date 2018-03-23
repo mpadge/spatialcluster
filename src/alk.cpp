@@ -31,13 +31,9 @@ void edge_tree_init (Edge_tree * edge_tree,
     for (int i = 0; i < from.length (); i++)
     {
         edge_tree->contig_mat (from [i], to [i]) = 1;
-        edge_tree->contig_mat (to [i], from [i]) = 1;
         edge_tree->num_edges (from [i], to [i]) = 1;
-        edge_tree->num_edges (to [i], from [i]) = 1;
         edge_tree->dmat (from [i], to [i]) = d [i];
-        edge_tree->dmat (to [i], from [i]) = d [i];
         edge_tree->avg_dist (from [i], to [i]) = 0.0;
-        edge_tree->avg_dist (to [i], from [i]) = 0.0;
     }
 
     sets_init (from, to, edge_tree->vert2cl_map, edge_tree->cl2vert_map);
@@ -49,28 +45,37 @@ void edge_tree_step (Edge_tree * edge_tree,
         Rcpp::NumericVector d,
         std::unordered_set <unsigned int> &the_tree)
 {
-    unsigned int e = 0;
     double edge_dist = treeMin (edge_tree->tree);
     unsigned int edge_i = edge_tree->edgewt2id_map.at (edge_dist);
     unsigned int vfrom = from [edge_i], vto = to [edge_i];
 
-    // T used to step through successive min values:
-    Tree <double> * T = treeSuccesorInOrder (edge_tree->tree);
-
     int cfrom = edge_tree->vert2cl_map.at (vfrom),
         cto = edge_tree->vert2cl_map.at (vto);
+    double min_cl_dist = edge_tree->avg_dist (cfrom, cto);
+    if (edge_tree->avg_dist (cto, cfrom) < min_cl_dist)
+        min_cl_dist = edge_tree->avg_dist (cto, cfrom);
+
     // Step through to find the minimal-distance edge that (i) connects
     // different clusters, (ii) represents contiguous clusters, and (iii) has
     // distance greater than the average dist between those 2 clusters.
+    unsigned int e = 0;
+    // T used to step through successive min values:
+    Tree <double> * T = treeMinTree (edge_tree->tree);
     while (cfrom == cto ||
             edge_tree->contig_mat (vfrom, vto) == 0 ||
-            d [edge_i] < edge_tree->avg_dist (cfrom, cto))
+            d [edge_i] < min_cl_dist)
     {
         e++;
         edge_dist = T->data;
         edge_i = edge_tree->edgewt2id_map.at (edge_dist);
         vfrom = from [edge_i];
         vto = to [edge_i];
+        cfrom = edge_tree->vert2cl_map.at (vfrom);
+        cto = edge_tree->vert2cl_map.at (vto);
+        min_cl_dist = edge_tree->avg_dist (cfrom, cto);
+        if (edge_tree->avg_dist (cto, cfrom) < min_cl_dist)
+            min_cl_dist = edge_tree->avg_dist (cto, cfrom);
+
         T = treeSuccesorInOrder (T); // pointer to node with next shortest d
     }
 
@@ -101,9 +106,7 @@ void edge_tree_step (Edge_tree * edge_tree,
                     edge_tree->contig_mat (cl.first, cto) == 1)
             {
                 edge_tree->contig_mat (cl.first, cfrom) = 1;
-                edge_tree->contig_mat (cfrom, cl.first) = 1;
                 edge_tree->contig_mat (cl.first, cto) = 1;
-                edge_tree->contig_mat (cto, cl.first) = 1;
 
                 std::set <unsigned int> verts_from = 
                     edge_tree->cl2vert_map.at (cl.first),
@@ -111,27 +114,31 @@ void edge_tree_step (Edge_tree * edge_tree,
                 for (auto vi: verts_from)
                     for (auto vj: verts_to)
                     {
-                        double tempd = edge_tree->dmat (vi, vj);
+                        double tempd = edge_tree->avg_dist (vi, vj);
                         // TODO: tempd should never be INFINITE_DOUBLE here -
                         // check out why that happens and FIX!
                         if (tempd < INFINITE_DOUBLE &&
                                 removed_dists.find (tempd) == removed_dists.end ())
                         {
                             removed_dists.emplace (tempd);
-                            treeDeleteNode (edge_tree->tree, tempd);
-                        }
+                            Rcpp::Rcout << "removing " << tempd << std::endl;
+                            //treeDeleteNode (edge_tree->tree, tempd);
+                        } else if (removed_dists.find (tempd) == removed_dists.end ())
+                            Rcpp::Rcout << "---" << std::endl;
                     }
                 verts_to = edge_tree->cl2vert_map.at (cfrom);
                 for (auto vi: verts_from)
                     for (auto vj: verts_to)
                     {
-                        double tempd = edge_tree->dmat (vi, vj);
+                        double tempd = edge_tree->avg_dist (vi, vj);
                         if (tempd < INFINITE_DOUBLE &&
                                 removed_dists.find (tempd) == removed_dists.end ())
                         {
                             removed_dists.emplace (tempd);
-                            treeDeleteNode (edge_tree->tree, tempd);
-                        }
+                            Rcpp::Rcout << "removing " << tempd << std::endl;
+                            //treeDeleteNode (edge_tree->tree, tempd);
+                        } else if (removed_dists.find (tempd) == removed_dists.end ())
+                            Rcpp::Rcout << "---" << std::endl;
                     }
                 // finally, add the new dist to the bst
                 treeInsertNode (edge_tree->tree,
