@@ -1,6 +1,12 @@
 /* binary search tree adapted from
  * http://www.bogotobogo.com/cplusplus/binarytree.php,
- * and used here just to extract minimal and maximal values */
+ * and used here just to extract minimal and maximal values 
+ * Note that although this might be more neatly done by embedding the functions
+ * within the struct/class def, it works by recursively adding pointers to new
+ * instances of same struct/class. Because it will be ultimately embedded within
+ * a meta-struct object, it is therefore actually easier not to embed the
+ * function defs, at the price of a little untidiness.
+ * */
 
 #include <iostream>
 
@@ -14,7 +20,7 @@ struct Tree
 };
 
 template <typename T>
-Tree <T> *newTreeNode (T data) 
+Tree <T> *treeNewNode (T data) 
 {
 	Tree <T> *node = new Tree <T>;
 	node->data = data;
@@ -26,7 +32,7 @@ Tree <T> *newTreeNode (T data)
 }
 
 template <typename T>
-void insertTreeNode (Tree <T> *node, T dat)
+void treeInsertNode (Tree <T> *node, T dat)
 {
 	Tree <T> *newNode = new Tree <T>;
 	newNode->data = dat;
@@ -60,17 +66,26 @@ void insertTreeNode (Tree <T> *node, T dat)
 }
 
 template <typename T>
-Tree <T> *getNode (Tree <T> *node, T dat)
+Tree <T> *treeGetNode (Tree <T> *node, T dat)
 {
 	if (node == nullptr)
         return node;
 
 	if (dat < node->data) 
-		return getNode (node->left,dat);
+		return treeGetNode (node->left,dat);
 	else if ( dat > node->data)
-		return getNode (node->right, dat);
+		return treeGetNode (node->right, dat);
 	else
 		return node;
+}
+
+template <typename T>
+int treeSize (struct Tree <T> *node)
+{
+    if (node == nullptr)
+        return 0;
+    else
+        return treeSize (node->left) + 1 + treeSize (node->right);
 }
 
 template <typename T>
@@ -92,7 +107,7 @@ T treeMax (Tree <T> *node)
 }
 
 template <typename T>
-T predecessorInOrder (Tree <T> *node)
+T treePredecessorInOrder (Tree <T> *node)
 {
 	if (node->left) 
 		return treeMax (node->left);
@@ -108,11 +123,11 @@ T predecessorInOrder (Tree <T> *node)
 }
 
 template <typename T>
-void deleteKey (Tree <T> *root, T dat)
+void treeDeleteNode (Tree <T> *root, T dat)
 {
 	Tree <T> *node = nullptr, *p = nullptr,
          *child = nullptr, *pred = nullptr;
-	node = getNode (root, dat);
+	node = treeGetNode (root, dat);
 
 	if (node->left == nullptr && node->right == nullptr)
     {
@@ -127,8 +142,8 @@ void deleteKey (Tree <T> *root, T dat)
 
 	if (node->left && node->right)
     {
-		T ch_pred = predecessorInOrder (node);
-		pred = getNode (root, ch_pred);
+		T ch_pred = treePredecessorInOrder (node);
+		pred = treeGetNode (root, ch_pred);
 		if (pred->parent->left == pred) 
 			pred->parent->left = nullptr;
 		else if (pred->parent->right == pred) 
@@ -156,12 +171,12 @@ void deleteKey (Tree <T> *root, T dat)
 }
 
 template <typename T>
-void clear (Tree <T> *node)
+void treeClear (Tree <T> *node)
 {
     if (node != nullptr)
     {
-        clear (node->left);
-        clear (node->right);
+        treeClear (node->left);
+        treeClear (node->right);
         delete node;
     }
 }
@@ -177,13 +192,13 @@ int main()
     std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution(0.0,1.0);
 
-	//Tree <double> *root = newTreeNode(1.0);
+	//Tree <double> *root = treeNewNode(1.0);
 	Tree <double> *tree;
     
     for (int i = 0; i < 1000; i++)
     {
         if (i == 0)
-            tree = newTreeNode (distribution (generator));
+            tree = treeNewNode (distribution (generator));
         else
             insertTreeNode(tree, distribution (generator));
     }
@@ -191,12 +206,12 @@ int main()
     std::cout << "tree (min, max) = (" << treeMin (tree) << ", " <<
         treeMax (tree) << ")" << std::endl;
     
-    deleteKey (tree, treeMin (tree));
-    deleteKey (tree, treeMax (tree));
+    treeDeleteNode (tree, treeMin (tree));
+    treeDeleteNode (tree, treeMax (tree));
     std::cout << "  ---> (" << treeMin (tree) << ", " <<
         treeMax (tree) << ")" << std::endl;
 
-    clear(tree);
+    treeClear(tree);
 
 	return 0;
 }
