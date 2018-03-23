@@ -107,6 +107,23 @@ T treeMax (Tree <T> *node)
 }
 
 template <typename T>
+Tree <T> *treeSuccesorInOrder (Tree <T> *node)
+{
+    /* if the node has right child, seccessor is Tree-Minimum */
+    if (node->right != nullptr)
+        return node->right;
+
+    Tree <T> *y = node->parent;
+    while (y != nullptr && node == y->right)
+    {
+        node = y;
+        y = y->parent;
+    }
+    return y;
+}
+
+
+template <typename T>
 T treePredecessorInOrder (Tree <T> *node)
 {
 	if (node->left) 

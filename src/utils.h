@@ -24,3 +24,12 @@ void sets_init (
         const Rcpp::IntegerVector &to,
         uint_map_t &edge2cl_map,
         uint_set_map_t &cl2edge_map);
+
+int find_shortest_connection (
+        Rcpp::IntegerVector &from,
+        Rcpp::IntegerVector &to,
+        Rcpp::NumericVector &d,
+        arma::Mat <double> &d_mat,
+        uint_set_map_t &cl2edge_map,
+        int cfrom,
+        int cto);
