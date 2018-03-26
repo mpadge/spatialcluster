@@ -218,24 +218,35 @@ int main()
     std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution(0.0,1.0);
 
-	//Tree <double> *root = treeNewNode(1.0);
 	Tree <double> *tree;
-    
-    for (int i = 0; i < 1000; i++)
+
+    unsigned int n = 100;
+    for (int i = 0; i < 100; i++)
     {
         if (i == 0)
             tree = treeNewNode (distribution (generator));
         else
-            insertTreeNode(tree, distribution (generator));
+            treeInsertNode (tree, distribution (generator));
     }
+    std::cout << "tree size = " << treeSize (tree) << std::endl;
 
     std::cout << "tree (min, max) = (" << treeMin (tree) << ", " <<
-        treeMax (tree) << ")" << std::endl;
+        treeMax (tree) << ")";
     
     treeDeleteNode (tree, treeMin (tree));
     treeDeleteNode (tree, treeMax (tree));
     std::cout << "  ---> (" << treeMin (tree) << ", " <<
         treeMax (tree) << ")" << std::endl;
+    std::cout << "tree size = " << treeSize (tree) << std::endl;
+
+    unsigned int nmin = 10;
+    std::cout << "First " << nmin << " minimal values:" << std::endl;
+    Tree <double> * T = treeMinTree (tree);
+    for (int i = 0; i < 10; i++)
+    {
+        std::cout << "(" << i << ", " << T->data << ")" << std::endl;
+        T = treeSuccesorInOrder (T);
+    }
 
     treeClear(tree);
 

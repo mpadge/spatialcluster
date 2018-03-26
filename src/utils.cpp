@@ -84,6 +84,21 @@ void sets_init (
         eset.insert (from [i]);
         cl2vert_map.emplace (from [i], eset);
     }
+    for (int i = 0; i < to.length (); i++)
+    {
+        if (cl2vert_map.find (to [i]) == cl2vert_map.end ())
+        {
+            std::set <unsigned int> eset;
+            eset.insert (to [i]);
+            cl2vert_map.emplace (to [i], eset);
+        } else
+        {
+            std::set <unsigned int> eset = cl2vert_map.at (to [i]);
+            eset.emplace (to [i]);
+            cl2vert_map.at (to [i]) = eset;
+        }
+    }
+    
     const unsigned int n = get_n (from, to);
     // Initially assign all verts to clusters of same number:
     for (unsigned int i = 0; i < n; i++)
