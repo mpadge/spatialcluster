@@ -24,7 +24,7 @@ Modified \code{scl} object in which \code{tree} is re-cut into
 Re-cut a spatial cluster tree (\code{scl}) at a different number of clusters.
 }
 \examples{
-n <- 20
+n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
 scl <- scl_cluster (xy, dmat, ncl = 4)

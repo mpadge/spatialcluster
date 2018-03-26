@@ -110,7 +110,7 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
 #' @param ... ignored here
 #' @export
 #' @examples
-#' n <- 20
+#' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
 #' scl <- scl_cluster (xy, dmat, ncl = 4)

@@ -34,7 +34,7 @@
 #'
 #' @export
 #' @examples
-#' n <- 20
+#' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
 #' scl <- scl_cluster (xy, dmat, ncl = 4)
@@ -120,7 +120,7 @@ tree_components <- function (tree)
 #' \code{ncl} clusters.
 #' @export
 #' @examples
-#' n <- 20
+#' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
 #' scl <- scl_cluster (xy, dmat, ncl = 4)

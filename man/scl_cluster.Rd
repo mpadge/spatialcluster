@@ -49,7 +49,7 @@ first-order relationships. It is therefore strongly recommended that the default
 \code{full_order = TRUE} be used at all times.
 }
 \examples{
-n <- 20
+n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
 scl <- scl_cluster (xy, dmat, ncl = 4)
