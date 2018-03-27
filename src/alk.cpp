@@ -3,15 +3,10 @@
 #include "bst.h"
 #include "alk.h"
 
-#include <math.h> // isnan
-
 // --------- AVERAGE LINKAGE CLUSTER ----------------
-
-/* TODO: To get this working, I need to properly trace the vert2cl and cl2vert
- * maps to index the matrices. The loops over vertices must be done the same as
- * in `utils/find_shortest_connection`, and the vertex sets updated as in
- * `slk/merge_clusters`
- */
+//
+// TODO: Remove all usage of the vert2cl and cl2vert pairs, and replace
+// throughout with edgewt2clpair_map.
 
 void edge_tree_init (Edge_tree * edge_tree,
         Rcpp::IntegerVector from,
@@ -24,8 +19,10 @@ void edge_tree_init (Edge_tree * edge_tree,
             edge_tree->tree = treeNewNode (d [0]);
         else
             treeInsertNode (edge_tree->tree, d [i]);
-        edge_tree->edgewt2id_map.emplace (d [i], i);
+        edge_tree->edgewt2id_map.emplace (d [i], i); // straight index!
         edge_tree->id2edgewt_map.emplace (i, d [i]);
+        edge_tree->edgewt2clpair_map.emplace (d [i],
+                std::make_pair (from [i], to [i]));
     }
 
     unsigned int n = get_n (from, to);
@@ -56,11 +53,14 @@ void edge_tree_step (Edge_tree * edge_tree,
         std::unordered_set <unsigned int> &the_tree)
 {
     double edge_dist = treeMin (edge_tree->tree);
-    unsigned int edge_i = edge_tree->edgewt2id_map.at (edge_dist);
-    unsigned int vfrom = from [edge_i], vto = to [edge_i];
+    //unsigned int edge_i = edge_tree->edgewt2id_map.at (edge_dist);
+    //unsigned int vfrom = from [edge_i], vto = to [edge_i];
+    std::pair <unsigned int, unsigned int> vft =
+        edge_tree->edgewt2clpair_map.at (edge_dist);
+    unsigned int cfrom = vft.first, cto = vft.second;
 
-    int cfrom = edge_tree->vert2cl_map.at (vfrom),
-        cto = edge_tree->vert2cl_map.at (vto);
+    //int cfrom = edge_tree->vert2cl_map.at (vfrom),
+    //    cto = edge_tree->vert2cl_map.at (vto);
     double min_cl_dist = edge_tree->avg_dist (cfrom, cto);
     if (edge_tree->avg_dist (cto, cfrom) < min_cl_dist)
         min_cl_dist = edge_tree->avg_dist (cto, cfrom);
@@ -71,18 +71,24 @@ void edge_tree_step (Edge_tree * edge_tree,
     // T used to step through successive min values:
     Tree <double> * T = treeMinTree (edge_tree->tree);
     while (cfrom == cto ||
-            edge_tree->contig_mat (vfrom, vto) == 0 ||
-            d [edge_i] < min_cl_dist)
+            edge_tree->contig_mat (cfrom, cto) == 0 ||
+            edge_tree->avg_dist (cfrom, cto) < min_cl_dist)
     {
         edge_dist = T->data;
+        /*
         if (edge_tree->edgewt2id_map.find (edge_dist) == 
                 edge_tree->edgewt2id_map.end ())
+        {
+            Rcpp::Rcout << "Failed when trying to erase (" << edge_dist << 
+                ")" << std::endl;
             Rcpp::stop ("shite, that shouldn't happen");
+        }
         edge_i = edge_tree->edgewt2id_map.at (edge_dist);
         vfrom = from [edge_i];
         vto = to [edge_i];
         cfrom = edge_tree->vert2cl_map.at (vfrom);
         cto = edge_tree->vert2cl_map.at (vto);
+        */
         min_cl_dist = edge_tree->avg_dist (cfrom, cto);
         if (edge_tree->avg_dist (cto, cfrom) < min_cl_dist)
             min_cl_dist = edge_tree->avg_dist (cto, cfrom);
@@ -143,6 +149,11 @@ void edge_tree_step (Edge_tree * edge_tree,
                 {
                     double thisd = T2->data;
                     treeDeleteNode (edge_tree->tree, thisd);
+                    // TODO: The following line is going to fail when there are
+                    // duplicate edge distances
+                    unsigned int id = edge_tree->edgewt2id_map.at (thisd);
+                    edge_tree->edgewt2id_map.erase (thisd);
+                    edge_tree->id2edgewt_map.erase (id);
                 }
 
                 T2 = treeGetNode (edge_tree->tree, tempd_t);
@@ -150,12 +161,18 @@ void edge_tree_step (Edge_tree * edge_tree,
                 {
                     double thisd = T2->data;
                     treeDeleteNode (edge_tree->tree, thisd);
+                    unsigned int id = edge_tree->edgewt2id_map.at (thisd);
+                    edge_tree->edgewt2id_map.erase (thisd);
+                    edge_tree->id2edgewt_map.erase (id);
                 }
 
 
                 // finally, add the new dist to the bst
                 treeInsertNode (edge_tree->tree,
                         edge_tree->avg_dist (cl.first, cfrom));
+                edge_tree->edgewt2clpair_map.emplace (
+                        edge_tree->avg_dist (cl.first, cfrom),
+                        std::make_pair (cl.first, cfrom));
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
     } // end for over cl

@@ -6,8 +6,10 @@ struct Edge_tree
 {
     unsigned int n;
 	Tree <double> * tree;
-    dint_map_t edgewt2id_map;
+    dint_map_t edgewt2id_map; // TODO: Delete those!
     intd_map_t id2edgewt_map;
+    std::unordered_map <double,
+        std::pair <unsigned int, unsigned int> > edgewt2clpair_map;
 
     arma::Mat <unsigned short> contig_mat, num_edges;
     arma::Mat <double> dmat, avg_dist;
