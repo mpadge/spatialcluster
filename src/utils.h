@@ -33,3 +33,11 @@ int find_shortest_connection (
         uint_set_map_t &cl2edge_map,
         int cfrom,
         int cto);
+
+void merge_clusters (
+        arma::Mat <unsigned short> &contig_mat,
+        uint_map_t &vert2cl_map,
+        uint_set_map_t &cl2vert_map,
+        int merge_from,
+        int merge_to);
+

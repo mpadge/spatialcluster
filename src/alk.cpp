@@ -59,7 +59,6 @@ void edge_tree_step (Edge_tree * edge_tree,
     unsigned int edge_i = edge_tree->edgewt2id_map.at (edge_dist);
     unsigned int vfrom = from [edge_i], vto = to [edge_i];
 
-
     int cfrom = edge_tree->vert2cl_map.at (vfrom),
         cto = edge_tree->vert2cl_map.at (vto);
     double min_cl_dist = edge_tree->avg_dist (cfrom, cto);
@@ -69,15 +68,16 @@ void edge_tree_step (Edge_tree * edge_tree,
     // Step through to find the minimal-distance edge that (i) connects
     // different clusters, (ii) represents contiguous clusters, and (iii) has
     // distance greater than the average dist between those 2 clusters.
-    unsigned int e = 0;
     // T used to step through successive min values:
     Tree <double> * T = treeMinTree (edge_tree->tree);
     while (cfrom == cto ||
             edge_tree->contig_mat (vfrom, vto) == 0 ||
             d [edge_i] < min_cl_dist)
     {
-        e++;
         edge_dist = T->data;
+        if (edge_tree->edgewt2id_map.find (edge_dist) == 
+                edge_tree->edgewt2id_map.end ())
+            Rcpp::stop ("shite, that shouldn't happen");
         edge_i = edge_tree->edgewt2id_map.at (edge_dist);
         vfrom = from [edge_i];
         vto = to [edge_i];
@@ -93,10 +93,12 @@ void edge_tree_step (Edge_tree * edge_tree,
     int ishort = find_shortest_connection (from, to, d, edge_tree->dmat,
             edge_tree->cl2vert_map, cfrom, cto);
     the_tree.insert (ishort);
+    merge_clusters (edge_tree->contig_mat, edge_tree->vert2cl_map,
+            edge_tree->cl2vert_map, cfrom, cto);
 
-    // Then merge clusters and update inter-cluster avg_dists
-    std::set <unsigned int> verts_from = edge_tree->cl2vert_map.at (cfrom),
-        verts_to = edge_tree->cl2vert_map.at (cto);
+    // Then update inter-cluster avg_dists, noting that cfrom is no longer part
+    // of cl2vert_map, but remains a valid index into avg_dist and num_edges
+    std::set <unsigned int> verts_to = edge_tree->cl2vert_map.at (cto);
 
     /* Cluster numbers start off here the same as vertex numbers, and so are
      * initially simple indices into the vert-by-vert matrices (contig_mat,
@@ -109,7 +111,7 @@ void edge_tree_step (Edge_tree * edge_tree,
      */
     for (auto cl: edge_tree->cl2vert_map)
     {
-        if (cl.first != cfrom && cl.first != cto)
+        if (cl.first != cto)
         {
             std::set <unsigned int> verts_i =
                 edge_tree->cl2vert_map.at (cl.first);
@@ -152,7 +154,6 @@ void edge_tree_step (Edge_tree * edge_tree,
 
 
                 // finally, add the new dist to the bst
-                //treeInsertNode (edge_tree->tree, T->data);
                 treeInsertNode (edge_tree->tree,
                         edge_tree->avg_dist (cl.first, cfrom));
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
@@ -190,13 +191,10 @@ Rcpp::IntegerVector rcpp_alk (
     {
         Rcpp::checkUserInterrupt ();
         edge_tree_step (&edge_tree, from, to, d, the_tree);
-        }
+    }
     treeClear (edge_tree.tree);
 
     std::vector <int> treevec (the_tree.begin (), the_tree.end ());
 
     return Rcpp::wrap (treevec);
-
-    Rcpp::IntegerVector res;
-    return res;
 }

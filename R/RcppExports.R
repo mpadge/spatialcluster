@@ -44,11 +44,6 @@ rcpp_get_component_vector <- function(graph) {
     .Call(`_spatialcluster_rcpp_get_component_vector`, graph)
 }
 
-#' merge two clusters in the contiguity matrix, reducing the size of the matrix
-#' by one row and column.
-#' @noRd
-NULL
-
 #' rcpp_slk
 #'
 #' Full-order single linkage cluster redcap algorithm

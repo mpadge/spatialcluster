@@ -162,3 +162,43 @@ int find_shortest_connection (
 
     return shortest;
 }
+
+//' merge two clusters in the contiguity matrix, reducing the size of the matrix
+//' by one row and column.
+//' @noRd
+void merge_clusters (
+        arma::Mat <unsigned short> &contig_mat,
+        uint_map_t &vert2cl_map,
+        uint_set_map_t &cl2vert_map,
+        int cluster_from,
+        int cluster_to)
+{
+    // Set all contig_mat (cluster_from, .) to 1
+    for (unsigned int j = 0; j < contig_mat.n_rows; j++)
+    {
+        if (contig_mat (cluster_from, j) == 1 )
+        {
+            contig_mat (cluster_to, j) = 1;
+            contig_mat (j, cluster_to) = 1;
+        }
+    }
+
+    std::set <unsigned int> verts_from = cl2vert_map.at (cluster_from),
+        verts_to = cl2vert_map.at (cluster_to);
+
+    for (auto vi: verts_from)
+        for (auto vj: verts_to)
+        {
+            // not directonal here, so need both directions:
+            contig_mat (vi, vj) = contig_mat (vj, vi) = 1;
+        }
+
+    // then re-number all cluster numbers in cl2vert 
+    cl2vert_map.erase (cluster_from);
+    for (auto v: verts_from)
+        verts_to.insert (v);
+    cl2vert_map.at (cluster_to) = verts_to;
+    // and in vert2cl:
+    for (auto v: verts_from)
+        vert2cl_map [v] = cluster_to;
+}
