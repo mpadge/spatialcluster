@@ -123,8 +123,10 @@ void edge_tree_step (Edge_tree * edge_tree,
                     edge_tree->contig_mat (cl.first, m) == 1)
             {
                 edge_tree->contig_mat (cl.first, l) = 1;
-                treeDeleteNode (edge_tree->tree, tempd_l);
-                treeDeleteNode (edge_tree->tree, tempd_m);
+                if (tempd_l > 0.0)
+                    treeDeleteNode (edge_tree->tree, tempd_l);
+                if (tempd_m > 0.0)
+                    treeDeleteNode (edge_tree->tree, tempd_m);
                 
                 treeInsertNode (edge_tree->tree,
                         edge_tree->avg_dist (cl.first, l));
