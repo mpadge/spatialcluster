@@ -4,7 +4,11 @@
 spatialcluster
 ==============
 
-R package for spatially-constrained clustering, including the REDCAP collection of algorithms described in [D. Guo's 2008 paper, "Regionalization with dynamically constrained agglomerative clutering and partitioning."](https://www.tandfonline.com/doi/abs/10.1080/13658810701674970) (pdf available [here](https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf)). ''Spatially-constrained'' means that the data from which clusters are to be formed also map on to spatial reference points, and the constraint is that clusters must be spatially contiguous. The actual clustering data are generally in the form of a distance or similarity matrix quantifying relationships between some collection of objects or points, as with most clustering procedures, while the spatial data are simply coordinates of those objects or points.
+Clustering algorithms are borne of historical computational necessity. Approximations were sought to boost efficiency and thereby enable clusters to be computed at all. This package includes an algorithm to *exactly* compuate spatially constrained clusters. The algorithm is as efficient as can be, but is much slower than approximate algorithms. It is neverthelsss exact.
+
+''Spatially-constrained'' means that the data from which clusters are to be formed also map on to spatial reference points, and the constraint is that clusters must be spatially contiguous. The actual clustering data are generally in the form of a distance or similarity matrix quantifying relationships between some collection of objects or points, as with most clustering procedures, while the spatial data are simply coordinates of those objects or points.
+
+For comparison, this package also includes the REDCAP collection of algorithms described in [D. Guo's 2008 paper, "Regionalization with dynamically constrained agglomerative clutering and partitioning."](https://www.tandfonline.com/doi/abs/10.1080/13658810701674970) (pdf available [here](https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf)).
 
 Installation
 ------------
@@ -40,6 +44,8 @@ library (spatialcluster)
 scl <- scl_cluster (xy, dmat, ncl = 4)
 plot (scl)
 ```
+
+    #> Only able to cut tree into maximum of 2 components
 
 ![](README-plot-1.png)
 
