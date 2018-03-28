@@ -22,7 +22,7 @@ Clustering algorithms are borne of historical computational necessity.
 Approximations were sought to boost efficiency and thereby enable clusters to be
 computed at all. This package includes an algorithm to *exactly* compuate
 spatially constrained clusters. The algorithm is as efficient as can be, but is
-much slower than approximate algorithms. It is neverthelsss exact.
+of course slower than approximate algorithms. It is neverthelsss exact.
 
 ''Spatially-constrained'' means that the data from which clusters are to be
 formed also map on to spatial reference points, and the constraint is that
