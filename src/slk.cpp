@@ -34,17 +34,20 @@ Rcpp::IntegerVector rcpp_slk (
     from = from - 1;
     to = to - 1;
 
-    const unsigned int n = get_n (from, to);
-    const unsigned int nf = get_n (from_full, to_full);
-
     arma::Mat <unsigned short> contig_mat;
     arma::Mat <double> d_mat, d_mat_full;
-    uint_map_t vert2cl_map;
+    // vert2cl and cl2vert are dynamically updated with cluster memberships;
+    // vert2index and index2vert are retained at initial values which map (from,
+    // to) vectors to matrix indices. All operations are performed on matrices
+    // directly, with membership re-traced at the end via index2vert_map.
+    uint_map_t vert2cl_map, vert2index_map, index2vert_map;
     uint_set_map_t cl2vert_map;
 
-    mats_init (from, to, d, contig_mat, d_mat, n);
-    dmat_full_init (from_full, to_full, d_full, d_mat_full, nf);
-    sets_init (from, to, vert2cl_map, cl2vert_map);
+    unsigned int n = sets_init (from, to, vert2index_map, index2vert_map,
+            vert2cl_map, cl2vert_map);
+
+    mats_init (from, to, d, vert2index_map, contig_mat, d_mat);
+    dmat_full_init (from_full, to_full, d_full, vert2index_map, d_mat_full);
 
     /* The contiguity matrix retains is shape, so is always indexed by the
      * (from, to) vectors. Merging clusters simply switches additional entries
@@ -55,15 +58,15 @@ Rcpp::IntegerVector rcpp_slk (
     int e = 0; // edge number in gr_full
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
-        int vfrom = from_full (e), vto = to_full (e); // vertex numbers
-        if (vert2cl_map.find (vfrom) != vert2cl_map.end () &&
-                vert2cl_map.find (vto) != vert2cl_map.end ())
+        int ifrom = from_full (e), ito = to_full (e); // vertex numbers
+        if (vert2cl_map.find (ifrom) != vert2cl_map.end () &&
+                vert2cl_map.find (ito) != vert2cl_map.end ())
         {
-            int cfrom = vert2cl_map.at (vfrom), cto = vert2cl_map.at (vto);
-            if (cfrom != cto && contig_mat (vfrom, vto) > 0)
+            int cfrom = vert2cl_map.at (ifrom), cto = vert2cl_map.at (ito);
+            if (cfrom != cto && contig_mat (ifrom, ito) > 0)
             {
-                unsigned int ishort = find_shortest_connection (from, to, d, d_mat,
-                        cl2vert_map, cfrom, cto);
+                unsigned int ishort = find_shortest_connection (from, to, d,
+                        vert2index_map, d_mat, cl2vert_map, cfrom, cto);
                 the_tree.insert (ishort);
                 merge_clusters (contig_mat, vert2cl_map, cl2vert_map,
                         cfrom, cto);

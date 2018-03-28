@@ -13,20 +13,33 @@ void edge_tree_init (Edge_tree * edge_tree,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
+    unsigned int n = sets_init (from, to, edge_tree->vert2index_map,
+            edge_tree->index2vert_map, edge_tree->vert2cl_map,
+            edge_tree->cl2vert_map);
+    edge_tree->n = n;
+
+    std::unordered_set <unsigned int> vert_set;
+
     for (int i = 0; i < from.size (); i++)
     {
+        vert_set.emplace (from [i]);
+        vert_set.emplace (to [i]);
         if (i == 0)
             edge_tree->tree = treeNewNode (d [0]);
         else
             treeInsertNode (edge_tree->tree, d [i]);
-        edge_tree->edgewt2id_map.emplace (d [i], i); // straight index!
-        edge_tree->id2edgewt_map.emplace (i, d [i]);
+    }
+    unsigned int i = 0;
+    for (auto v: vert_set)
+        edge_tree->vert2index_map.emplace (v, i++);
+
+    for (int i = 0; i < from.size (); i++)
+    {
         edge_tree->edgewt2clpair_map.emplace (d [i],
-                std::make_pair (from [i], to [i]));
+                std::make_pair (edge_tree->vert2index_map.at (from [i]),
+                    edge_tree->vert2index_map.at (to [i])));
     }
 
-    unsigned int n = get_n (from, to);
-    edge_tree->n = n;
     edge_tree->contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
     edge_tree->num_edges = arma::ones <arma::Mat <unsigned short> > (n, n);
     edge_tree->avg_dist.set_size (n, n);
@@ -36,14 +49,14 @@ void edge_tree_init (Edge_tree * edge_tree,
     edge_tree->dmat.fill (INFINITE_DOUBLE);
     for (int i = 0; i < from.length (); i++)
     {
-        edge_tree->contig_mat (from [i], to [i]) = 1;
-        edge_tree->num_edges (from [i], to [i]) = 1;
-        edge_tree->dmat (from [i], to [i]) = d [i];
-        //edge_tree->avg_dist (from [i], to [i]) = 0.0;
-        edge_tree->avg_dist (from [i], to [i]) = d [i];
+        unsigned int vf = edge_tree->vert2index_map.at (from [i]),
+                     vt = edge_tree->vert2index_map.at (to [i]);
+        edge_tree->contig_mat (vf, vt) = 1;
+        edge_tree->num_edges (vf, vt) = 1;
+        //edge_tree->avg_dist (vf, vt) = 0.0;
+        edge_tree->avg_dist (vf, vt) = d [i];
+        edge_tree->dmat (vf, vt) = d [i];
     }
-
-    sets_init (from, to, edge_tree->vert2cl_map, edge_tree->cl2vert_map);
 }
 
 void edge_tree_step (Edge_tree * edge_tree,
@@ -52,59 +65,33 @@ void edge_tree_step (Edge_tree * edge_tree,
         Rcpp::NumericVector d,
         std::unordered_set <unsigned int> &the_tree)
 {
-    double edge_dist = treeMin (edge_tree->tree);
-    //unsigned int edge_i = edge_tree->edgewt2id_map.at (edge_dist);
-    //unsigned int vfrom = from [edge_i], vto = to [edge_i];
-    std::pair <unsigned int, unsigned int> vft =
-        edge_tree->edgewt2clpair_map.at (edge_dist);
-    unsigned int cfrom = vft.first, cto = vft.second;
-
-    //int cfrom = edge_tree->vert2cl_map.at (vfrom),
-    //    cto = edge_tree->vert2cl_map.at (vto);
-    double min_cl_dist = edge_tree->avg_dist (cfrom, cto);
-    if (edge_tree->avg_dist (cto, cfrom) < min_cl_dist)
-        min_cl_dist = edge_tree->avg_dist (cto, cfrom);
-
     // Step through to find the minimal-distance edge that (i) connects
     // different clusters, (ii) represents contiguous clusters, and (iii) has
     // distance greater than the average dist between those 2 clusters.
     // T used to step through successive min values:
     Tree <double> * T = treeMinTree (edge_tree->tree);
-    while (cfrom == cto ||
-            edge_tree->contig_mat (cfrom, cto) == 0 ||
-            edge_tree->avg_dist (cfrom, cto) < min_cl_dist)
+    double edge_dist = T->data;
+    std::pair <unsigned int, unsigned int> pr =
+        edge_tree->edgewt2clpair_map.at (edge_dist);
+    unsigned int l = edge_tree->vert2index_map.at (pr.first),
+                 m = edge_tree->vert2index_map.at (pr.second);
+    while (l == m || edge_tree->contig_mat (l, m) == 0 ||
+            edge_dist < edge_tree->avg_dist (l, m))
     {
+        T = treeSuccessorInOrder (T);
         edge_dist = T->data;
-        /*
-        if (edge_tree->edgewt2id_map.find (edge_dist) == 
-                edge_tree->edgewt2id_map.end ())
-        {
-            Rcpp::Rcout << "Failed when trying to erase (" << edge_dist << 
-                ")" << std::endl;
-            Rcpp::stop ("shite, that shouldn't happen");
-        }
-        edge_i = edge_tree->edgewt2id_map.at (edge_dist);
-        vfrom = from [edge_i];
-        vto = to [edge_i];
-        cfrom = edge_tree->vert2cl_map.at (vfrom);
-        cto = edge_tree->vert2cl_map.at (vto);
-        */
-        min_cl_dist = edge_tree->avg_dist (cfrom, cto);
-        if (edge_tree->avg_dist (cto, cfrom) < min_cl_dist)
-            min_cl_dist = edge_tree->avg_dist (cto, cfrom);
-
-        T = treeSuccesorInOrder (T); // pointer to node with next shortest d
+        pr = edge_tree->edgewt2clpair_map.at (edge_dist);
+        l = edge_tree->vert2index_map.at (pr.first);
+        m = edge_tree->vert2index_map.at (pr.second);
     }
 
-    int ishort = find_shortest_connection (from, to, d, edge_tree->dmat,
-            edge_tree->cl2vert_map, cfrom, cto);
+    int ishort = find_shortest_connection (from, to, d,
+            edge_tree->vert2index_map, edge_tree->dmat,
+            edge_tree->cl2vert_map, l, m);
+    // ishort is an index into (from, to)
     the_tree.insert (ishort);
     merge_clusters (edge_tree->contig_mat, edge_tree->vert2cl_map,
-            edge_tree->cl2vert_map, cfrom, cto);
-
-    // Then update inter-cluster avg_dists, noting that cfrom is no longer part
-    // of cl2vert_map, but remains a valid index into avg_dist and num_edges
-    std::set <unsigned int> verts_to = edge_tree->cl2vert_map.at (cto);
+            edge_tree->cl2vert_map, l, m);
 
     /* Cluster numbers start off here the same as vertex numbers, and so are
      * initially simple indices into the vert-by-vert matrices (contig_mat,
@@ -117,62 +104,30 @@ void edge_tree_step (Edge_tree * edge_tree,
      */
     for (auto cl: edge_tree->cl2vert_map)
     {
-        if (cl.first != cto)
+        if (cl.first != l || cl.first != m)
         {
             std::set <unsigned int> verts_i =
                 edge_tree->cl2vert_map.at (cl.first);
 
-            const double tempd_f = edge_tree->avg_dist (cl.first, cfrom),
-                   tempd_t = edge_tree->avg_dist (cl.first, cto);
-            const unsigned int nedges_f = edge_tree->num_edges (cl.first, cfrom),
-                  nedges_t = edge_tree->num_edges (cl.first, cto);
+            const double tempd_l = edge_tree->avg_dist (cl.first, l),
+                   tempd_m = edge_tree->avg_dist (cl.first, m);
+            const unsigned int nedges_l = edge_tree->num_edges (cl.first, l),
+                  nedges_m = edge_tree->num_edges (cl.first, m);
 
-            edge_tree->avg_dist (cl.first, cfrom) =
-                (tempd_f * nedges_f + tempd_t * nedges_t) /
-                (nedges_f + nedges_t);
-            edge_tree->num_edges (cl.first, cfrom) = nedges_f + nedges_t;
+            edge_tree->avg_dist (cl.first, l) =
+                (tempd_l * nedges_l + tempd_m * nedges_m) /
+                (nedges_l + nedges_m);
+            edge_tree->num_edges (cl.first, l) = nedges_l + nedges_m;
 
-            if (edge_tree->contig_mat (cl.first, cfrom) == 1 ||
-                    edge_tree->contig_mat (cfrom, cl.first) == 1 ||
-                    edge_tree->contig_mat (cl.first, cto) == 1 ||
-                    edge_tree->contig_mat (cto, cl.first) == 1)
+            if (edge_tree->contig_mat (cl.first, l) == 1 ||
+                    edge_tree->contig_mat (cl.first, m) == 1)
             {
-                edge_tree->contig_mat (cl.first, cfrom) = 1;
-                edge_tree->contig_mat (cfrom, cl.first) = 1;
-                edge_tree->contig_mat (cl.first, cto) = 1;
-                edge_tree->contig_mat (cto, cl.first) = 1;
+                edge_tree->contig_mat (cl.first, l) = 1;
+                treeDeleteNode (edge_tree->tree, tempd_l);
+                treeDeleteNode (edge_tree->tree, tempd_m);
                 
-                //treeDeleteNode (edge_tree->tree, tempd_f);
-                //treeDeleteNode (edge_tree->tree, tempd_t);
-                Tree <double> * T2 = treeGetNode (edge_tree->tree, tempd_f);
-                if (T2 != nullptr)
-                {
-                    double thisd = T2->data;
-                    treeDeleteNode (edge_tree->tree, thisd);
-                    // TODO: The following line is going to fail when there are
-                    // duplicate edge distances
-                    unsigned int id = edge_tree->edgewt2id_map.at (thisd);
-                    edge_tree->edgewt2id_map.erase (thisd);
-                    edge_tree->id2edgewt_map.erase (id);
-                }
-
-                T2 = treeGetNode (edge_tree->tree, tempd_t);
-                if (T2 != nullptr)
-                {
-                    double thisd = T2->data;
-                    treeDeleteNode (edge_tree->tree, thisd);
-                    unsigned int id = edge_tree->edgewt2id_map.at (thisd);
-                    edge_tree->edgewt2id_map.erase (thisd);
-                    edge_tree->id2edgewt_map.erase (id);
-                }
-
-
-                // finally, add the new dist to the bst
                 treeInsertNode (edge_tree->tree,
-                        edge_tree->avg_dist (cl.first, cfrom));
-                edge_tree->edgewt2clpair_map.emplace (
-                        edge_tree->avg_dist (cl.first, cfrom),
-                        std::make_pair (cl.first, cfrom));
+                        edge_tree->avg_dist (cl.first, l));
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
     } // end for over cl
@@ -198,10 +153,10 @@ Rcpp::IntegerVector rcpp_alk (
     // Index vectors are 1-indexed, so
     from = from - 1;
     to = to - 1;
-    const unsigned int n = get_n (from, to);
 
     Edge_tree edge_tree;
     edge_tree_init (&edge_tree, from, to, d);
+    const unsigned int n = edge_tree.n;
 
     std::unordered_set <unsigned int> the_tree;
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges

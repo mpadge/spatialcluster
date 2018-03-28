@@ -117,7 +117,7 @@ T treeMax (Tree <T> *node)
 }
 
 template <typename T>
-Tree <T> * treeSuccesorInOrder (Tree <T> *node)
+Tree <T> * treeSuccessorInOrder (Tree <T> *node)
 {
     if (node->right != nullptr)
         return treeMinTree (node->right);
@@ -245,7 +245,7 @@ int main()
     for (int i = 0; i < 10; i++)
     {
         std::cout << "(" << i << ", " << T->data << ")" << std::endl;
-        T = treeSuccesorInOrder (T);
+        T = treeSuccessorInOrder (T);
     }
 
     treeClear(tree);

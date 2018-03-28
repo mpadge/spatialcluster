@@ -1,34 +1,33 @@
 #pragma once
 
-unsigned int get_n (
-    const Rcpp::IntegerVector &from,
-    const Rcpp::IntegerVector &to);
+unsigned int sets_init (
+        const Rcpp::IntegerVector &from,
+        const Rcpp::IntegerVector &to,
+        uint_map_t &vert2index_map,
+        uint_map_t &index2vert_map,
+        uint_map_t &edge2cl_map,
+        uint_set_map_t &cl2edge_map);
 
 void mats_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
+        uint_map_t &vert2index_map,
         arma::Mat <unsigned short> &contig_mat,
-        arma::Mat <double> &d_mat,
-        const unsigned int n);
+        arma::Mat <double> &d_mat);
 
 void dmat_full_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
-        arma::Mat <double> &d_mat,
-        const unsigned int n);
-
-void sets_init (
-        const Rcpp::IntegerVector &from,
-        const Rcpp::IntegerVector &to,
-        uint_map_t &edge2cl_map,
-        uint_set_map_t &cl2edge_map);
+        uint_map_t &vert2index_map,
+        arma::Mat <double> &d_mat);
 
 int find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,
         Rcpp::NumericVector &d,
+        uint_map_t &vert2index_map,
         arma::Mat <double> &d_mat,
         uint_set_map_t &cl2edge_map,
         int cfrom,

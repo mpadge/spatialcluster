@@ -4,28 +4,60 @@
 // Note that all matrices **CAN** be asymmetrical, and so are always indexed
 // (from, to)
 
-unsigned int get_n (
-    const Rcpp::IntegerVector &from,
-    const Rcpp::IntegerVector &to)
+unsigned int sets_init (
+        const Rcpp::IntegerVector &from,
+        const Rcpp::IntegerVector &to,
+        uint_map_t &vert2index_map,
+        uint_map_t &index2vert_map,
+        uint_map_t &vert2cl_map,
+        uint_set_map_t &cl2vert_map)
 {
-    std::set <unsigned int> nodes;
-    int max_node = 0;
-    for (auto i: from)
-    {
-        nodes.insert (i);
-        if (i > max_node)
-            max_node = i;
-    }
-    for (auto i: to)
-    {
-        nodes.insert (i);
-        if (i > max_node)
-            max_node = i;
-    }
-    if (nodes.size () != (static_cast <unsigned int> (max_node) + 1))
-        Rcpp::stop ("vertex numbers are discontinuous");
+    vert2index_map.clear ();
+    vert2cl_map.clear ();
+    cl2vert_map.clear ();
 
-    return nodes.size ();
+    std::unordered_set <unsigned int> vert_set;
+    for (int i = 0; i < from.size (); i++)
+    {
+        vert_set.emplace (from [i]);
+        vert_set.emplace (to [i]);
+    }
+    unsigned int i = 0;
+    for (auto v: vert_set)
+    {
+        index2vert_map.emplace (i, v);
+        vert2index_map.emplace (v, i++);
+    }
+
+    for (int i = 0; i < from.length (); i++)
+    {
+        std::set <unsigned int> eset;
+        unsigned int fi = vert2index_map.at (from [i]);
+        eset.insert (fi);
+        cl2vert_map.emplace (fi, eset);
+    }
+    for (int i = 0; i < to.length (); i++)
+    {
+        unsigned int ti = vert2index_map.at (to [i]);
+        if (cl2vert_map.find (ti) == cl2vert_map.end ())
+        {
+            std::set <unsigned int> eset;
+            eset.insert (ti);
+            cl2vert_map.emplace (ti, eset);
+        } else
+        {
+            std::set <unsigned int> eset = cl2vert_map.at (ti);
+            eset.emplace (ti);
+            cl2vert_map.at (ti) = eset;
+        }
+    }
+    
+    const unsigned int n = vert_set.size ();
+    // Initially assign all verts to clusters of same number:
+    for (unsigned int i = 0; i < n; i++)
+        vert2cl_map.emplace (i, i);
+
+    return n;
 }
 
 //' initial contiguity and distance matrices. The contiguity matrix is between
@@ -36,10 +68,12 @@ void mats_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
+        uint_map_t &vert2index_map,
         arma::Mat <unsigned short> &contig_mat,
-        arma::Mat <double> &d_mat,
-        const unsigned int n)
+        arma::Mat <double> &d_mat)
 {
+    const unsigned int n = vert2index_map.size ();
+
     contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
     d_mat.resize (n, n);
@@ -47,8 +81,10 @@ void mats_init (
 
     for (int i = 0; i < from.length (); i++)
     {
-        contig_mat (from [i], to [i]) = 1;
-        d_mat (from [i], to [i]) = d [i];
+        contig_mat (vert2index_map.at (from [i]),
+                vert2index_map.at (to [i])) = 1;
+        d_mat (vert2index_map.at (from [i]),
+            vert2index_map.at (to [i])) = d [i];
     }
 }
 
@@ -56,53 +92,18 @@ void dmat_full_init (
         const Rcpp::IntegerVector &from, // here, from_full, etc.
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
-        arma::Mat <double> &d_mat, // here, d_mat_full
-        const unsigned int n)
+        uint_map_t &vert2index_map,
+        arma::Mat <double> &d_mat) // here, d_mat_full
 {
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    d_mat.resize (n, n);
+    d_mat.resize (vert2index_map.size (), vert2index_map.size ());
     d_mat.fill (INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
-        d_mat [from [i], to [i]] = d [i];
+        d_mat [vert2index_map.at (from [i]),
+              vert2index_map.at (to [i])] = d [i];
     }
-}
-
-void sets_init (
-        const Rcpp::IntegerVector &from,
-        const Rcpp::IntegerVector &to,
-        uint_map_t &vert2cl_map,
-        uint_set_map_t &cl2vert_map)
-{
-    vert2cl_map.clear ();
-    cl2vert_map.clear ();
-
-    for (int i = 0; i < from.length (); i++)
-    {
-        std::set <unsigned int> eset;
-        eset.insert (from [i]);
-        cl2vert_map.emplace (from [i], eset);
-    }
-    for (int i = 0; i < to.length (); i++)
-    {
-        if (cl2vert_map.find (to [i]) == cl2vert_map.end ())
-        {
-            std::set <unsigned int> eset;
-            eset.insert (to [i]);
-            cl2vert_map.emplace (to [i], eset);
-        } else
-        {
-            std::set <unsigned int> eset = cl2vert_map.at (to [i]);
-            eset.emplace (to [i]);
-            cl2vert_map.at (to [i]) = eset;
-        }
-    }
-    
-    const unsigned int n = get_n (from, to);
-    // Initially assign all verts to clusters of same number:
-    for (unsigned int i = 0; i < n; i++)
-        vert2cl_map.emplace (i, i);
 }
 
 //' find shortest connection between two clusters
@@ -111,11 +112,14 @@ void sets_init (
 //' @param cl2vert_map map of list of all (from, to, d) edges for each cluster
 //' @param cfrom Number of cluster which is to be merged
 //' @param cto Number of cluster with which it is to be merged
+//'
+//' @return Index directly into from, to - **NOT** into the actual matrices!
 //' @noRd
 int find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,
         Rcpp::NumericVector &d,
+        uint_map_t &vert2index_map,
         arma::Mat <double> &d_mat,
         uint_set_map_t &cl2vert_map,
         int cfrom,
@@ -151,7 +155,8 @@ int find_shortest_connection (
     int shortest = INFINITE_INT;
     for (int i = 0; i < from.length (); i++)
     {
-        if (from [i] == short_i && to [i] == short_j)
+        if (vert2index_map.at (from [i]) == short_i &&
+                vert2index_map.at (to [i]) == short_j)
         {
             shortest = i;
             break;
