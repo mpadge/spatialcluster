@@ -59,11 +59,10 @@ void edge_tree_init (Edge_tree * edge_tree,
     }
 }
 
-void edge_tree_step (Edge_tree * edge_tree,
+int edge_tree_step (Edge_tree * edge_tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
-        Rcpp::NumericVector d,
-        std::unordered_set <unsigned int> &the_tree)
+        Rcpp::NumericVector d)
 {
     // Step through to find the minimal-distance edge that (i) connects
     // different clusters, (ii) represents contiguous clusters, and (iii) has
@@ -88,8 +87,7 @@ void edge_tree_step (Edge_tree * edge_tree,
     int ishort = find_shortest_connection (from, to, d,
             edge_tree->vert2index_map, edge_tree->dmat,
             edge_tree->cl2vert_map, l, m);
-    // ishort is an index into (from, to)
-    the_tree.insert (ishort);
+    // ishort is return value; an index into (from, to)
     merge_clusters (edge_tree->contig_mat, edge_tree->vert2cl_map,
             edge_tree->cl2vert_map, l, m);
 
@@ -133,6 +131,8 @@ void edge_tree_step (Edge_tree * edge_tree,
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
     } // end for over cl
+
+    return ishort;
 }
 
 
@@ -164,7 +164,8 @@ Rcpp::IntegerVector rcpp_alk (
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
-        edge_tree_step (&edge_tree, from, to, d, the_tree);
+        int ishort = edge_tree_step (&edge_tree, from, to, d);
+        the_tree.insert (ishort);
     }
     treeClear (edge_tree.tree);
 

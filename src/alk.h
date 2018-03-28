@@ -22,11 +22,10 @@ void edge_tree_init (Edge_tree * edge_tree,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void edge_tree_step (Edge_tree * edge_tree,
+int edge_tree_step (Edge_tree * edge_tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
-        Rcpp::NumericVector d,
-        std::unordered_set <unsigned int> &the_tree);
+        Rcpp::NumericVector d);
 
 Rcpp::IntegerVector rcpp_alk (
         const Rcpp::DataFrame gr);
