@@ -4,17 +4,30 @@
 // Note that all matrices **CAN** be asymmetrical, and so are always indexed
 // (from, to)
 
+/* These routines all work with 2 lots of 2 main maps:
+ * 1. vert2index and index2vert maps
+ * 2. cl2index and index2cl maps
+ *
+ * The former map all vertices enumerated in the original from and to vectors to
+ * sequential index numbers into the matrices (dists, contig_mat, whatever). The
+ * latter are initially direct a->a maps of all indices to themselves. As
+ * clusters merge, the values of index2cl maps are updated so that, for example,
+ * index2cl(a)->b and index2cl(b)->b. The cl2index map then holds an
+ * unordered_set of target indices for each cluster.
+ */
+
 unsigned int sets_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         uint_map_t &vert2index_map,
         uint_map_t &index2vert_map,
-        uint_map_t &vert2cl_map,
-        uint_set_map_t &cl2vert_map)
+        uint_map_t &index2cl_map,
+        uint_set_map_t &cl2index_map)
 {
     vert2index_map.clear ();
-    vert2cl_map.clear ();
-    cl2vert_map.clear ();
+    index2vert_map.clear ();
+    index2cl_map.clear ();
+    cl2index_map.clear ();
 
     std::unordered_set <unsigned int> vert_set;
     for (int i = 0; i < from.size (); i++)
@@ -29,33 +42,29 @@ unsigned int sets_init (
         vert2index_map.emplace (v, i++);
     }
 
+    std::unordered_set <unsigned int> eset;
     for (int i = 0; i < from.length (); i++)
     {
-        std::set <unsigned int> eset;
         unsigned int fi = vert2index_map.at (from [i]);
+        eset.clear ();
         eset.insert (fi);
-        cl2vert_map.emplace (fi, eset);
+        cl2index_map.emplace (fi, eset);
     }
     for (int i = 0; i < to.length (); i++)
     {
         unsigned int ti = vert2index_map.at (to [i]);
-        if (cl2vert_map.find (ti) == cl2vert_map.end ())
-        {
-            std::set <unsigned int> eset;
-            eset.insert (ti);
-            cl2vert_map.emplace (ti, eset);
-        } else
-        {
-            std::set <unsigned int> eset = cl2vert_map.at (ti);
-            eset.emplace (ti);
-            cl2vert_map.at (ti) = eset;
-        }
+        if (cl2index_map.find (ti) == cl2index_map.end ())
+            eset.clear ();
+        else
+            eset = cl2index_map.at (ti);
+        eset.emplace (ti);
+        cl2index_map.emplace (ti, eset);
     }
     
     const unsigned int n = vert_set.size ();
     // Initially assign all verts to clusters of same number:
     for (unsigned int i = 0; i < n; i++)
-        vert2cl_map.emplace (i, i);
+        index2cl_map.emplace (i, i);
 
     return n;
 }
@@ -68,7 +77,7 @@ void mats_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
-        uint_map_t &vert2index_map,
+        const uint_map_t &vert2index_map,
         arma::Mat <unsigned short> &contig_mat,
         arma::Mat <double> &d_mat)
 {
@@ -81,10 +90,10 @@ void mats_init (
 
     for (int i = 0; i < from.length (); i++)
     {
-        contig_mat (vert2index_map.at (from [i]),
-                vert2index_map.at (to [i])) = 1;
-        d_mat (vert2index_map.at (from [i]),
-            vert2index_map.at (to [i])) = d [i];
+        unsigned int fi = vert2index_map.at (from [i]),
+                     ti = vert2index_map.at (to [i]);
+        contig_mat (fi, ti) = 1;
+        d_mat (fi, ti) = d [i];
     }
 }
 
@@ -92,7 +101,7 @@ void dmat_full_init (
         const Rcpp::IntegerVector &from, // here, from_full, etc.
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
-        uint_map_t &vert2index_map,
+        const uint_map_t &vert2index_map,
         arma::Mat <double> &d_mat) // here, d_mat_full
 {
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
@@ -121,19 +130,19 @@ int find_shortest_connection (
         Rcpp::NumericVector &d,
         uint_map_t &vert2index_map,
         arma::Mat <double> &d_mat,
-        uint_set_map_t &cl2vert_map,
-        int cfrom,
-        int cto)
+        uint_set_map_t &cl2index_map,
+        const unsigned int cfrom,
+        const unsigned int cto)
 {
-    std::set <unsigned int> verts_i = cl2vert_map.at (cfrom);
-    std::set <unsigned int> verts_j = cl2vert_map.at (cto);
+    std::unordered_set <unsigned int> index_i = cl2index_map.at (cfrom),
+        index_j = cl2index_map.at (cto);
 
     double dmin = INFINITE_DOUBLE;
     int short_i = INFINITE_INT, short_j = INFINITE_INT;
 
     // from and to here are not direction, so need to examine both directions
-    for (auto i: verts_i)
-        for (auto j: verts_j)
+    for (auto i: index_i)
+        for (auto j: index_j)
         {
             if (d_mat (i, j) < dmin)
             {
@@ -173,37 +182,38 @@ int find_shortest_connection (
 //' @noRd
 void merge_clusters (
         arma::Mat <unsigned short> &contig_mat,
-        uint_map_t &vert2cl_map,
-        uint_set_map_t &cl2vert_map,
-        int cluster_from,
-        int cluster_to)
+        uint_map_t &index2cl_map,
+        uint_set_map_t &cl2index_map,
+        const unsigned int cluster_from,
+        const unsigned int cluster_to)
 {
     // Set all contig_mat (cluster_from, .) to 1
-    for (unsigned int j = 0; j < contig_mat.n_rows; j++)
+    for (unsigned int i = 0; i < contig_mat.n_rows; i++)
     {
-        if (contig_mat (cluster_from, j) == 1 )
+        if (contig_mat (cluster_from, i) == 1 )
         {
-            contig_mat (cluster_to, j) = 1;
-            contig_mat (j, cluster_to) = 1;
+            contig_mat (cluster_to, i) = 1;
+            contig_mat (i, cluster_to) = 1;
         }
     }
 
-    std::set <unsigned int> verts_from = cl2vert_map.at (cluster_from),
-        verts_to = cl2vert_map.at (cluster_to);
+    std::unordered_set <unsigned int>
+        idx_from = cl2index_map.at (cluster_from),
+        idx_to = cl2index_map.at (cluster_to);
 
-    for (auto vi: verts_from)
-        for (auto vj: verts_to)
+    // not directonal here, so need both directions:
+    for (auto i: idx_from)
+        for (auto j: idx_to)
         {
-            // not directonal here, so need both directions:
-            contig_mat (vi, vj) = contig_mat (vj, vi) = 1;
+            contig_mat (i, j) = contig_mat (j, i) = 1;
         }
 
-    // then re-number all cluster numbers in cl2vert 
-    cl2vert_map.erase (cluster_from);
-    for (auto v: verts_from)
-        verts_to.insert (v);
-    cl2vert_map.at (cluster_to) = verts_to;
-    // and in vert2cl:
-    for (auto v: verts_from)
-        vert2cl_map [v] = cluster_to;
+    // then re-number all cluster numbers in cl2index 
+    cl2index_map.erase (cluster_from);
+    for (auto i: idx_from)
+        idx_to.insert (i);
+    cl2index_map.at (cluster_to) = idx_to;
+    // and in index2cl:
+    for (auto i: idx_from)
+        index2cl_map.at (i) = cluster_to;
 }

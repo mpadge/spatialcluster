@@ -157,7 +157,7 @@ void treeDeleteNode (Tree <T> *root, T dat)
 
 	if (node->left == nullptr && node->right == nullptr)
     {
-		if (node->parent) p = node->parent;
+        if (node->parent) p = node->parent;
 		if (node == p->left) 
 			p->left = nullptr;
 		else
@@ -184,15 +184,20 @@ void treeDeleteNode (Tree <T> *root, T dat)
 	else if (node->right)
 		child = node->right;
 	p = node->parent;
-	if (p->left && p->left == node)
+    if (p->left != nullptr)
     {
-		p->left = child;
-	}
-	else if (p->right && p->right == node)
+        if (p->left == node)
+        {
+            p->left = child;
+        }
+    } else if (p->right != nullptr)
     {
-		p->right = child;
-	}
-	child->parent = p;
+        if (p->right == node)
+        {
+            p->right = child;
+        }
+    }
+    child->parent = p;
 	delete node;
 }
 

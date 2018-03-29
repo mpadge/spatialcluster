@@ -2,25 +2,45 @@
 
 #include <unordered_set>
 
+/* The main matrices (contig, num_edges, dmat, avg_dist) are all references by
+ * direct indices throughout, not by vertex numbers. The latter are mapped to
+ * the former by vert2index_map, and reverse by index2vert_map.
+ *
+ * The index2cl and cl2index then associate those indices with clusters which
+ * are themselves also direct indices into the matrices. Cluster merging simply
+ * re-directs multiple indices onto the same cluster (index) numbers.
+ *
+ * The binary tree only returns minimal distances which need to be associated
+ * with particular pairs of clusters. This is done with the final map,
+ * edgewt2idx_pair, where the pair of indices is into clusters, requiring this
+ * map to be constantly updated. This updating requires in turn a reverse map,
+ * idx2edgewt, so that the weight associated with any pre-merge cluster can
+ * be obtained, and the edgewt2idx clusters for that weight updated.
+ */
 struct Edge_tree
 {
     unsigned int n;
 	Tree <double> * tree;
 
     std::unordered_map <double,
-        std::pair <unsigned int, unsigned int> > edgewt2clpair_map;
+        std::pair <unsigned int, unsigned int> > edgewt2idx_pair_map;
+    std::unordered_map <unsigned int, std::unordered_set <double> >
+        idx2edgewt_map; // all wts associated with that cluster
 
     arma::Mat <unsigned short> contig_mat, num_edges;
     arma::Mat <double> dmat, avg_dist;
 
-    uint_map_t vert2cl_map, vert2index_map, index2vert_map;
-    uint_set_map_t cl2vert_map;
+    uint_map_t index2cl_map, vert2index_map, index2vert_map;
+    uint_set_map_t cl2index_map;
 };
 
 void edge_tree_init (Edge_tree * edge_tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
+
+void update_edgewt_maps (Edge_tree * edge_tree,
+        unsigned int l, unsigned int m);
 
 int edge_tree_step (Edge_tree * edge_tree,
         Rcpp::IntegerVector from,
