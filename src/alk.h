@@ -17,10 +17,9 @@
  * idx2edgewt, so that the weight associated with any pre-merge cluster can
  * be obtained, and the edgewt2idx clusters for that weight updated.
  */
-struct Edge_tree
+struct ALKDat
 {
     unsigned int n;
-	Tree <double> * tree;
 
     std::unordered_map <double,
         std::pair <unsigned int, unsigned int> > edgewt2idx_pair_map;
@@ -34,15 +33,17 @@ struct Edge_tree
     uint_set_map_t cl2index_map;
 };
 
-void edge_tree_init (Edge_tree * edge_tree,
+void alk_init (ALKDat alk_dat,
+        Tree <double> * tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void update_edgewt_maps (Edge_tree * edge_tree,
+void update_edgewt_maps (ALKDat alk_dat,
         unsigned int l, unsigned int m);
 
-int edge_tree_step (Edge_tree * edge_tree,
+int alk_step (ALKDat alk_dat,
+        Tree <double> * tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);

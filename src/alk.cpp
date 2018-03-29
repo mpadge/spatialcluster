@@ -5,15 +5,16 @@
 
 // --------- AVERAGE LINKAGE CLUSTER ----------------
 
-void edge_tree_init (Edge_tree * edge_tree,
+void alk_init (ALKDat alk_dat,
+        Tree <double> * tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    unsigned int n = sets_init (from, to, edge_tree->vert2index_map,
-            edge_tree->index2vert_map, edge_tree->index2cl_map,
-            edge_tree->cl2index_map);
-    edge_tree->n = n;
+    unsigned int n = sets_init (from, to, alk_dat.vert2index_map,
+            alk_dat.index2vert_map, alk_dat.index2cl_map,
+            alk_dat.cl2index_map);
+    alk_dat.n = n;
 
     std::unordered_set <unsigned int> vert_set;
 
@@ -22,74 +23,74 @@ void edge_tree_init (Edge_tree * edge_tree,
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
         if (i == 0)
-            edge_tree->tree = treeNewNode (d [0]);
+            tree = treeNewNode (d [0]);
         else
-            treeInsertNode (edge_tree->tree, d [i]);
+            treeInsertNode (tree, d [i]);
     }
     unsigned int i = 0;
     for (auto v: vert_set)
-        edge_tree->vert2index_map.emplace (v, i++);
+        alk_dat.vert2index_map.emplace (v, i++);
 
     for (int i = 0; i < from.size (); i++)
     {
-        unsigned int fi = edge_tree->vert2index_map.at (from [i]),
-                     ti = edge_tree->vert2index_map.at (to [i]);
-        edge_tree->edgewt2idx_pair_map.emplace (d [i], std::make_pair (fi, ti));
+        unsigned int fi = alk_dat.vert2index_map.at (from [i]),
+                     ti = alk_dat.vert2index_map.at (to [i]);
+        alk_dat.edgewt2idx_pair_map.emplace (d [i], std::make_pair (fi, ti));
 
         std::unordered_set <double> wtset;
-        if (edge_tree->idx2edgewt_map.find (fi) ==
-                edge_tree->idx2edgewt_map.end ())
+        if (alk_dat.idx2edgewt_map.find (fi) ==
+                alk_dat.idx2edgewt_map.end ())
             wtset.clear ();
         else
-            wtset = edge_tree->idx2edgewt_map.at (fi);
+            wtset = alk_dat.idx2edgewt_map.at (fi);
         wtset.emplace (d [i]);
-        edge_tree->idx2edgewt_map.emplace (fi, wtset);
+        alk_dat.idx2edgewt_map.emplace (fi, wtset);
 
-        if (edge_tree->idx2edgewt_map.find (ti) ==
-                edge_tree->idx2edgewt_map.end ())
+        if (alk_dat.idx2edgewt_map.find (ti) ==
+                alk_dat.idx2edgewt_map.end ())
             wtset.clear ();
         else
-            wtset = edge_tree->idx2edgewt_map.at (ti);
+            wtset = alk_dat.idx2edgewt_map.at (ti);
         wtset.emplace (d [i]);
-        edge_tree->idx2edgewt_map.emplace (ti, wtset);
+        alk_dat.idx2edgewt_map.emplace (ti, wtset);
     }
 
-    edge_tree->contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
-    edge_tree->num_edges = arma::ones <arma::Mat <unsigned short> > (n, n);
-    edge_tree->avg_dist.set_size (n, n);
-    //edge_tree->avg_dist.fill (INFINITE_DOUBLE);
-    edge_tree->avg_dist.fill (0.0);
-    edge_tree->dmat.set_size (n, n);
-    edge_tree->dmat.fill (INFINITE_DOUBLE);
+    alk_dat.contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
+    alk_dat.num_edges = arma::ones <arma::Mat <unsigned short> > (n, n);
+    alk_dat.avg_dist.set_size (n, n);
+    //alk_dat.avg_dist.fill (INFINITE_DOUBLE);
+    alk_dat.avg_dist.fill (0.0);
+    alk_dat.dmat.set_size (n, n);
+    alk_dat.dmat.fill (INFINITE_DOUBLE);
     for (int i = 0; i < from.length (); i++)
     {
-        unsigned int vf = edge_tree->vert2index_map.at (from [i]),
-                     vt = edge_tree->vert2index_map.at (to [i]);
-        edge_tree->contig_mat (vf, vt) = 1;
-        edge_tree->num_edges (vf, vt) = 1;
-        //edge_tree->avg_dist (vf, vt) = 0.0;
-        edge_tree->avg_dist (vf, vt) = d [i];
-        edge_tree->dmat (vf, vt) = d [i];
+        unsigned int vf = alk_dat.vert2index_map.at (from [i]),
+                     vt = alk_dat.vert2index_map.at (to [i]);
+        alk_dat.contig_mat (vf, vt) = 1;
+        alk_dat.num_edges (vf, vt) = 1;
+        //alk_dat.avg_dist (vf, vt) = 0.0;
+        alk_dat.avg_dist (vf, vt) = d [i];
+        alk_dat.dmat (vf, vt) = d [i];
     }
 }
 
 // update both idx2edgewt and edgewt2idx maps to reflect merging of cluster m
 // into cluster l (using Guo's original notation there). The cl2index
 // and index2cl maps are updated in `merge_clusters`
-void update_edgewt_maps (Edge_tree * edge_tree,
+void update_edgewt_maps (ALKDat alk_dat,
         unsigned int l, unsigned int m)
 {
-    std::unordered_set <double> wtsl = edge_tree->idx2edgewt_map.at (l),
-        wtsm = edge_tree->idx2edgewt_map.at (m);
+    std::unordered_set <double> wtsl = alk_dat.idx2edgewt_map.at (l),
+        wtsm = alk_dat.idx2edgewt_map.at (m);
     for (auto w: wtsm)
         wtsl.insert (w);
-    edge_tree->idx2edgewt_map.erase (m);
-    edge_tree->idx2edgewt_map.emplace (l, wtsl);
+    alk_dat.idx2edgewt_map.erase (m);
+    alk_dat.idx2edgewt_map.emplace (l, wtsl);
 
     for (auto w: wtsl)
     {
         std::pair <unsigned int, unsigned int> pr =
-            edge_tree->edgewt2idx_pair_map.at (w);
+            alk_dat.edgewt2idx_pair_map.at (w);
         bool update = true;
         if (pr.first == l)
             pr.first = m;
@@ -98,11 +99,12 @@ void update_edgewt_maps (Edge_tree * edge_tree,
         else
             update = false;
         if (update)
-            edge_tree->edgewt2idx_pair_map.emplace (w, pr);
+            alk_dat.edgewt2idx_pair_map.emplace (w, pr);
     }
 }
 
-int edge_tree_step (Edge_tree * edge_tree,
+int alk_step (ALKDat alk_dat,
+        Tree <double> * tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
@@ -111,30 +113,30 @@ int edge_tree_step (Edge_tree * edge_tree,
     // different clusters, (ii) represents contiguous clusters, and (iii) has
     // distance greater than the average dist between those 2 clusters.
     // T used to step through successive min values:
-    Tree <double> * T = treeMinTree (edge_tree->tree);
+    Tree <double> * T = treeMinTree (tree);
     double edge_dist = T->data;
     std::pair <unsigned int, unsigned int> pr =
-        edge_tree->edgewt2idx_pair_map.at (edge_dist);
+        alk_dat.edgewt2idx_pair_map.at (edge_dist);
     unsigned int l = pr.first, m = pr.second;
-    while (l == m || edge_tree->contig_mat (l, m) == 0 ||
-            edge_dist < edge_tree->avg_dist (l, m))
+    while (l == m || alk_dat.contig_mat (l, m) == 0 ||
+            edge_dist < alk_dat.avg_dist (l, m))
     {
         T = treeSuccessorInOrder (T);
         edge_dist = T->data;
-        pr = edge_tree->edgewt2idx_pair_map.at (edge_dist);
+        pr = alk_dat.edgewt2idx_pair_map.at (edge_dist);
         l = pr.first;
         m = pr.second;
     }
     treeClear (T);
     
     int ishort = find_shortest_connection (from, to, d,
-            edge_tree->vert2index_map, edge_tree->dmat,
-            edge_tree->cl2index_map, m, l);
+            alk_dat.vert2index_map, alk_dat.dmat,
+            alk_dat.cl2index_map, m, l);
     // ishort is return value; an index into (from, to)
-    merge_clusters (edge_tree->contig_mat,
-            edge_tree->index2cl_map,
-            edge_tree->cl2index_map, m, l);
-    update_edgewt_maps (edge_tree, m, l);
+    merge_clusters (alk_dat.contig_mat,
+            alk_dat.index2cl_map,
+            alk_dat.cl2index_map, m, l);
+    update_edgewt_maps (alk_dat, m, l);
 
     /* Cluster numbers start off here the same as vertex numbers, and so are
      * initially simple indices into the vert-by-vert matrices (contig_mat,
@@ -145,45 +147,44 @@ int edge_tree_step (Edge_tree * edge_tree,
      * are derived from constantly updated values of index2cl_map and
      * cl2index_map.
      */
-    for (auto cl: edge_tree->cl2index_map)
+    for (auto cl: alk_dat.cl2index_map)
     {
         if (cl.first != l || cl.first != m)
         {
-            const double tempd_l = edge_tree->avg_dist (cl.first, l),
-                   tempd_m = edge_tree->avg_dist (cl.first, m);
-            const unsigned int nedges_l = edge_tree->num_edges (cl.first, l),
-                  nedges_m = edge_tree->num_edges (cl.first, m);
+            const double tempd_l = alk_dat.avg_dist (cl.first, l),
+                   tempd_m = alk_dat.avg_dist (cl.first, m);
+            const unsigned int nedges_l = alk_dat.num_edges (cl.first, l),
+                  nedges_m = alk_dat.num_edges (cl.first, m);
 
-            edge_tree->avg_dist (cl.first, l) =
+            alk_dat.avg_dist (cl.first, l) =
                 (tempd_l * nedges_l + tempd_m * nedges_m) /
                 static_cast <double> (nedges_l + nedges_m);
-            edge_tree->num_edges (cl.first, l) = nedges_l + nedges_m;
+            alk_dat.num_edges (cl.first, l) = nedges_l + nedges_m;
 
-            if (edge_tree->contig_mat (cl.first, l) == 1 ||
-                    edge_tree->contig_mat (cl.first, m) == 1)
+            if (alk_dat.contig_mat (cl.first, l) == 1 ||
+                    alk_dat.contig_mat (cl.first, m) == 1)
             {
-                edge_tree->contig_mat (cl.first, l) = 1;
+                alk_dat.contig_mat (cl.first, l) = 1;
                 if (tempd_l > 0.0)
                 {
-                    Tree <double> * T = treeGetNode (edge_tree->tree, tempd_l);
+                    Tree <double> * T = treeGetNode (tree, tempd_l);
                     if (T == nullptr)
                         Rcpp::stop (" that value does not exist");
-                    //treeDeleteNode (edge_tree->tree, tempd_l);
-                    treeDeleteNode (edge_tree->tree, T->data);
+                    //treeDeleteNode (tree, tempd_l);
+                    treeDeleteNode (tree, T->data);
                     treeClear (T);
                 }
                 if (tempd_m > 0.0)
                 {
-                    Tree <double> * T = treeGetNode (edge_tree->tree, tempd_m);
+                    Tree <double> * T = treeGetNode (tree, tempd_m);
                     if (T == nullptr)
                         Rcpp::stop (" that value does not exist");
-                    //treeDeleteNode (edge_tree->tree, tempd_m);
-                    treeDeleteNode (edge_tree->tree, T->data);
+                    //treeDeleteNode (tree, tempd_m);
+                    treeDeleteNode (tree, T->data);
                     treeClear (T);
                 }
                 
-                treeInsertNode (edge_tree->tree,
-                        edge_tree->avg_dist (cl.first, l));
+                treeInsertNode (tree, alk_dat.avg_dist (cl.first, l));
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
     } // end for over cl
@@ -212,18 +213,19 @@ Rcpp::IntegerVector rcpp_alk (
     from = from - 1;
     to = to - 1;
 
-    Edge_tree edge_tree;
-    edge_tree_init (&edge_tree, from, to, d);
-    const unsigned int n = edge_tree.n;
+    ALKDat alk_dat;
+    Tree <double> * tree = nullptr;
+    alk_init (alk_dat, tree, from, to, d);
+    const unsigned int n = alk_dat.n;
 
     std::unordered_set <unsigned int> the_tree;
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
-        int ishort = edge_tree_step (&edge_tree, from, to, d);
+        int ishort = alk_step (alk_dat, tree, from, to, d);
         the_tree.insert (ishort);
     }
-    treeClear (edge_tree.tree);
+    treeClear (tree);
 
     std::vector <int> treevec (the_tree.begin (), the_tree.end ());
 
