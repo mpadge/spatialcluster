@@ -6,7 +6,7 @@
 // --------- AVERAGE LINKAGE CLUSTER ----------------
 
 void alk_init (ALKDat alk_dat,
-        Tree <double> * tree,
+        Tree <double> *& tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
@@ -104,7 +104,7 @@ void update_edgewt_maps (ALKDat alk_dat,
 }
 
 int alk_step (ALKDat alk_dat,
-        Tree <double> * tree,
+        Tree <double> *& tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
@@ -127,7 +127,8 @@ int alk_step (ALKDat alk_dat,
         l = pr.first;
         m = pr.second;
     }
-    treeClear (T);
+    //treeClear (T);
+    //T = nullptr;
     
     int ishort = find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
@@ -167,21 +168,11 @@ int alk_step (ALKDat alk_dat,
                 alk_dat.contig_mat (cl.first, l) = 1;
                 if (tempd_l > 0.0)
                 {
-                    Tree <double> * T = treeGetNode (tree, tempd_l);
-                    if (T == nullptr)
-                        Rcpp::stop (" that value does not exist");
-                    //treeDeleteNode (tree, tempd_l);
-                    treeDeleteNode (tree, T->data);
-                    treeClear (T);
+                    treeDeleteNode (tree, tempd_l);
                 }
                 if (tempd_m > 0.0)
                 {
-                    Tree <double> * T = treeGetNode (tree, tempd_m);
-                    if (T == nullptr)
-                        Rcpp::stop (" that value does not exist");
-                    //treeDeleteNode (tree, tempd_m);
-                    treeDeleteNode (tree, T->data);
-                    treeClear (T);
+                    treeDeleteNode (tree, tempd_m);
                 }
                 
                 treeInsertNode (tree, alk_dat.avg_dist (cl.first, l));

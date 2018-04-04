@@ -34,7 +34,7 @@ struct ALKDat
 };
 
 void alk_init (ALKDat alk_dat,
-        Tree <double> * tree,
+        Tree <double> *& tree, // pass reference to pointer!
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
@@ -43,7 +43,7 @@ void update_edgewt_maps (ALKDat alk_dat,
         unsigned int l, unsigned int m);
 
 int alk_step (ALKDat alk_dat,
-        Tree <double> * tree,
+        Tree <double> *& tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);

@@ -14,15 +14,15 @@ template <typename T>
 struct Tree
 {
 	T data;
-	Tree *left;
-	Tree *right;  
-	Tree *parent;  
+	Tree * left;
+	Tree * right;  
+	Tree * parent;  
 };
 
 template <typename T>
 Tree <T> *treeNewNode (T data) 
 {
-	Tree <T> *node = new Tree <T>;
+	Tree <T> * node = new Tree <T>;
 	node->data = data;
 	node->left = nullptr;
 	node->right = nullptr;
@@ -34,7 +34,7 @@ Tree <T> *treeNewNode (T data)
 template <typename T>
 void treeInsertNode (Tree <T> *node, T dat)
 {
-	Tree <T> *newNode = new Tree <T>;
+	Tree <T> * newNode = new Tree <T>;
 	newNode->data = dat;
 	newNode->left = nullptr;
 	newNode->right = nullptr;
@@ -66,7 +66,7 @@ void treeInsertNode (Tree <T> *node, T dat)
 }
 
 template <typename T>
-Tree <T> *treeGetNode (Tree <T> *node, T dat)
+Tree <T> * treeGetNode (Tree <T> *node, T dat)
 {
 	if (node == nullptr)
         return node;
@@ -122,7 +122,7 @@ Tree <T> * treeSuccessorInOrder (Tree <T> *node)
     if (node->right != nullptr)
         return treeMinTree (node->right);
 
-    Tree <T> *y = node->parent;
+    Tree <T> * y = node->parent;
     while (y != nullptr && node == y->right)
     {
         node = y;
@@ -202,7 +202,7 @@ void treeDeleteNode (Tree <T> *root, T dat)
 }
 
 template <typename T>
-void treeClear (Tree <T> *node)
+void treeClear (Tree <T> * node)
 {
     if (node != nullptr)
     {
