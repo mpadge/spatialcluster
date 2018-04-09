@@ -1,260 +1,265 @@
-/* binary search tree adapted from
- * http://www.bogotobogo.com/cplusplus/binarytree.php,
- * and used here just to extract minimal and maximal values 
- * Note that although this might be more neatly done by embedding the functions
- * within the struct/class def, it works by recursively adding pointers to new
- * instances of same struct/class. Because it will be ultimately embedded within
- * a meta-struct object, it is therefore actually easier not to embed the
- * function defs, at the price of a little untidiness.
- * */
-
 #include <iostream>
+#include <cstdlib>
+using namespace std;
 
-template <typename T>
-struct Tree
+// Templating with recursive pointers is much harder than simply changing the
+// typedef, and makes the code much less readable
+typedef double data_type;
+
+struct tree_node
 {
-	T data;
-	Tree * left;
-	Tree * right;  
-	Tree * parent;  
+    tree_node * lo;
+    tree_node * hi;
+    tree_node * parent;
+    data_type data;
 };
 
-template <typename T>
-Tree <T> *treeNewNode (T data) 
+class BinarySearchTree
 {
-	Tree <T> * node = new Tree <T>;
-	node->data = data;
-	node->left = nullptr;
-	node->right = nullptr;
-	node->parent = nullptr;
+    private:
+        tree_node * root;
+        int tsize (tree_node * node);
+        data_type tmin (tree_node * node);
+        data_type tmax (tree_node * node);
+        void clear_node (tree_node * node);
+        tree_node * removeNode (tree_node * node, data_type value);
 
-	return node;
-}
-
-template <typename T>
-void treeInsertNode (Tree <T> *node, T dat)
-{
-	Tree <T> * newNode = new Tree <T>;
-	newNode->data = dat;
-	newNode->left = nullptr;
-	newNode->right = nullptr;
-	while (node)
-    {
-	    if (dat <= node->data)
+    public:
+        BinarySearchTree ()
         {
-		    if (node->left == nullptr)
-            {
-			    newNode->parent = node;
-		        node->left = newNode;
-		        return;
-		    }
-		    else
-                node = node->left;
+            root = nullptr;
         }
-	    else
+        ~BinarySearchTree ()
         {
-		    if (node->right == nullptr)
-            {
-				newNode->parent = node;
-		        node->right = newNode;
-		        return;
-		    }
-		    else
-		        node = node->right;
-	    }
-	}
+            treeClear ();
+        }
+        void insert (data_type);
+        void remove (data_type value);
+        int treeSize ();
+        data_type treeMin ();
+        data_type treeMax ();
+
+        tree_node * getRoot ();
+        tree_node * getNode (tree_node * node, data_type value);
+        tree_node * treeMinTree ();
+        tree_node * treeMaxTree ();
+        tree_node * tminTree (tree_node * node);
+        tree_node * tmaxTree (tree_node * node);
+
+        tree_node * nextHi (tree_node * node);
+        tree_node * nextLo (tree_node * node);
+
+        void treeClear ();
+};
+
+void BinarySearchTree::insert (data_type d)
+{
+    tree_node * t = new tree_node;
+    tree_node * parent;
+    t->data = d;
+    t->lo = nullptr;
+    t->hi = nullptr;
+    parent = nullptr;
+
+    if (root == nullptr)
+        root = t;
+    else
+    {
+        tree_node * node;
+        node = root;
+        while (node != nullptr)
+        {
+            parent = node;
+            if (t->data > node->data)
+                node = node->hi;
+            else
+                node = node->lo;
+        }
+
+        t->parent = parent;
+        if (t->data < parent->data)
+            parent->lo = t;
+        else
+            parent->hi = t;
+    }
 }
 
-template <typename T>
-Tree <T> * treeGetNode (Tree <T> *node, T dat)
+void BinarySearchTree::remove (data_type value)
 {
-	if (node == nullptr)
+    root = removeNode (root, value);
+}
+
+// recursive private member function:
+tree_node * BinarySearchTree::removeNode (tree_node * node, data_type value)
+{
+    if (node == nullptr)
         return node;
 
-	if (dat < node->data) 
-		return treeGetNode (node->left,dat);
-	else if ( dat > node->data)
-		return treeGetNode (node->right, dat);
-	else
-		return node;
+    if (value < node->data) {
+        node->lo = removeNode (node->lo, value);
+    } else if (value > node->data) {
+        node->hi = removeNode (node->hi, value);
+    } else {
+        if (node->lo == nullptr && node->hi == nullptr) { // no children
+            delete node;
+            node = nullptr;
+        }
+        else if (node->lo == nullptr) { // 1 child: hi
+            tree_node * temp = node;
+            node->hi->parent = node->parent;
+            node = node->hi;
+            delete temp;
+        }
+        else if (node->hi == nullptr) { // 1 childe: lo
+            tree_node * temp = node;
+            node->lo->parent = node->parent;
+            node = node->lo;
+            delete temp;
+        }
+        else // 2 children
+        {
+            tree_node * temp = tminTree (node->hi);
+            node->data = temp->data;
+            node->hi = removeNode (node->hi, temp->data);
+        }
+    }
+    return node; // then the root node which needs to be updated
 }
 
-template <typename T>
-int treeSize (struct Tree <T> *node)
+int BinarySearchTree::treeSize ()
+{
+    return tsize (root);
+}
+
+int BinarySearchTree::tsize (tree_node * node)
 {
     if (node == nullptr)
         return 0;
     else
-        return treeSize (node->left) + 1 + treeSize (node->right);
+        return tsize (node->lo) + 1 + tsize (node->hi);
 }
 
-template <typename T>
-T treeMin (Tree <T> *node)
+data_type BinarySearchTree::treeMin ()
 {
-	while (node->left)
-		node = node->left;
-
-	return node->data;
+    return tmin (root);
 }
 
-// returns Tree instead of min value
-template <typename T>
-Tree <T> * treeMinTree (Tree <T> *node)
+data_type BinarySearchTree::tmin (tree_node * node)
 {
-	while (node->left)
-		node = node->left;
+    while (node->lo != nullptr)
+        node = node->lo;
 
-	return node;
+    return node->data;
 }
 
-template <typename T>
-T treeMax (Tree <T> *node)
+data_type BinarySearchTree::treeMax ()
 {
-	while (node->right)
-		node = node->right;
-
-	return node->data;
+    return tmax (root);
 }
 
-template <typename T>
-Tree <T> * treeSuccessorInOrder (Tree <T> *node)
+data_type BinarySearchTree::tmax (tree_node * node)
 {
-    if (node->right != nullptr)
-        return treeMinTree (node->right);
+    while (node->hi != nullptr)
+        node = node->hi;
 
-    Tree <T> * y = node->parent;
-    while (y != nullptr && node == y->right)
-    {
-        node = y;
-        y = y->parent;
-    }
-    return y;
+    return node->data;
 }
 
-
-template <typename T>
-T treePredecessorInOrder (Tree <T> *node)
+tree_node * BinarySearchTree::treeMinTree ()
 {
-	if (node->left != nullptr) 
-		return treeMax (node->left);
-
-	Tree <T> *y = node->parent;
-	while (y != nullptr && node == y->left)
-    {
-		node = y;
-		y = y->parent;
-	}
-
-	return y->data;
+    return tminTree (root);
 }
 
-template <typename T>
-void treeDeleteNode (Tree <T> *root, T dat)
+tree_node * BinarySearchTree::tminTree (tree_node * node)
 {
-	Tree <T> *node = nullptr, *p = nullptr,
-         *child = nullptr, *pred = nullptr;
-	node = treeGetNode (root, dat);
+    while (node->lo != nullptr)
+        node = node->lo;
 
-	if (node->left == nullptr && node->right == nullptr)
-    {
-        if (node->parent) p = node->parent;
-		if (node == p->left) 
-			p->left = nullptr;
-		else
-			p->right = nullptr;
-		delete node;
-		return;
-	}
-
-	if (node->left && node->right)
-    {
-		T dat_pred = treePredecessorInOrder (node);
-		pred = treeGetNode (root, dat_pred);
-		if (pred->parent->left == pred) 
-			pred->parent->left = nullptr;
-		else if (pred->parent->right == pred) 
-			pred->parent->right = nullptr;
-		node->data = pred->data;
-		delete pred;
-		return;
-	}
-
-	if (node->left) 
-		child = node->left;
-	else if (node->right)
-		child = node->right;
-	p = node->parent;
-    if (p->left != nullptr)
-    {
-        if (p->left == node)
-        {
-            p->left = child;
-        }
-    } else if (p->right != nullptr)
-    {
-        if (p->right == node)
-        {
-            p->right = child;
-        }
-    }
-    child->parent = p;
-	delete node;
+    return node;
 }
 
-template <typename T>
-void treeClear (Tree <T> * node)
+tree_node * BinarySearchTree::treeMaxTree ()
+{
+    return tmaxTree (root);
+}
+
+tree_node * BinarySearchTree::tmaxTree (tree_node * node)
+{
+    while (node->hi != nullptr)
+        node = node->hi;
+
+    return node;
+}
+
+void BinarySearchTree::treeClear ()
+{
+    clear_node (root);
+}
+
+void BinarySearchTree::clear_node (tree_node * node)
 {
     if (node != nullptr)
     {
-        treeClear (node->left);
-        treeClear (node->right);
+        clear_node (node->lo);
+        clear_node (node->hi);
         delete node;
     }
 }
 
-/* affirm no memory leaks:
-#include <random>
-
-// clang++ -fsanitize=undefined bst.cpp -o junk
-// valgrind --tool=memcheck --leak-check=full ./junk
-
-int main()
+tree_node * BinarySearchTree::getRoot ()
 {
-    std::default_random_engine generator;
-    std::uniform_real_distribution<double> distribution(0.0,1.0);
-
-	Tree <double> *tree;
-
-    unsigned int n = 100;
-    for (int i = 0; i < 100; i++)
-    {
-        if (i == 0)
-            tree = treeNewNode (distribution (generator));
-        else
-            treeInsertNode (tree, distribution (generator));
-    }
-    std::cout << "tree size = " << treeSize (tree) << std::endl;
-
-    std::cout << "tree (min, max) = (" << treeMin (tree) << ", " <<
-        treeMax (tree) << ")";
-    
-    treeDeleteNode (tree, treeMin (tree));
-    treeDeleteNode (tree, treeMax (tree));
-    std::cout << "  ---> (" << treeMin (tree) << ", " <<
-        treeMax (tree) << ")" << std::endl;
-    std::cout << "tree size = " << treeSize (tree) << std::endl;
-
-    unsigned int nmin = 10;
-    std::cout << "First " << nmin << " minimal values:" << std::endl;
-    Tree <double> * T = treeMinTree (tree);
-    for (int i = 0; i < 10; i++)
-    {
-        std::cout << "(" << i << ", " << T->data << ")" << std::endl;
-        T = treeSuccessorInOrder (T);
-    }
-
-    treeClear(tree);
-
-	return 0;
+    tree_node * node = root;
+    return node;
 }
-*/
+
+tree_node * BinarySearchTree::getNode (tree_node * node, data_type value)
+{
+    if (node == nullptr)
+    {
+        std::cout << "value = " << value <<
+            " does not exist in the tree" << std::endl;
+        return node;
+    }
+
+	if (value < node->data) 
+		return getNode (node->lo, value);
+	else if (value > node->data)
+		return getNode (node->hi, value);
+	else
+		return node;
+}
+
+tree_node * BinarySearchTree::nextHi (tree_node * node)
+{
+    if (node->hi != nullptr)
+        return tminTree (node->hi);
+
+    tree_node * y = node->parent;
+    while (y != nullptr && node == y->hi)
+    {
+        node = y;
+        y = y->parent;
+    }
+    if (y == nullptr)
+        std::cout << "already at max value" << std::endl;
+    return y;
+}
+
+tree_node * BinarySearchTree::nextLo (tree_node * node)
+{
+    if (node->lo != nullptr)
+        return tmaxTree (node->lo);
+
+    tree_node * y = node->parent;
+    while (y != nullptr && node == y->lo)
+    {
+        node = y;
+        y = y->parent;
+    }
+    if (y == nullptr)
+        std::cout << "already at min value" << std::endl;
+    return y;
+}
+
+// Can be tested with bst.cpp given in
+// hhtps::github.com/mpadge/binary-tree/bst.cpp

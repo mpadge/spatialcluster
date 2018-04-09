@@ -1,5 +1,7 @@
 // --------- AVERAGE LINKAGE CLUSTER ----------------
 
+#include "bst.h"
+
 #include <unordered_set>
 
 /* The main matrices (contig, num_edges, dmat, avg_dist) are all references by
@@ -33,17 +35,17 @@ struct ALKDat
     uint_set_map_t cl2index_map;
 };
 
-void alk_init (ALKDat alk_dat,
-        Tree <double> *& tree, // pass reference to pointer!
+void alk_init (ALKDat &alk_dat,
+        BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void update_edgewt_maps (ALKDat alk_dat,
+void update_edgewt_maps (ALKDat &alk_dat,
         unsigned int l, unsigned int m);
 
-int alk_step (ALKDat alk_dat,
-        Tree <double> *& tree,
+int alk_step (ALKDat &alk_dat,
+        BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);

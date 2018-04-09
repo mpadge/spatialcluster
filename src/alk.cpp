@@ -1,12 +1,11 @@
 #include "common.h"
 #include "utils.h"
-#include "bst.h"
 #include "alk.h"
 
 // --------- AVERAGE LINKAGE CLUSTER ----------------
 
-void alk_init (ALKDat alk_dat,
-        Tree <double> *& tree,
+void alk_init (ALKDat &alk_dat,
+        BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
@@ -22,10 +21,7 @@ void alk_init (ALKDat alk_dat,
     {
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
-        if (i == 0)
-            tree = treeNewNode (d [0]);
-        else
-            treeInsertNode (tree, d [i]);
+        tree.insert (d [i]);
     }
     unsigned int i = 0;
     for (auto v: vert_set)
@@ -77,7 +73,7 @@ void alk_init (ALKDat alk_dat,
 // update both idx2edgewt and edgewt2idx maps to reflect merging of cluster m
 // into cluster l (using Guo's original notation there). The cl2index
 // and index2cl maps are updated in `merge_clusters`
-void update_edgewt_maps (ALKDat alk_dat,
+void update_edgewt_maps (ALKDat &alk_dat,
         unsigned int l, unsigned int m)
 {
     std::unordered_set <double> wtsl = alk_dat.idx2edgewt_map.at (l),
@@ -103,8 +99,8 @@ void update_edgewt_maps (ALKDat alk_dat,
     }
 }
 
-int alk_step (ALKDat alk_dat,
-        Tree <double> *& tree,
+int alk_step (ALKDat &alk_dat,
+        BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
@@ -113,22 +109,21 @@ int alk_step (ALKDat alk_dat,
     // different clusters, (ii) represents contiguous clusters, and (iii) has
     // distance greater than the average dist between those 2 clusters.
     // T used to step through successive min values:
-    Tree <double> * T = treeMinTree (tree);
-    double edge_dist = T->data;
+    double edge_dist = tree.treeMin();
+    tree_node * node = tree.getRoot ();
+    node = tree.getNode (node, edge_dist);
     std::pair <unsigned int, unsigned int> pr =
         alk_dat.edgewt2idx_pair_map.at (edge_dist);
     unsigned int l = pr.first, m = pr.second;
     while (l == m || alk_dat.contig_mat (l, m) == 0 ||
             edge_dist < alk_dat.avg_dist (l, m))
     {
-        T = treeSuccessorInOrder (T);
-        edge_dist = T->data;
+        node = tree.nextLo (node);
+        edge_dist = node->data;
         pr = alk_dat.edgewt2idx_pair_map.at (edge_dist);
         l = pr.first;
         m = pr.second;
     }
-    //treeClear (T);
-    //T = nullptr;
     
     int ishort = find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
@@ -148,6 +143,7 @@ int alk_step (ALKDat alk_dat,
      * are derived from constantly updated values of index2cl_map and
      * cl2index_map.
      */
+
     for (auto cl: alk_dat.cl2index_map)
     {
         if (cl.first != l || cl.first != m)
@@ -168,14 +164,14 @@ int alk_step (ALKDat alk_dat,
                 alk_dat.contig_mat (cl.first, l) = 1;
                 if (tempd_l > 0.0)
                 {
-                    treeDeleteNode (tree, tempd_l);
+                    tree.remove (tempd_l);
                 }
                 if (tempd_m > 0.0)
                 {
-                    treeDeleteNode (tree, tempd_m);
+                    tree.remove (tempd_m);
                 }
                 
-                treeInsertNode (tree, alk_dat.avg_dist (cl.first, l));
+                tree.insert (alk_dat.avg_dist (cl.first, l));
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
     } // end for over cl
@@ -205,7 +201,7 @@ Rcpp::IntegerVector rcpp_alk (
     to = to - 1;
 
     ALKDat alk_dat;
-    Tree <double> * tree = nullptr;
+    BinarySearchTree tree;
     alk_init (alk_dat, tree, from, to, d);
     const unsigned int n = alk_dat.n;
 
@@ -216,7 +212,6 @@ Rcpp::IntegerVector rcpp_alk (
         int ishort = alk_step (alk_dat, tree, from, to, d);
         the_tree.insert (ishort);
     }
-    treeClear (tree);
 
     std::vector <int> treevec (the_tree.begin (), the_tree.end ());
 
