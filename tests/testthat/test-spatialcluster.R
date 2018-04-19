@@ -11,7 +11,7 @@ test_that("scl structure", {
               expect_true (nrow (scl$tree) < n)
 })
 
-test_that("scl methods",{
+test_that("scl methods", {
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
@@ -24,6 +24,8 @@ test_that("scl methods",{
               expect_true (!identical (scl1, scl2))
               scl4 <- scl_cluster (xy, dmat, ncl = 4, linkage = "single")
               expect_true (identical (scl3, scl4))
+              scl5 <- scl_cluster (xy, dmat, ncl = 4, linkage = "average")
+              expect_false (identical (scl4, scl5))
 })
 
 test_that("recluster", {
