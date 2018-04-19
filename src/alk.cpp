@@ -87,7 +87,7 @@ void alk_init (ALKDat &alk_dat,
 // into cluster l (using Guo's original notation there). The cl2index
 // and index2cl maps are updated in `merge_clusters`
 void update_edgewt_maps (ALKDat &alk_dat,
-        unsigned int l, unsigned int m)
+        unsigned int m, unsigned int l)
 {
     std::unordered_set <double> wtsl = alk_dat.idx2edgewt_map.at (l),
         wtsm = alk_dat.idx2edgewt_map.at (m);
@@ -102,16 +102,37 @@ void update_edgewt_maps (ALKDat &alk_dat,
         std::pair <unsigned int, unsigned int> pr =
             alk_dat.edgewt2idx_pair_map.at (w);
         bool update = true;
-        if (pr.first == l)
-            pr.first = m;
-        else if (pr.second == l)
-            pr.second = m;
+        if (pr.first == m)
+            pr.first = l;
+        else if (pr.second == m)
+            pr.second = l;
         else
             update = false;
         if (update)
         {
-            alk_dat.edgewt2idx_pair_map.erase (w);
-            alk_dat.edgewt2idx_pair_map.emplace (w, pr);
+            alk_dat.edgewt2idx_pair_map [w] = pr;
+        }
+    }
+
+    // Any edgewt2idx pairs with entries of m also have to be re-mapped to l
+    // TODO: Is there a better way to do this?
+    std::unordered_set <double> wts;
+    for (auto w: alk_dat.edgewt2idx_pair_map)
+    {
+        if (w.second.first == m || w.second.second == m)
+            wts.emplace (w.first);
+    }
+    if (wts.size () > 0)
+    {
+        for (auto w: wts)
+        {
+            std::pair <unsigned int, unsigned int> pr =
+                alk_dat.edgewt2idx_pair_map.at (w);
+            if (pr.first == m)
+                pr.first = l;
+            if (pr.second == m)
+                pr.second = l;
+            alk_dat.edgewt2idx_pair_map [w] = pr;
         }
     }
 }
@@ -143,8 +164,6 @@ int alk_step (ALKDat &alk_dat,
         l = pr.first;
         m = pr.second;
     }
-    Rcpp::Rcout << "looking for edge between [" << l << "] and [" <<
-        m << "]" << std::endl;
     
     int ishort = find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
@@ -183,29 +202,35 @@ int alk_step (ALKDat &alk_dat,
                     alk_dat.contig_mat (cl.first, m) == 1)
             {
                 alk_dat.contig_mat (cl.first, l) = 1;
+                bool rm = false; // TODO: Delete
                 if (tempd_l > 0.0)
                 {
                     tree.remove (tempd_l);
+                    rm = true;
                 }
                 if (tempd_m > 0.0)
                 {
                     tree.remove (tempd_m);
+                    rm = true;
                 }
                 
                 double tempd = alk_dat.avg_dist (cl.first, l);
-                tree.insert (tempd);
-                alk_dat.edgewt2idx_pair_map.emplace (tempd,
-                        std::make_pair (cl.first, l));
+                if (tempd > 0.0)
+                {
+                    tree.insert (tempd);
+                    alk_dat.edgewt2idx_pair_map [tempd] =
+                        std::make_pair (cl.first, l);
 
-                std::unordered_set <double> wtset;
-                if (alk_dat.idx2edgewt_map.find (cl.first) ==
-                        alk_dat.idx2edgewt_map.end ())
-                    wtset.clear ();
-                else
-                    wtset = alk_dat.idx2edgewt_map.at (cl.first);
-                wtset.emplace (tempd);
-                alk_dat.idx2edgewt_map.erase (cl.first);
-                alk_dat.idx2edgewt_map.emplace (cl.first, wtset);
+                    std::unordered_set <double> wtset;
+                    if (alk_dat.idx2edgewt_map.find (cl.first) ==
+                            alk_dat.idx2edgewt_map.end ())
+                        wtset.clear ();
+                    else
+                        wtset = alk_dat.idx2edgewt_map.at (cl.first);
+                    wtset.emplace (tempd);
+                    alk_dat.idx2edgewt_map.erase (cl.first);
+                    alk_dat.idx2edgewt_map.emplace (cl.first, wtset);
+                }
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
     } // end for over cl

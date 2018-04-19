@@ -144,7 +144,7 @@ int find_shortest_connection (
     double dmin = INFINITE_DOUBLE;
     int short_i = INFINITE_INT, short_j = INFINITE_INT;
 
-    // from and to here are not direction, so need to examine both directions
+    // from and to here are not directional, so need to examine both directions
     for (auto i: index_i)
         for (auto j: index_j)
         {
