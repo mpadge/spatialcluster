@@ -17,38 +17,51 @@ void alk_init (ALKDat &alk_dat,
 
     std::unordered_set <unsigned int> vert_set;
 
+    // Get set of unique vertices, and store binary tree of edge distances
     for (int i = 0; i < from.size (); i++)
     {
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
         tree.insert (d [i]);
     }
+    // Construct vert2index_map to map each unique vertex to an index
     unsigned int i = 0;
     for (auto v: vert_set)
         alk_dat.vert2index_map.emplace (v, i++);
 
+    // Construct idx2edgewt_map and edgewt2idx_pair_map
     for (int i = 0; i < from.size (); i++)
     {
         unsigned int fi = alk_dat.vert2index_map.at (from [i]),
                      ti = alk_dat.vert2index_map.at (to [i]);
         alk_dat.edgewt2idx_pair_map.emplace (d [i], std::make_pair (fi, ti));
 
+        // idx2edgewt_map.second is an unordered set that needs to be expanded
         std::unordered_set <double> wtset;
         if (alk_dat.idx2edgewt_map.find (fi) ==
                 alk_dat.idx2edgewt_map.end ())
-            wtset.clear ();
-        else
+        {
+            wtset.emplace (d [i]);
+            alk_dat.idx2edgewt_map.emplace (fi, wtset);
+        } else
+        {
             wtset = alk_dat.idx2edgewt_map.at (fi);
-        wtset.emplace (d [i]);
-        alk_dat.idx2edgewt_map.emplace (fi, wtset);
+            wtset.emplace (d [i]);
+            alk_dat.idx2edgewt_map [fi] = wtset;
+        }
 
+        // repeat same for "to" vertex
         if (alk_dat.idx2edgewt_map.find (ti) ==
                 alk_dat.idx2edgewt_map.end ())
-            wtset.clear ();
-        else
+        {
+            wtset.emplace (d [i]);
+            alk_dat.idx2edgewt_map.emplace (ti, wtset);
+        } else
+        {
             wtset = alk_dat.idx2edgewt_map.at (ti);
-        wtset.emplace (d [i]);
-        alk_dat.idx2edgewt_map.emplace (ti, wtset);
+            wtset.emplace (d [i]);
+            alk_dat.idx2edgewt_map [ti] = wtset;
+        }
     }
 
     alk_dat.contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
@@ -81,6 +94,7 @@ void update_edgewt_maps (ALKDat &alk_dat,
     for (auto w: wtsm)
         wtsl.insert (w);
     alk_dat.idx2edgewt_map.erase (m);
+    alk_dat.idx2edgewt_map.erase (l);
     alk_dat.idx2edgewt_map.emplace (l, wtsl);
 
     for (auto w: wtsl)
@@ -95,7 +109,10 @@ void update_edgewt_maps (ALKDat &alk_dat,
         else
             update = false;
         if (update)
+        {
+            alk_dat.edgewt2idx_pair_map.erase (w);
             alk_dat.edgewt2idx_pair_map.emplace (w, pr);
+        }
     }
 }
 
@@ -118,12 +135,16 @@ int alk_step (ALKDat &alk_dat,
     while (l == m || alk_dat.contig_mat (l, m) == 0 ||
             edge_dist < alk_dat.avg_dist (l, m))
     {
-        node = tree.nextLo (node);
+        node = tree.nextHi (node);
+        if (node == nullptr)
+            Rcpp::stop ("can not go past highest node");
         edge_dist = node->data;
         pr = alk_dat.edgewt2idx_pair_map.at (edge_dist);
         l = pr.first;
         m = pr.second;
     }
+    Rcpp::Rcout << "looking for edge between [" << l << "] and [" <<
+        m << "]" << std::endl;
     
     int ishort = find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
@@ -171,7 +192,20 @@ int alk_step (ALKDat &alk_dat,
                     tree.remove (tempd_m);
                 }
                 
-                tree.insert (alk_dat.avg_dist (cl.first, l));
+                double tempd = alk_dat.avg_dist (cl.first, l);
+                tree.insert (tempd);
+                alk_dat.edgewt2idx_pair_map.emplace (tempd,
+                        std::make_pair (cl.first, l));
+
+                std::unordered_set <double> wtset;
+                if (alk_dat.idx2edgewt_map.find (cl.first) ==
+                        alk_dat.idx2edgewt_map.end ())
+                    wtset.clear ();
+                else
+                    wtset = alk_dat.idx2edgewt_map.at (cl.first);
+                wtset.emplace (tempd);
+                alk_dat.idx2edgewt_map.erase (cl.first);
+                alk_dat.idx2edgewt_map.emplace (cl.first, wtset);
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
     } // end for over cl

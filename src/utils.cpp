@@ -134,6 +134,10 @@ int find_shortest_connection (
         const unsigned int cfrom,
         const unsigned int cto)
 {
+    if (cl2index_map.find (cfrom) == cl2index_map.end ())
+        Rcpp::stop ("cluster index not found");
+    if (cl2index_map.find (cto) == cl2index_map.end ())
+        Rcpp::stop ("cluster index not found");
     std::unordered_set <unsigned int> index_i = cl2index_map.at (cfrom),
         index_j = cl2index_map.at (cto);
 
@@ -212,8 +216,8 @@ void merge_clusters (
     cl2index_map.erase (cluster_from);
     for (auto i: idx_from)
         idx_to.insert (i);
-    cl2index_map.at (cluster_to) = idx_to;
+    cl2index_map [cluster_to] = idx_to;
     // and in index2cl:
     for (auto i: idx_from)
-        index2cl_map.at (i) = cluster_to;
+        index2cl_map [i] = cluster_to;
 }
