@@ -11,8 +11,7 @@ void alk_init (ALKDat &alk_dat,
         Rcpp::NumericVector d)
 {
     unsigned int n = sets_init (from, to, alk_dat.vert2index_map,
-            alk_dat.index2vert_map, alk_dat.index2cl_map,
-            alk_dat.cl2index_map);
+            alk_dat.index2cl_map, alk_dat.cl2index_map);
     alk_dat.n = n;
 
     std::unordered_set <unsigned int> vert_set;

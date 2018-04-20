@@ -4,9 +4,9 @@
 
 #include <unordered_set>
 
-/* The main matrices (contig, num_edges, dmat, avg_dist) are all references by
+/* The main matrices (contig, num_edges, dmat, avg_dist) are all referenced by
  * direct indices throughout, not by vertex numbers. The latter are mapped to
- * the former by vert2index_map, and reverse by index2vert_map.
+ * the former by vert2index_map.
  *
  * The index2cl and cl2index then associate those indices with clusters which
  * are themselves also direct indices into the matrices. Cluster merging simply
@@ -31,7 +31,7 @@ struct ALKDat
     arma::Mat <unsigned short> contig_mat, num_edges;
     arma::Mat <double> dmat, avg_dist;
 
-    uint_map_t index2cl_map, vert2index_map, index2vert_map;
+    uint_map_t index2cl_map, vert2index_map;
     uint_set_map_t cl2index_map;
 };
 
