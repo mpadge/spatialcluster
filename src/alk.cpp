@@ -11,7 +11,8 @@ void alk_init (ALKDat &alk_dat,
         Rcpp::NumericVector d)
 {
     unsigned int n = sets_init (from, to, alk_dat.vert2index_map,
-            alk_dat.index2cl_map, alk_dat.cl2index_map);
+            alk_dat.index2vert_map, alk_dat.index2cl_map,
+            alk_dat.cl2index_map);
     alk_dat.n = n;
 
     std::unordered_set <unsigned int> vert_set;
@@ -220,7 +221,8 @@ int alk_step (ALKDat &alk_dat,
                     else
                         wtset = alk_dat.idx2edgewt_map.at (cl.first);
                     wtset.emplace (tempd);
-                    alk_dat.idx2edgewt_map [cl.first] = wtset;
+                    alk_dat.idx2edgewt_map.erase (cl.first);
+                    alk_dat.idx2edgewt_map.emplace (cl.first, wtset);
                 }
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
