@@ -77,7 +77,7 @@ scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
                     tree_full <- scl_spantree_clk (edges_all, edges_nn)
                 } else
                 {
-                    stop ("Only single and average linkage implemented at the moment.")
+                    stop ("linkage must be one of (single, average, complete)")
                 }
             }
 

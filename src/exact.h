@@ -1,8 +1,8 @@
 #pragma once
 
-// --------- COMPLETE LINKAGE CLUSTER ----------------
+// --------- EXACT CLUSTER ----------------
 
-struct CLKDat
+struct EXDat
 {
     unsigned int n;
 
@@ -15,16 +15,12 @@ struct CLKDat
     uint_set_map_t cl2index_map;
 };
 
-void clk_init (CLKDat &clk_dat,
-        Rcpp::IntegerVector from_full,
-        Rcpp::IntegerVector to_full,
-        Rcpp::NumericVector d_full,
+void clexact_init (EXDat &clexact_dat,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-unsigned int clk_step (CLKDat &clk_dat, unsigned int i);
+unsigned int clexact_step (EXDat &clexact_dat, unsigned int i);
 
-Rcpp::IntegerVector rcpp_clk (
-        const Rcpp::DataFrame gr_full,
+Rcpp::IntegerVector rcpp_exact (
         const Rcpp::DataFrame gr);

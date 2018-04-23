@@ -4,11 +4,6 @@
 
 // --------- COMPLETE LINKAGE CLUSTER ----------------
 
-bool edge_sorter (oneEdge const & lhs, oneEdge const & rhs)
-{
-    return lhs.dist < rhs.dist;
-}
-
 void clk_init (CLKDat &clk_dat,
         Rcpp::IntegerVector from_full,
         Rcpp::IntegerVector to_full,

@@ -15,7 +15,7 @@
     utils::globalVariables ("to")
     utils::globalVariables ("clnum")
     utils::globalVariables ("comp")
-    utils::globalVariables ("desc")
+    #utils::globalVariables ("desc")
     utils::globalVariables ("value")
     utils::globalVariables ("na.omit")
     utils::globalVariables ("xfr")

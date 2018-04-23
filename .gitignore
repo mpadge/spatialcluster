@@ -36,3 +36,5 @@ vignettes/*.pdf
 *.swp
 *.un~
 .Rproj.user
+
+*\.pdf

@@ -40,3 +40,10 @@ void merge_clusters (
         const unsigned int merge_from,
         const unsigned int merge_to);
 
+struct oneEdge
+{
+    unsigned int from, to;
+    double dist;
+};
+
+bool edge_sorter (oneEdge const & lhs, oneEdge const & rhs);

@@ -25,6 +25,21 @@ rcpp_clk <- function(gr_full, gr) {
     .Call(`_spatialcluster_rcpp_clk`, gr_full, gr)
 }
 
+#' clexact_step
+#'
+#' @param ei The i'th edge of the full sorted list of edge weights
+#' @noRd
+NULL
+
+#' rcpp_exact
+#'
+#' Full-order complete linkage cluster redcap algorithm
+#'
+#' @noRd
+rcpp_exact <- function(gr) {
+    .Call(`_spatialcluster_rcpp_exact`, gr)
+}
+
 #' graph_from_df
 #'
 #' Convert a standard graph data.frame into an object of class graph. Graphs

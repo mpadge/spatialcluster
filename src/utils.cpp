@@ -221,3 +221,8 @@ void merge_clusters (
     for (auto i: idx_from)
         index2cl_map [i] = cluster_to;
 }
+
+bool edge_sorter (oneEdge const & lhs, oneEdge const & rhs)
+{
+    return lhs.dist < rhs.dist;
+}

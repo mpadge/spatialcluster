@@ -20,9 +20,7 @@ class BinarySearchTree
 {
     private:
         tree_node * root;
-        int tsize (tree_node * node);
         data_type tmin (tree_node * node);
-        data_type tmax (tree_node * node);
         void clear_node (tree_node * node);
         tree_node * removeNode (tree_node * node, data_type value);
 
@@ -37,19 +35,14 @@ class BinarySearchTree
         }
         void insert (data_type);
         void remove (data_type value);
-        int treeSize ();
         data_type treeMin ();
-        data_type treeMax ();
 
         tree_node * getRoot ();
         tree_node * getNode (tree_node * node, data_type value);
         tree_node * treeMinTree ();
-        tree_node * treeMaxTree ();
         tree_node * tminTree (tree_node * node);
-        tree_node * tmaxTree (tree_node * node);
 
         tree_node * nextHi (tree_node * node);
-        tree_node * nextLo (tree_node * node);
 
         void treeClear ();
 };
@@ -128,19 +121,6 @@ tree_node * BinarySearchTree::removeNode (tree_node * node, data_type value)
     return node; // then the root node which needs to be updated
 }
 
-int BinarySearchTree::treeSize ()
-{
-    return tsize (root);
-}
-
-int BinarySearchTree::tsize (tree_node * node)
-{
-    if (node == nullptr)
-        return 0;
-    else
-        return tsize (node->lo) + 1 + tsize (node->hi);
-}
-
 data_type BinarySearchTree::treeMin ()
 {
     return tmin (root);
@@ -154,19 +134,6 @@ data_type BinarySearchTree::tmin (tree_node * node)
     return node->data;
 }
 
-data_type BinarySearchTree::treeMax ()
-{
-    return tmax (root);
-}
-
-data_type BinarySearchTree::tmax (tree_node * node)
-{
-    while (node->hi != nullptr)
-        node = node->hi;
-
-    return node->data;
-}
-
 tree_node * BinarySearchTree::treeMinTree ()
 {
     return tminTree (root);
@@ -176,19 +143,6 @@ tree_node * BinarySearchTree::tminTree (tree_node * node)
 {
     while (node->lo != nullptr)
         node = node->lo;
-
-    return node;
-}
-
-tree_node * BinarySearchTree::treeMaxTree ()
-{
-    return tmaxTree (root);
-}
-
-tree_node * BinarySearchTree::tmaxTree (tree_node * node)
-{
-    while (node->hi != nullptr)
-        node = node->hi;
 
     return node;
 }
@@ -246,22 +200,3 @@ tree_node * BinarySearchTree::nextHi (tree_node * node)
     //    std::cout << "already at max value" << std::endl;
     return y;
 }
-
-tree_node * BinarySearchTree::nextLo (tree_node * node)
-{
-    if (node->lo != nullptr)
-        return tmaxTree (node->lo);
-
-    tree_node * y = node->parent;
-    while (y != nullptr && node == y->lo)
-    {
-        node = y;
-        y = y->parent;
-    }
-    //if (y == nullptr)
-    //    std::cout << "already at min value" << std::endl;
-    return y;
-}
-
-// Can be tested with bst.cpp given in
-// hhtps::github.com/mpadge/binary-tree/bst.cpp
