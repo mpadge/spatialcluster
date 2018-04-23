@@ -26,6 +26,9 @@ test_that("scl methods", {
               expect_true (identical (scl3, scl4))
               scl5 <- scl_cluster (xy, dmat, ncl = 4, linkage = "average")
               expect_false (identical (scl4, scl5))
+              scl6 <- scl_cluster (xy, dmat, ncl = 4, linkage = "complete")
+              expect_false (identical (scl6, scl5))
+              expect_false (identical (scl6, scl4))
 })
 
 test_that("recluster", {
