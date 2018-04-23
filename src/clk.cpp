@@ -77,10 +77,12 @@ void clk_init (CLKDat &clk_dat,
 //' @noRd
 unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
 {
-    // find shortest _nn edges that connects the two clusters
+    // find shortest _all edges that connects the two clusters
     oneEdge ei = clk_dat.edges_all [i];
-    unsigned int u = clk_dat.vert2index_map.at (ei.from),
-                 v = clk_dat.vert2index_map.at (ei.to);
+    const unsigned int u = clk_dat.vert2index_map.at (ei.from),
+          v = clk_dat.vert2index_map.at (ei.to),
+          cl_u = clk_dat.index2cl_map.at (u),
+          cl_v = clk_dat.index2cl_map.at (v);
 
     // Find shortest edge in MST that connects u and v:
     unsigned int mmin = INFINITE_INT, lmin = INFINITE_INT,
@@ -91,10 +93,10 @@ unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
         oneEdge ej = clk_dat.edges_nn [j];
         unsigned int m = clk_dat.vert2index_map.at (ej.from),
                      l = clk_dat.vert2index_map.at (ej.to);
-        if (((clk_dat.index2cl_map.at (m) == u &&
-                        clk_dat.index2cl_map.at (l) == v) ||
-                    (clk_dat.index2cl_map.at (m) == v &&
-                     clk_dat.index2cl_map.at (l) == u)) &&
+        if (((clk_dat.index2cl_map.at (m) == cl_u &&
+                        clk_dat.index2cl_map.at (l) == cl_v) ||
+                    (clk_dat.index2cl_map.at (m) == cl_v &&
+                     clk_dat.index2cl_map.at (l) == cl_u)) &&
                 ej.dist < dmin)
         {
             the_edge = j;
@@ -108,7 +110,9 @@ unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
 
     merge_clusters (clk_dat.contig_mat,
             clk_dat.index2cl_map,
-            clk_dat.cl2index_map, mmin, lmin);
+            clk_dat.cl2index_map,
+            clk_dat.index2cl_map.at (mmin),
+            clk_dat.index2cl_map.at (lmin));
 
     for (auto cl: clk_dat.cl2index_map)
     {
@@ -125,10 +129,9 @@ unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
                     clk_dat.contig_mat (cl.first, mmin) == 1)
             {
                 clk_dat.contig_mat (cl.first, lmin) = 1;
-            } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
-        } // end if cl.first != (cfrom, cto)
+            }
+        }
     } // end for over cl
-
 
     return the_edge;
 }
@@ -172,13 +175,14 @@ Rcpp::IntegerVector rcpp_clk (
     for (int i = 0; i < clk_dat.edges_all.size (); i++)
     {
         oneEdge ei = clk_dat.edges_all [i];
-        unsigned int m = clk_dat.vert2index_map.at (ei.from),
-                     l = clk_dat.vert2index_map.at (ei.to);
-        if (clk_dat.index2cl_map.at (l) != clk_dat.index2cl_map.at (m) &&
-                clk_dat.contig_mat (l, m) == 1 &&
-                ei.dist > clk_dat.dmax (m, l))
+        unsigned int u = clk_dat.vert2index_map.at (ei.from),
+                     v = clk_dat.vert2index_map.at (ei.to);
+        if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
+                clk_dat.contig_mat (u, v) == 1 &&
+                ei.dist > clk_dat.dmax (u, v))
         {
-            clk_step (clk_dat, i);
+            unsigned int the_edge = clk_step (clk_dat, i);
+            treevec.push_back (the_edge);
         }
     }
 
