@@ -83,8 +83,6 @@ scl_spantree_alk <- function (edges)
 scl_spantree_clk <- function (edges_all, edges_nn)
 {
     clusters <- rcpp_clk (edges_all, edges_nn) + 1
-    # clusters is here an index into the sorted values of edges_nn$d
-    clusters <- order (edges_nn$d) [clusters]
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
 }

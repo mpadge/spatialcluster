@@ -27,8 +27,8 @@ void clk_init (CLKDat &clk_dat,
         here.dist = d_full [i];
         clk_dat.edges_all [i] = here;
     }
-    std::sort (clk_dat.edges_all.begin (), clk_dat.edges_all.end (),
-            edge_sorter);
+    // These edges are already passed in sorted form, so no need to explicitly
+    // sort here.
 
     clk_dat.edges_nn.clear ();
     clk_dat.edges_nn.resize (from.size ());
@@ -40,8 +40,6 @@ void clk_init (CLKDat &clk_dat,
         here.dist = d [i];
         clk_dat.edges_nn [i] = here;
     }
-    std::sort (clk_dat.edges_nn.begin (), clk_dat.edges_nn.end (),
-            edge_sorter);
 
     // Get set of unique vertices, and store binary tree of edge distances
     std::unordered_set <unsigned int> vert_set;

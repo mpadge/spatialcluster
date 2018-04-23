@@ -60,8 +60,8 @@ scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
         edges_nn <- scl_edges_nn (xy, dmat, shortest)
         if (linkage == "exact")
         {
-            tree_full <- scl_spantree_exact (edges_nn)
-            stop ("exact linkage not yet implemented")
+            tree <- scl_exact (edges_nn)
+            trees <- list (tree_out = NULL)
         } else
         {
             if (!full_order)
@@ -83,7 +83,8 @@ scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
                         tree_full <- scl_spantree_clk (edges_all, edges_nn)
                     } else
                     {
-                        stop ("linkage must be one of (single, average, complete)")
+                        stop ("linkage must be one of ",
+                              "(single, average, complete)")
                     }
                 }
 

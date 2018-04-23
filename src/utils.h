@@ -45,5 +45,3 @@ struct oneEdge
     unsigned int from, to;
     double dist;
 };
-
-bool edge_sorter (oneEdge const & lhs, oneEdge const & rhs);

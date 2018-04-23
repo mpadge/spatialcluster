@@ -24,8 +24,6 @@ void clexact_init (EXDat &clexact_dat,
         here.dist = d [i];
         clexact_dat.edges_nn [i] = here;
     }
-    std::sort (clexact_dat.edges_nn.begin (), clexact_dat.edges_nn.end (),
-            edge_sorter);
 
     // Get set of unique vertices, and store binary tree of edge distances
     std::unordered_set <unsigned int> vert_set;
