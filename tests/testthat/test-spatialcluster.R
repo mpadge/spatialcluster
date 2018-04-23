@@ -22,6 +22,7 @@ test_that("scl methods", {
               # these are the default pars:
               scl3 <- scl_cluster (xy, dmat, ncl = 4, full_order = TRUE)
               expect_true (!identical (scl1, scl2))
+
               scl4 <- scl_cluster (xy, dmat, ncl = 4, linkage = "single")
               expect_true (identical (scl3, scl4))
               scl5 <- scl_cluster (xy, dmat, ncl = 4, linkage = "average")
@@ -29,6 +30,10 @@ test_that("scl methods", {
               scl6 <- scl_cluster (xy, dmat, ncl = 4, linkage = "complete")
               expect_false (identical (scl6, scl5))
               expect_false (identical (scl6, scl4))
+              scl7 <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
+              expect_false (identical (scl7, scl4))
+              expect_false (identical (scl7, scl5))
+              expect_false (identical (scl7, scl6))
 })
 
 test_that("recluster", {
@@ -52,4 +57,6 @@ test_that("plot", {
               expect_is (g, "ggplot")
               g2 <- plot (scl, tree = TRUE)
               expect_true (!identical (g, g2))
+              g3 <- plot (scl, tree = TRUE, convex = TRUE)
+              expect_true (!identical (g2, g3))
 })
