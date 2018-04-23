@@ -10,6 +10,12 @@ rcpp_alk <- function(gr) {
     .Call(`_spatialcluster_rcpp_alk`, gr)
 }
 
+#' clk_step
+#'
+#' @param ei The i'th edge of the full sorted list of edge weights
+#' @noRd
+NULL
+
 #' rcpp_clk
 #'
 #' Full-order complete linkage cluster redcap algorithm

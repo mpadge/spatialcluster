@@ -4,6 +4,11 @@
 
 // --------- COMPLETE LINKAGE CLUSTER ----------------
 
+bool edge_sorter (oneEdge const & lhs, oneEdge const & rhs)
+{
+    return lhs.dist < rhs.dist;
+}
+
 void clk_init (CLKDat &clk_dat,
         Rcpp::IntegerVector from_full,
         Rcpp::IntegerVector to_full,
@@ -18,16 +23,30 @@ void clk_init (CLKDat &clk_dat,
     clk_dat.n = n;
 
     clk_dat.edges_all.clear ();
-    clk_dat.edges_all.reserve (d_full.size ());
-    for (auto di: d_full)
-        clk_dat.edges_all.push_back (di);
-    std::sort (clk_dat.edges_all.begin (), clk_dat.edges_all.end ());
+    clk_dat.edges_all.resize (from_full.size ());
+    for (int i = 0; i < from_full.size (); i++)
+    {
+        oneEdge here;
+        here.from = from_full [i];
+        here.to = to_full [i];
+        here.dist = d_full [i];
+        clk_dat.edges_all [i] = here;
+    }
+    std::sort (clk_dat.edges_all.begin (), clk_dat.edges_all.end (),
+            edge_sorter);
 
     clk_dat.edges_nn.clear ();
-    clk_dat.edges_nn.reserve (d.size ());
-    for (auto di: d)
-        clk_dat.edges_nn.push_back (di);
-    std::sort (clk_dat.edges_nn.begin (), clk_dat.edges_nn.end ());
+    clk_dat.edges_nn.resize (from.size ());
+    for (int i = 0; i < from.size (); i++)
+    {
+        oneEdge here;
+        here.from = from [i];
+        here.to = to [i];
+        here.dist = d [i];
+        clk_dat.edges_nn [i] = here;
+    }
+    std::sort (clk_dat.edges_nn.begin (), clk_dat.edges_nn.end (),
+            edge_sorter);
 
     // Get set of unique vertices, and store binary tree of edge distances
     std::unordered_set <unsigned int> vert_set;
@@ -42,17 +61,77 @@ void clk_init (CLKDat &clk_dat,
         clk_dat.vert2index_map.emplace (v, i++);
 
     clk_dat.contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
-    clk_dat.dmax.set_size (n, n);
-    clk_dat.dmax.fill (INFINITE_DOUBLE);
+    clk_dat.dmax.zeros (n, n);
     for (int i = 0; i < from.length (); i++)
     {
         unsigned int vf = clk_dat.vert2index_map.at (from [i]),
                      vt = clk_dat.vert2index_map.at (to [i]);
         clk_dat.contig_mat (vf, vt) = 1;
-        clk_dat.dmax (vf, vt) = d [i];
+        //clk_dat.dmax (vf, vt) = d [i]; // NOPE - all dmax = 0 at start!
     }
 }
 
+//' clk_step
+//'
+//' @param ei The i'th edge of the full sorted list of edge weights
+//' @noRd
+unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
+{
+    // find shortest _nn edges that connects the two clusters
+    oneEdge ei = clk_dat.edges_all [i];
+    unsigned int u = clk_dat.vert2index_map.at (ei.from),
+                 v = clk_dat.vert2index_map.at (ei.to);
+
+    // Find shortest edge in MST that connects u and v:
+    unsigned int mmin = INFINITE_INT, lmin = INFINITE_INT,
+                 the_edge = INFINITE_INT;
+    double dmin = INFINITE_DOUBLE;
+    for (int j = 0; j < clk_dat.edges_nn.size (); j++)
+    {
+        oneEdge ej = clk_dat.edges_nn [j];
+        unsigned int m = clk_dat.vert2index_map.at (ej.from),
+                     l = clk_dat.vert2index_map.at (ej.to);
+        if (((clk_dat.index2cl_map.at (m) == u &&
+                        clk_dat.index2cl_map.at (l) == v) ||
+                    (clk_dat.index2cl_map.at (m) == v &&
+                     clk_dat.index2cl_map.at (l) == u)) &&
+                ej.dist < dmin)
+        {
+            the_edge = j;
+            mmin = m;
+            lmin = l;
+            dmin = ej.dist;
+        }
+    }
+    if (dmin == INFINITE_DOUBLE)
+        Rcpp::stop ("minimal distance not able to be found");
+
+    merge_clusters (clk_dat.contig_mat,
+            clk_dat.index2cl_map,
+            clk_dat.cl2index_map, mmin, lmin);
+
+    for (auto cl: clk_dat.cl2index_map)
+    {
+        if (cl.first != lmin || cl.first != mmin)
+        {
+            const double dl = clk_dat.dmax (cl.first, lmin),
+                  dm = clk_dat.dmax (cl.first, mmin);
+            double dtemp = dl;
+            if (dm < dl)
+                dtemp = dm;
+            clk_dat.dmax (cl.first, lmin) = dtemp;
+
+            if (clk_dat.contig_mat (cl.first, lmin) == 1 ||
+                    clk_dat.contig_mat (cl.first, mmin) == 1)
+            {
+                clk_dat.contig_mat (cl.first, lmin) = 1;
+            } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
+        } // end if cl.first != (cfrom, cto)
+    } // end for over cl
+
+
+    return the_edge;
+}
 
 //' rcpp_clk
 //'
@@ -90,6 +169,19 @@ Rcpp::IntegerVector rcpp_clk (
     clk_init (clk_dat, from_full, to_full, d_full, from, to, d);
 
     std::vector <int> treevec;
+    for (int i = 0; i < clk_dat.edges_all.size (); i++)
+    {
+        oneEdge ei = clk_dat.edges_all [i];
+        unsigned int m = clk_dat.vert2index_map.at (ei.from),
+                     l = clk_dat.vert2index_map.at (ei.to);
+        if (clk_dat.index2cl_map.at (l) != clk_dat.index2cl_map.at (m) &&
+                clk_dat.contig_mat (l, m) == 1 &&
+                ei.dist > clk_dat.dmax (m, l))
+        {
+            clk_step (clk_dat, i);
+        }
+    }
+
 
     return Rcpp::wrap (treevec);
 }

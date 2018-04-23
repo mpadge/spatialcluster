@@ -63,20 +63,24 @@ scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
             tree_full <- scl_spantree_O1 (edges_nn)
         } else
         {
-            if (linkage == "single")
-            {
-                edges_all <- scl_edges_all (xy, dmat, shortest)
-                tree_full <- scl_spantree_slk (edges_all, edges_nn)
-            } else if (linkage == "average")
+            if (linkage == "average")
             {
                 tree_full <- scl_spantree_alk (edges_nn)
-            } else if (linkage == "complete")
-            {
-                tree_full <- scl_spantree_clk (edges_nn)
             } else
             {
-                stop ("Only single and average linkage implemented at the moment.")
+                edges_all <- scl_edges_all (xy, dmat, shortest)
+                if (linkage == "single")
+                {
+                    tree_full <- scl_spantree_slk (edges_all, edges_nn)
+                } else if (linkage == "complete")
+                {
+                    tree_full <- scl_spantree_clk (edges_all, edges_nn)
+                } else
+                {
+                    stop ("Only single and average linkage implemented at the moment.")
+                }
             }
+
         }
         trees <- scl_cuttree (tree_full, edges_nn, ncl)
 
