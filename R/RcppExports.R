@@ -15,8 +15,8 @@ rcpp_alk <- function(gr) {
 #' Full-order complete linkage cluster redcap algorithm
 #'
 #' @noRd
-rcpp_clk <- function(gr) {
-    .Call(`_spatialcluster_rcpp_clk`, gr)
+rcpp_clk <- function(gr_full, gr) {
+    .Call(`_spatialcluster_rcpp_clk`, gr_full, gr)
 }
 
 #' graph_from_df

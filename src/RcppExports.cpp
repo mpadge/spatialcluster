@@ -18,13 +18,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_clk
-Rcpp::IntegerVector rcpp_clk(const Rcpp::DataFrame gr);
-RcppExport SEXP _spatialcluster_rcpp_clk(SEXP grSEXP) {
+Rcpp::IntegerVector rcpp_clk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr);
+RcppExport SEXP _spatialcluster_rcpp_clk(SEXP gr_fullSEXP, SEXP grSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr_full(gr_fullSEXP);
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_clk(gr));
+    rcpp_result_gen = Rcpp::wrap(rcpp_clk(gr_full, gr));
     return rcpp_result_gen;
 END_RCPP
 }

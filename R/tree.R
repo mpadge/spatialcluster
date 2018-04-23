@@ -80,9 +80,9 @@ scl_spantree_alk <- function (edges)
 #'
 #' @inheritParams scl_spantree_slk
 #' @noRd
-scl_spantree_clk <- function (edges)
+scl_spantree_clk <- function (edges_all, edges_nn)
 {
-    clusters <- rcpp_clk (edges) + 1
+    clusters <- rcpp_clk (edges_all, edges_nn) + 1
     tibble::tibble (from = edges$from [clusters],
                     to = edges$to [clusters])
 }
