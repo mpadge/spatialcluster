@@ -4,4 +4,5 @@
 ^README\.md$
 ^makefile$
 ^.*\.Rproj$
+^.*\.pdf$
 ^\.Rproj\.user$

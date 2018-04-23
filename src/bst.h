@@ -218,8 +218,8 @@ tree_node * BinarySearchTree::getNode (tree_node * node, data_type value)
 {
     if (node == nullptr)
     {
-        std::cout << "value = " << value <<
-            " does not exist in the tree" << std::endl;
+        //std::cout << "value = " << value <<
+        //    " does not exist in the tree" << std::endl;
         return node;
     }
 
@@ -242,8 +242,8 @@ tree_node * BinarySearchTree::nextHi (tree_node * node)
         node = y;
         y = y->parent;
     }
-    if (y == nullptr)
-        std::cout << "already at max value" << std::endl;
+    //if (y == nullptr)
+    //    std::cout << "already at max value" << std::endl;
     return y;
 }
 
@@ -258,8 +258,8 @@ tree_node * BinarySearchTree::nextLo (tree_node * node)
         node = y;
         y = y->parent;
     }
-    if (y == nullptr)
-        std::cout << "already at min value" << std::endl;
+    //if (y == nullptr)
+    //    std::cout << "already at min value" << std::endl;
     return y;
 }
 

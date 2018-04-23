@@ -4,8 +4,6 @@
 
 #include "bst.h"
 
-#include <unordered_set>
-
 /* The main matrices (contig, num_edges, dmat, avg_dist) are all referenced by
  * direct indices throughout, not by vertex numbers. The latter are mapped to
  * the former by vert2index_map. Note that index2vert_map is not used for this

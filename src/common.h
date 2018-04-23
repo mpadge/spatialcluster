@@ -8,6 +8,7 @@
 #include <random>
 #include <string> // stoi
 #include <cmath> // round
+#include <unordered_set>
 
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
