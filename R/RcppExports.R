@@ -10,6 +10,15 @@ rcpp_alk <- function(gr) {
     .Call(`_spatialcluster_rcpp_alk`, gr)
 }
 
+#' rcpp_clk
+#'
+#' Full-order complete linkage cluster redcap algorithm
+#'
+#' @noRd
+rcpp_clk <- function(gr) {
+    .Call(`_spatialcluster_rcpp_clk`, gr)
+}
+
 #' graph_from_df
 #'
 #' Convert a standard graph data.frame into an object of class graph. Graphs

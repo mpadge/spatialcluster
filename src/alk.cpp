@@ -4,7 +4,7 @@
 
 // --------- AVERAGE LINKAGE CLUSTER ----------------
 
-void alk_init (ALKDat &alk_dat,
+void alk_init (CLDAT &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
@@ -86,7 +86,7 @@ void alk_init (ALKDat &alk_dat,
 // update both idx2edgewt and edgewt2idx maps to reflect merging of cluster m
 // into cluster l (using Guo's original notation there). The cl2index
 // and index2cl maps are updated in `merge_clusters`
-void update_edgewt_maps (ALKDat &alk_dat,
+void update_edgewt_maps (CLDAT &alk_dat,
         unsigned int m, unsigned int l)
 {
     std::unordered_set <double> wtsl = alk_dat.idx2edgewt_map.at (l),
@@ -137,7 +137,7 @@ void update_edgewt_maps (ALKDat &alk_dat,
     }
 }
 
-int alk_step (ALKDat &alk_dat,
+int alk_step (CLDAT &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
@@ -252,7 +252,7 @@ Rcpp::IntegerVector rcpp_alk (
     from = from - 1;
     to = to - 1;
 
-    ALKDat alk_dat;
+    CLDAT alk_dat;
     BinarySearchTree tree;
     alk_init (alk_dat, tree, from, to, d);
     const unsigned int n = alk_dat.n;
