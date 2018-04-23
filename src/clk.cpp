@@ -181,6 +181,6 @@ Rcpp::IntegerVector rcpp_clk (
         }
     }
 
-
+    // treevec here in an index into a **sorted** version of (from, to , d)
     return Rcpp::wrap (treevec);
 }

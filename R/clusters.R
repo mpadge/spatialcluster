@@ -58,38 +58,45 @@ scl_cluster <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
     {
         xy <- scl_tbl (xy)
         edges_nn <- scl_edges_nn (xy, dmat, shortest)
-        if (!full_order)
+        if (linkage == "exact")
         {
-            tree_full <- scl_spantree_O1 (edges_nn)
+            tree_full <- scl_spantree_exact (edges_nn)
+            stop ("exact linkage not yet implemented")
         } else
         {
-            if (linkage == "average")
+            if (!full_order)
             {
-                tree_full <- scl_spantree_alk (edges_nn)
+                tree_full <- scl_spantree_O1 (edges_nn)
             } else
             {
-                edges_all <- scl_edges_all (xy, dmat, shortest)
-                if (linkage == "single")
+                if (linkage == "average")
                 {
-                    tree_full <- scl_spantree_slk (edges_all, edges_nn)
-                } else if (linkage == "complete")
-                {
-                    tree_full <- scl_spantree_clk (edges_all, edges_nn)
+                    tree_full <- scl_spantree_alk (edges_nn)
                 } else
                 {
-                    stop ("linkage must be one of (single, average, complete)")
+                    edges_all <- scl_edges_all (xy, dmat, shortest)
+                    if (linkage == "single")
+                    {
+                        tree_full <- scl_spantree_slk (edges_all, edges_nn)
+                    } else if (linkage == "complete")
+                    {
+                        tree_full <- scl_spantree_clk (edges_all, edges_nn)
+                    } else
+                    {
+                        stop ("linkage must be one of (single, average, complete)")
+                    }
                 }
+
             }
+            trees <- scl_cuttree (tree_full, edges_nn, ncl)
 
+            tree <- tree_components (trees$tree_in)
         }
-        trees <- scl_cuttree (tree_full, edges_nn, ncl)
-
-        tree <- tree_components (trees$tree_in)
 
         # meta-data:
+        clo <- c ("single", "full") [match (full_order, c (FALSE, TRUE))]
         pars <- list (ncl = ncl,
-                      cl_order = c ("single", "full") [match (full_order,
-                                                              c (FALSE, TRUE))],
+                      cl_order = clo,
                       linkage = linkage)
 
         structure (list (xy = xy, tree = tree,
