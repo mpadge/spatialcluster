@@ -27,7 +27,10 @@ rcpp_clk <- function(gr_full, gr) {
 
 #' clexact_step
 #'
-#' @param ei The i'th edge of the full sorted list of edge weights
+#' All edges are initially in their own clusters. This merges edge#i with the
+#' edge having the 
+#'
+#' @param ei The i'th edge of the sorted list of NN edge weights
 #' @noRd
 NULL
 

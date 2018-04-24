@@ -261,11 +261,11 @@ Rcpp::IntegerVector rcpp_alk (
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
-        int ishort = alk_step (alk_dat, tree, from, to, d);
+        unsigned int ishort = alk_step (alk_dat, tree, from, to, d);
         the_tree.insert (ishort);
     }
 
-    std::vector <int> treevec (the_tree.begin (), the_tree.end ());
+    std::vector <unsigned int> treevec (the_tree.begin (), the_tree.end ());
 
     return Rcpp::wrap (treevec);
 }
