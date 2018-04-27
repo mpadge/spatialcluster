@@ -59,7 +59,7 @@ The single function `scl_cluster()` requires three arguments:
 
 Usage can be demonstrated with some simple fake data:
 ```{r}
-n <- 20
+n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
 ```
@@ -69,11 +69,19 @@ devtools::load_all (".", export_all = FALSE)
 ```
 ```{r fake-run, eval = FALSE}
 library (spatialcluster)
-scl <- scl_cluster (xy, dmat, ncl = 4)
+scl <- scl_cluster (xy, dmat, ncl = 8, linkage = "single")
 plot (scl)
 ```
-```{r plot, echo = FALSE}
-scl <- scl_cluster (xy, dmat, ncl = 4, full_order = FALSE)
+```{r plot-single, echo = FALSE}
+scl <- scl_cluster (xy, dmat, ncl = 8, linkage = "single")
+plot (scl, convex = )
+```
+```{r plot-average}
+scl <- scl_cluster (xy, dmat, ncl = 8, linkage = "average")
+plot (scl)
+```
+```{r plot-complete}
+scl <- scl_cluster (xy, dmat, ncl = 8, linkage = "complete")
 plot (scl)
 ```
 

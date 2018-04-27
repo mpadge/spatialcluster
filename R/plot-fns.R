@@ -86,9 +86,8 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
                     j <- which (inds$ind2 == tail (ind_seq, n = 1))
                     ind_seq <- c (ind_seq, inds [j, 1])
                 }
-                inds <- inds [-j, , drop = FALSE]
+                inds <- inds [-j, , drop = FALSE] #nolint
             }
-            indx <- match (ind_seq, xy$ind)
             xy <- xy [match (ind_seq, xy$ind), ]
             bdry [[i]] <- cbind (i, xy$x, xy$y)
         }
@@ -121,7 +120,7 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
 #' plot (scl)
 #' # overlay the spanning tree used to generate the clusters:
 #' plot (scl, tree = TRUE)
-plot.scl <- function (x, ..., tree = FALSE, convex = FALSE, hull_alpha = 0.1)
+plot.scl <- function (x, ..., tree = FALSE, convex = TRUE, hull_alpha = 0.1)
 {
     if (convex)
         hulls <- scl_hulls (x$tree, x$xy)
@@ -150,9 +149,10 @@ plot.scl <- function (x, ..., tree = FALSE, convex = FALSE, hull_alpha = 0.1)
         dplyr::left_join (cl_cols, by = "comp") %>%
         dplyr::mutate (col = ifelse (is.na (col), "#333333FF", col))
 
+    y <- id <- NULL # suppress no visible binding warnings
     hull_aes <- ggplot2::aes (x = x, y = y, group = id)
     hull_width <- 0.5
-    g <- ggplot2::ggplot (xy, ggplot2::aes (x = x, y = y)) + 
+    g <- ggplot2::ggplot (xy, ggplot2::aes (x = x, y = y)) +
         ggplot2::geom_point (size = 5, color = xy$col,
                              show.legend = FALSE) +
         ggplot2::geom_polygon (data = hulls,

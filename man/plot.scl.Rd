@@ -4,7 +4,7 @@
 \alias{plot.scl}
 \title{plot.scl}
 \usage{
-\method{plot}{scl}(x, ..., tree = FALSE, convex = FALSE, hull_alpha = 0.1)
+\method{plot}{scl}(x, ..., tree = FALSE, convex = TRUE, hull_alpha = 0.1)
 }
 \arguments{
 \item{x}{object to be plotted}

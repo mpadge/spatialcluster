@@ -32,7 +32,7 @@ The single function `scl_cluster()` requires three arguments:
 Usage can be demonstrated with some simple fake data:
 
 ``` r
-n <- 20
+n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
 ```
@@ -41,12 +41,24 @@ The load the package and call the function:
 
 ``` r
 library (spatialcluster)
-scl <- scl_cluster (xy, dmat, ncl = 4)
+scl <- scl_cluster (xy, dmat, ncl = 8, linkage = "single")
 plot (scl)
 ```
 
-    #> Only able to cut tree into maximum of 3 components
+![](/docs/figs/README-plot-single-1.png)
 
-![](README-plot-1.png)
+``` r
+scl <- scl_cluster (xy, dmat, ncl = 8, linkage = "average")
+plot (scl)
+```
+
+![](/docs/figs/README-plot-average-1.png)
+
+``` r
+scl <- scl_cluster (xy, dmat, ncl = 8, linkage = "complete")
+plot (scl)
+```
+
+![](/docs/figs/README-plot-complete-1.png)
 
 This example illustrates the universal danger in all clustering algorithms: they can not fail to produce results, even when the data fed to them are definitely devoid of any information as in this example. Clustering algorithms should only be applied to reflect a very specific hypothesis for why data should be clustered in the first place; spatial clustering algorithms should only be applied to reflect two very specific hypothesis for (i) why data should be clustered at all, and (ii) why those clusters should manifest a spatial pattern.
