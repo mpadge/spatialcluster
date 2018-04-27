@@ -22,9 +22,10 @@ void clexact_init (EXDat &clexact_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void clexact_merge (EXDat &clexact_dat, unsigned int m, unsigned int l);
+void assign_first_edge (EXDat &clexact_dat);
 
-unsigned int clexact_step (EXDat &clexact_dat, unsigned int i);
+unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
+        unsigned int clnum);
 
 Rcpp::IntegerVector rcpp_exact (
         const Rcpp::DataFrame gr);

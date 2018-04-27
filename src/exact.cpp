@@ -41,9 +41,24 @@ void clexact_init (EXDat &clexact_dat,
             clexact_dat.index_in_cluster.end (), false);
 }
 
-void clexact_merge (EXDat &clexact_dat, unsigned int m, unsigned int l)
+
+void assign_first_edge (EXDat &clexact_dat)
 {
+    unsigned int clnum = 1, ei = 0;
+    oneEdge edge = clexact_dat.edges [ei];
+    unsigned int ito = clexact_dat.vert2index_map.at (edge.to),
+                 ifrom = clexact_dat.vert2index_map.at (edge.from);
+    clexact_dat.index2cl_map.emplace (ito, clnum);
+    clexact_dat.index2cl_map.emplace (ifrom, clnum);
+    std::unordered_set <unsigned int> cli;
+    cli.insert (ito);
+    cli.insert (ifrom);
+    clexact_dat.cl2index_map.emplace (clnum, cli);
+
+    clexact_dat.index_in_cluster [ito] =
+        clexact_dat.index_in_cluster [ifrom] = true;
 }
+
 
 //' clexact_step
 //'
@@ -52,28 +67,44 @@ void clexact_merge (EXDat &clexact_dat, unsigned int m, unsigned int l)
 //'
 //' @param ei The i'th edge of the sorted list of NN edge weights
 //' @noRd
-unsigned int clexact_step (EXDat &clexact_dat, unsigned int i)
+unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
+        unsigned int clnum)
 {
-    unsigned int the_edge = INFINITE_INT;
+    bool from_in = false, to_in = false;
+    oneEdge edge = clexact_dat.edges [ei];
+    unsigned int ito = clexact_dat.vert2index_map.at (edge.to);
+    unsigned int ifrom = clexact_dat.vert2index_map.at (edge.from);
+    if (clexact_dat.index_in_cluster [ito])
+        to_in = true;
+    if (clexact_dat.index_in_cluster [ifrom])
+        from_in = true;
 
-    /*
-    oneEdge ei = clexact_dat.edges [i];
-    const unsigned int m = clexact_dat.vert2index_map.at (ei.from),
-          l = clexact_dat.vert2index_map.at (ei.to),
-          cl_m = clexact_dat.index2cl_map.at (m),
-          cl_l = clexact_dat.index2cl_map.at (l);
+    unsigned int clnum_i = clnum;
 
-    if (cl_m != cl_l)
+    if (!(from_in && to_in))
     {
-        merge_clusters (clexact_dat.contig_mat,
-                clexact_dat.index2cl_map,
-                clexact_dat.cl2index_map,
-                clexact_dat.index2cl_map.at (m),
-                clexact_dat.index2cl_map.at (l));
-    }
-    */
+        if (from_in)
+        {
+            clnum_i = clexact_dat.index2cl_map [ifrom];
+            clexact_dat.index_in_cluster [ifrom] = true;
+        } else if (to_in)
+        {
+            clnum_i = clexact_dat.index2cl_map [ito];
+            clexact_dat.index_in_cluster [ito] = true;
+        }
 
-    return the_edge;
+        clexact_dat.index2cl_map [ifrom] =
+            clexact_dat.index2cl_map [ito] = clnum_i;
+        std::unordered_set <unsigned int> cli;
+        if (clexact_dat.cl2index_map.find (clnum_i) !=
+                clexact_dat.cl2index_map.end ())
+            cli = clexact_dat.cl2index_map.at (clnum_i);
+        cli.insert (ito);
+        cli.insert (ifrom);
+        clexact_dat.cl2index_map [clnum_i] = cli;
+    }
+
+    return clnum_i;
 }
 
 //' rcpp_exact
@@ -99,63 +130,16 @@ Rcpp::IntegerVector rcpp_exact (
     EXDat clexact_dat;
     clexact_init (clexact_dat, from, to, d);
 
-    // -------- Assign first edge
-    unsigned int clnum = 1, ei = 0;
-    oneEdge edge = clexact_dat.edges [ei];
-    unsigned int ito = clexact_dat.vert2index_map.at (edge.to),
-                 ifrom = clexact_dat.vert2index_map.at (edge.from);
-    clexact_dat.index2cl_map.emplace (ito, clnum);
-    clexact_dat.index2cl_map.emplace (ifrom, clnum);
-    std::unordered_set <unsigned int> cli;
-    cli.insert (ito);
-    cli.insert (ifrom);
-    clexact_dat.cl2index_map.emplace (clnum, cli);
-
-    clexact_dat.index_in_cluster [ito] =
-        clexact_dat.index_in_cluster [ifrom] = true;
-
-    clnum++;
-    ei++;
+    assign_first_edge (clexact_dat);
+    unsigned int clnum = 2; // #1 assigned in assign_first_edge
+    unsigned int ei = 1; // index of next edge to be assigned
     unsigned int nleft = clexact_dat.n - 2; // number of !index_in_cluster
-    // -------- finish assign first edge
 
     while (nleft > 0)
     {
-        bool from_in = false, to_in = false;
-        edge = clexact_dat.edges [ei];
-        ito = clexact_dat.vert2index_map.at (edge.to);
-        ifrom = clexact_dat.vert2index_map.at (edge.from);
-        if (clexact_dat.index_in_cluster [ito])
-            to_in = true;
-        if (clexact_dat.index_in_cluster [ifrom])
-            from_in = true;
-
-        if (from_in && to_in)
-            continue; // both already allocated, so don't do anything
-
-        unsigned int clnum_i = clnum;
-        if (from_in)
-        {
-            clnum_i = clexact_dat.index2cl_map [ifrom];
-            clexact_dat.index_in_cluster [ifrom] = true;
-        } else if (to_in)
-        {
-            clnum_i = clexact_dat.index2cl_map [ito];
-            clexact_dat.index_in_cluster [ito] = true;
-        }
-
-        clexact_dat.index2cl_map [ifrom] =
-            clexact_dat.index2cl_map [ito] = clnum_i;
-        if (clexact_dat.cl2index_map.find (clnum_i) ==
-                clexact_dat.cl2index_map.end ())
-            cli.clear ();
-        else
-            cli = clexact_dat.cl2index_map.at (clnum_i);
-        cli.insert (ito);
-        cli.insert (ifrom);
-        clexact_dat.cl2index_map [clnum_i] = cli;
-
+        unsigned int clnum_i = clexact_step (clexact_dat, ei++, clnum);
         nleft--;
+        // TODO: This is now wrong:
         if (clnum_i == clnum)
             clnum++;
     }
