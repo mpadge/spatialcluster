@@ -44,7 +44,7 @@ void clexact_init (EXDat &clexact_dat,
 
 void assign_first_edge (EXDat &clexact_dat)
 {
-    unsigned int clnum = 1, ei = 0;
+    unsigned int clnum = 0, ei = 0;
     oneEdge edge = clexact_dat.edges [ei];
     unsigned int ito = clexact_dat.vert2index_map.at (edge.to),
                  ifrom = clexact_dat.vert2index_map.at (edge.from);
@@ -59,7 +59,6 @@ void assign_first_edge (EXDat &clexact_dat)
     cli.insert (ifrom);
     clexact_dat.cl2index_map.emplace (clnum, cli);
 
-
     clexact_dat.vert2cl_map.emplace (edge.to, clnum);
     clexact_dat.vert2cl_map.emplace (edge.from, clnum);
 }
@@ -72,8 +71,8 @@ void assign_first_edge (EXDat &clexact_dat)
 //'
 //' @param ei The i'th edge of the sorted list of NN edge weights
 //' @noRd
-unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
-        unsigned int clnum)
+unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
+        const unsigned int clnum)
 {
     bool from_in = false, to_in = false;
     oneEdge edge = clexact_dat.edges [ei];
@@ -86,7 +85,10 @@ unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
 
     unsigned int clnum_i = clnum;
 
-    if (!(from_in && to_in))
+    if (from_in && to_in)
+    {
+        clnum_i = INFINITE_INT;
+    } else
     {
         if (from_in) // then to is not in cluster
             clnum_i = clexact_dat.index2cl_map [ifrom];
@@ -114,6 +116,60 @@ unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
     return clnum_i;
 }
 
+//' fill_cl_edges
+//'
+//' Fill (arma) matrix of strongest/shortest connections between all clusters
+//' used to construct the hierarchical relationships
+//' @noRd
+void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
+        unsigned int num_clusters)
+{
+    std::unordered_map <unsigned int, std::set <unsigned int> > vert_sets;
+    for (unsigned int i = 0; i < num_clusters; i++)
+    {
+        std::set <unsigned int> verts;
+        for (auto vi: clexact_dat.vert2cl_map)
+        {
+            if (vi.second == i)
+            {
+                verts.emplace (vi.first);
+            }
+        }
+        vert_sets.emplace (i, verts);
+    }
+
+    // need a (sparse) matrix of all pairwise edge distances:
+    arma::Mat <double> vert_dists (clexact_dat.n, clexact_dat.n);
+    for (auto ei: clexact_dat.edges)
+    {
+        unsigned int i = clexact_dat.vert2index_map.at (ei.from),
+                     j = clexact_dat.vert2index_map.at (ei.to);
+        vert_dists (i, j) = vert_dists (j, i) = ei.dist;
+    }
+
+    for (unsigned int i = 0; i < (num_clusters - 1); i++)
+        for (unsigned int j = (i + 1); j < num_clusters; j++)
+        {
+            std::set <unsigned int> verts_i = vert_sets.at (i),
+                verts_j = vert_sets.at (j);
+            double max_d = 0.0;
+            for (auto vi: verts_i)
+                for (auto vj: verts_j)
+                {
+                    unsigned int ii = clexact_dat.vert2index_map.at (vi),
+                           jj = clexact_dat.vert2index_map.at (vj);
+                    if (vert_dists (ii, jj) > max_d)
+                        max_d = vert_dists (ii, jj);
+                }
+            cl_edges (i, j) = cl_edges (j, i) = max_d;
+        }
+}
+
+void make_cl_hierarchy (EXDat &clexact_dat, arma::Mat <double> &cl_edges)
+{
+}
+
+
 //' rcpp_exact
 //'
 //' Full-order complete linkage cluster redcap algorithm
@@ -138,15 +194,21 @@ Rcpp::IntegerVector rcpp_exact (
     clexact_init (clexact_dat, from, to, d);
 
     assign_first_edge (clexact_dat);
-    unsigned int clnum = 2; // #1 assigned in assign_first_edge
+    unsigned int clnum = 1; // #1 assigned in assign_first_edge
     unsigned int ei = 1; // index of next edge to be assigned
 
     while (clexact_dat.vert2cl_map.size () < clexact_dat.n)
     {
-        unsigned int clnum_i = clexact_step (clexact_dat, ei++, clnum);
+        unsigned int clnum_i = clexact_step (clexact_dat, ei, clnum);
+        ei++;
         if (clnum_i == clnum)
             clnum++;
     }
+
+    // Then construct the hierarchical relationships among clusters
+    arma::Mat <double> cl_edges (clnum, clnum);
+    fill_cl_edges (clexact_dat, cl_edges, clnum);
+    make_cl_hierarchy (clexact_dat, cl_edges);
 
     // Then construct vector mapping edges to cluster numbers
     std::vector <unsigned int> clvec (clexact_dat.n);

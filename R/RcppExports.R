@@ -34,6 +34,13 @@ rcpp_clk <- function(gr_full, gr) {
 #' @noRd
 NULL
 
+#' fill_cl_edges
+#'
+#' Fill (arma) matrix of strongest/shortest connections between all clusters
+#' used to construct the hierarchical relationships
+#' @noRd
+NULL
+
 #' rcpp_exact
 #'
 #' Full-order complete linkage cluster redcap algorithm

@@ -16,8 +16,8 @@ matrix:
         - os: linux
           r: devel
           dist: trusty
-        - os: osx
-          r: release
+          #- os: osx
+          #r: release
           #- os: osx
           #r: devel
 

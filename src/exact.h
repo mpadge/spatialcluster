@@ -25,8 +25,13 @@ void clexact_init (EXDat &clexact_dat,
 
 void assign_first_edge (EXDat &clexact_dat);
 
-unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
-        unsigned int clnum);
+unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
+        const unsigned int clnum);
+
+void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
+        unsigned int num_clusters);
+
+void make_cl_hierarchy (EXDat &clexact_dat, arma::Mat <double> &cl_edges);
 
 Rcpp::IntegerVector rcpp_exact (
         const Rcpp::DataFrame gr);
