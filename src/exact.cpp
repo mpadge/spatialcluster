@@ -48,15 +48,20 @@ void assign_first_edge (EXDat &clexact_dat)
     oneEdge edge = clexact_dat.edges [ei];
     unsigned int ito = clexact_dat.vert2index_map.at (edge.to),
                  ifrom = clexact_dat.vert2index_map.at (edge.from);
-    clexact_dat.index2cl_map.emplace (ito, clnum);
-    clexact_dat.index2cl_map.emplace (ifrom, clnum);
+
+    clexact_dat.index2cl_map [ito] = clnum;
+    clexact_dat.index2cl_map [ifrom] = clnum;
+    clexact_dat.index_in_cluster [ito] = true;
+    clexact_dat.index_in_cluster [ifrom] = true;
+
     std::unordered_set <unsigned int> cli;
     cli.insert (ito);
     cli.insert (ifrom);
     clexact_dat.cl2index_map.emplace (clnum, cli);
 
-    clexact_dat.index_in_cluster [ito] =
-        clexact_dat.index_in_cluster [ifrom] = true;
+
+    clexact_dat.vert2cl_map.emplace (edge.to, clnum);
+    clexact_dat.vert2cl_map.emplace (edge.from, clnum);
 }
 
 
@@ -83,18 +88,16 @@ unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
 
     if (!(from_in && to_in))
     {
-        if (from_in)
-        {
+        if (from_in) // then to is not in cluster
             clnum_i = clexact_dat.index2cl_map [ifrom];
-            clexact_dat.index_in_cluster [ifrom] = true;
-        } else if (to_in)
-        {
+        else if (to_in)
             clnum_i = clexact_dat.index2cl_map [ito];
-            clexact_dat.index_in_cluster [ito] = true;
-        }
 
-        clexact_dat.index2cl_map [ifrom] =
-            clexact_dat.index2cl_map [ito] = clnum_i;
+        clexact_dat.index_in_cluster [ito] = true;
+        clexact_dat.index_in_cluster [ifrom] = true;
+        clexact_dat.index2cl_map [ifrom] = clnum_i;
+        clexact_dat.index2cl_map [ito] = clnum_i;
+
         std::unordered_set <unsigned int> cli;
         if (clexact_dat.cl2index_map.find (clnum_i) !=
                 clexact_dat.cl2index_map.end ())
@@ -102,6 +105,10 @@ unsigned int clexact_step (EXDat &clexact_dat, unsigned int ei,
         cli.insert (ito);
         cli.insert (ifrom);
         clexact_dat.cl2index_map [clnum_i] = cli;
+
+        // These values may already be in the map here, but that's okay
+        clexact_dat.vert2cl_map.emplace (edge.to, clnum_i);
+        clexact_dat.vert2cl_map.emplace (edge.from, clnum_i);
     }
 
     return clnum_i;
@@ -133,30 +140,18 @@ Rcpp::IntegerVector rcpp_exact (
     assign_first_edge (clexact_dat);
     unsigned int clnum = 2; // #1 assigned in assign_first_edge
     unsigned int ei = 1; // index of next edge to be assigned
-    unsigned int nleft = clexact_dat.n - 2; // number of !index_in_cluster
 
-    while (nleft > 0)
+    while (clexact_dat.vert2cl_map.size () < clexact_dat.n)
     {
         unsigned int clnum_i = clexact_step (clexact_dat, ei++, clnum);
-        nleft--;
-        // TODO: This is now wrong:
         if (clnum_i == clnum)
             clnum++;
     }
 
     // Then construct vector mapping edges to cluster numbers
-    std::vector <int> clvec (from.size ());
-    for (unsigned int i = 0; i < from.size (); i++)
-    {
-        unsigned int index = clexact_dat.vert2index_map.at (from [i]);
-        unsigned int clnum_i = clexact_dat.index2cl_map.at (index);
-        std::unordered_set <unsigned int> cl_members =
-            clexact_dat.cl2index_map.at (clnum_i);
-        for (auto cl: cl_members)
-        {
-            clvec [cl] = clnum_i;
-        }
-    }
+    std::vector <unsigned int> clvec (clexact_dat.n);
+    for (auto ci: clexact_dat.vert2cl_map)
+        clvec [ci.first] = ci.second;
     
     return Rcpp::wrap (clvec);
 }

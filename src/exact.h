@@ -13,7 +13,8 @@ struct EXDat
     std::vector <oneEdge> edges; // nearest neighbour edges only
     std::vector <bool> index_in_cluster;
 
-    uint_map_t index2cl_map, vert2index_map, index2vert_map;
+    uint_map_t index2cl_map, vert2index_map, index2vert_map,
+               vert2cl_map;
     uint_set_map_t cl2index_map;
 };
 
