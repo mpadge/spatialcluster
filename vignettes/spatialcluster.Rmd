@@ -1,0 +1,157 @@
+---
+title: "spatialcluster"
+author: "Mark Padgham"
+date: "`r Sys.Date()`"
+output: 
+    html_document:
+        toc: true
+        toc_float: true
+        number_sections: false
+        theme: flatly
+header-includes: 
+    - \usepackage{tikz}
+    - \usetikzlibrary{arrows}
+vignette: >
+  %\VignetteIndexEntry{spatialcluster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r pkg-load, echo = FALSE, message = FALSE}
+devtools::load_all (".", export_all = FALSE)
+```
+
+# Introduction
+
+`spatialcluster` is an **R** package for performing spatially-constrained
+clustering. Spatially-constrained clustering is a distinct mode of clustering in
+which data include additional spatial coordinates in addition to the data used
+for clustering, and the clustering is performed such that only spatially
+contiguous or adjacent points may be merged into the same cluster (Fig. 1).
+
+# Other approaches to spatial clustering in **R**
+
+Several extant **R** packages provide routines which may be and are purportedly
+used for spatial clustering tasks. However, almost all such routines accept a
+single distance matrix (or equivalent structure) as input, and their use for
+spatially-structured data requires the amalgamation of potentially non-spatial
+primary data with explicitly spatial data quantifying positions of objects to be
+clustered. Such arguably conventional applications of spatial clustering almost
+always demand some effectively arbitrary combination of non-spatial (or
+not-necessarily-spatial) and spatial data to attain a single metric of effective
+combined distance. This is often achieved through a simple additive weighting.
+If `d` denotes a matrix of non-spatial distances between data objects, and `xy`
+a structurally identical matrix of spatial distances, then a single distance
+matrix, $M$, is commonly formed as,
+\begin{equation}
+    M = \alpha d + \beta xy,
+\wnd{equation}
+where $\alpha$ and $\beta$ are effectively arbitrary parameters, and a
+clustering scheme can be more constrained by spatial structure through
+increasing the relative value of $\beta$.
+
+We concur here with the sentiment emphasised elsewhere that such approaches
+provide more a means of attained approximately spatially-structured clustering
+schemes, rather than actually providing spatially-constrained clusters in the
+sense developed here.
+
+# Spatially-constrained clustering
+
+In contrast to the approached described in the foregoing section, spatially
+constrained clustering is implemented on two distinct sets of data, both of
+which may most conveniently be conceived of and represented by distance matrices
+(where between points or finite objects). Conventional approaches combined these
+two matrices into one prior to clustering; spatially-constrained clustering is
+performed on the matrix of distances between (non-spatial) data objects, while
+the formation of clusters is constrained such that only neighbouring points or
+objects are merged into the same cluster.
+
+We consider here two primary implementations of spatially-constrained
+clustering: clustering by average values, and clustering by extreme values.
+Clustering in the first case aims to derive clusters with the greatest internal
+intra-cluster homogeneity, while the second case aims to derive clusters with
+the maximal inter-cluster heterogeneity.
+
+## The REDCAP algorithms
+
+The REDCAP algorithms for spatially-constrained clustering (**RE**gionalization
+with **D**ynamically **C**onstrained **A**gglomerative **C**lustering)
+construct minimal spanning trees through a set of spatial neighbours, and then
+successively bisect these trees to split the entire data set into distinct
+clusters. The algorithms implement three methods for agglomerating ("linking")
+clusters: single-linkage, average-linkage, and complete linkage, which briefly
+work as follows:
+
+1. Single-linkage clustering simply loops through the list of minimal-distance,
+   nearest-neighbour edges, and inserts an edge into the clustering tree if it
+   is not part of any previous cluster, and if it connects two contiguous
+   clusters.
+2. Average-linkage clustering assigns weights to each edge based on their
+   average distance to all adjacent edges, where the group of adjacent edges
+   includes all edges in a cluster adjacent to any unassigned edge. Thus when an
+   edge becomes part of a cluster, the distances to all non-assigned edges
+   adjacent to that cluster are updated to reflect the change in average
+   distance calculated over all edges in that cluster. Edges are continually
+   (re-)sorted based on average distances, and the tree built through
+   sequentially inserting minimal-distance edges.
+3. Maximal-linkage clustering forms clusters through inserting the edge having
+   the minimal distance to the farthest point of any cluster.
+
+All three methods effectively minimise the total intra-cluster distance, with
+single-linkage being a computationally cheap shortcut; and average and maximal
+linkage minimising the respective measures of intra-cluster distance.
+
+# The Exact Clustering Algorithm
+
+As described above, the REDCAP algorithms provide different ways of constructing
+minimal spanning trees for a given data set, with resultant clusters based on
+bisecting these spanning trees. They effectively represent the relationships
+within a data set by the "best" minimal set (according to the chosen algorithm).
+Here, we develop a simple algorithm for deriving a clustering scheme that uses
+the full set of nearest-neighbour relationships in a given data set.
+
+Each point or object within a typical planar (effectively two-dimensional) data
+set may have on average just under three nearest neighbours (if calculated
+using, for example, triangulation); a minimal-spanning tree reduces this to an
+average of under two nearest neighbours (one for terminal nodes; two otherwise).
+The reduction in computational complexity is thus $\sim O(2/3)$. Conversely, the
+loss in computational complexity through using all nearest-neighbour points as
+advocated here is relatively no too large; perhaps being around 50%. Note also
+that many clustering algorithms scale sub-linearly, often approaching
+logarithmic-scale performance. This potentially difference in efficient in cases
+of logarithmic scaling reduces to only,
+\begin{equation}
+    \frac {{\rm log} (1.5 N)} {{\rm log} (N)},
+\end{equation}
+which actually decreases with increasing $N$, to levels one may presume barely
+significant for large $N$.
+
+The algorithm proceeds through the following steps, looping until all data
+objects have been allocated to a cluster, and beginning with both `i = 0` and
+`clnum = 0`. The primary data is an array of edges (`edge`) sorted by increasing
+distance.
+
+1. Select `edge [i]` connecting nodes `a` and `b`.
+2. If both `a` and `b` are already in clusters, increment `i` and continue to
+   next iteration; else
+3. If neither node is in a cluster, create new cluster number `clnum` containing
+   `a` and `b`, and increment both `i` and `clnum`; else
+4. Only one of `a` and `b` is allocated, so allocate the previously unallocated
+   node to the cluster number of the other and increment `i`.
+
+This procedure allocates all nodes (data objects) to clusters. The number of
+resultant clusters can not be known in advance, and many clusters may be very
+small, comprising for example only a single edge connecting two nodes. This
+initial clustering may then be used as the basis of a further hierarchical
+clustering, through sequentially merging clusters having the minimal distance
+according to some specified metric. As for the REDCAP algorithms, this merging
+involves linking previously distinct clusters according to some specified
+criteria, and the same three criteria can be directly applied in this exact
+clustering case. Single-linkage hierarchically connects clusters by selecting
+the single edge having the minimal distance between any two clusters;
+average-linkage clustering selects the edge having the minimal average distance
+to any pair of clusters; and maximal-linkage clusters selects the edge having
+the lowest maximal distance to all points within any pair of clusters.
+
+
+# Bibliography
