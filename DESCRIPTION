@@ -23,6 +23,7 @@ Imports:
     tripack
 Suggests:
     dbscan,
+    devtools,
     knitr,
     rmarkdown,
     roxygen2,
