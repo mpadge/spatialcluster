@@ -31,59 +31,160 @@ which data include additional spatial coordinates in addition to the data used
 for clustering, and the clustering is performed such that only spatially
 contiguous or adjacent points may be merged into the same cluster (Fig. 1).
 
-# Other approaches to spatial clustering in **R**
+## Nomenclature
 
-Several extant **R** packages provide routines which may be and are purportedly
-used for spatial clustering tasks. However, almost all such routines accept a
-single distance matrix (or equivalent structure) as input, and their use for
-spatially-structured data requires the amalgamation of potentially non-spatial
-primary data with explicitly spatial data quantifying positions of objects to be
-clustered. Such arguably conventional applications of spatial clustering almost
-always demand some effectively arbitrary combination of non-spatial (or
-not-necessarily-spatial) and spatial data to attain a single metric of effective
-combined distance. This is often achieved through a simple additive weighting.
-If `d` denotes a matrix of non-spatial distances between data objects, and `x`
-a structurally identical matrix of spatial distances, then a single distance
-matrix, $M$, is commonly formed as,
-\begin{equation}
-    M = \alpha d + \beta x,
-\end{equation}
-where $\alpha$ and $\beta$ are effectively arbitrary parameters, and a
-clustering scheme can be more constrained by spatial structure through
-increasing the relative value of $\beta$.
+* The term "objects" is used here to refer to the objects which are to be
+  aggregated into clusters; these may be points, lines, polygons, or any other
+  spatial or non-spatial entities
+* The term "non-spatial data" also encompasses data which are not necessarily
+  spatial, but which may include some spatial component.
 
-We concur here with the sentiment emphasised elsewhere that such approaches
-provide more a means of attaining approximately spatially-structured clustering
-schemes, rather than actually providing spatially-constrained clusters in the
-sense developed here.
+# Spatial clustering versus spatially-constrained clustering
+
+## Spatial clustering
+
+
+Spatial clustering is a very well-studied field [see reviews in @Han2001;
+@Duque2007; @Lu2009], with many methods implemented in the **R** language (see
+the CRAN Task View on [Analysis of Spatial
+Data](https://cran.r-project.org/web/views/Spatial.html)). Spatial clustering
+algorithms take as input a set of spatial distances between objects, and seek to
+cluster those objects based on these exclusively spatial distances alone (Fig.
+1A). Other non-spatial data may be included, but must be somehow reconciled with
+the spatial component. This is often achieved through weighted addition to
+attain approximately "spatialized" data. Figure 1B-C illustrate two related
+non-spatial (B) and spatial (C) datasets. The primary data of interest depicted
+in B can be "spatialized" through additively combining the associated distance
+matrices of non-spatial and spatial data, and submitting the resultant distance
+matrix to a clustering routine of choice.
+
+
+```{r, fig.width = 12, fig.height = 4, echo = FALSE, fig.cap = "Figure 1: (A) Illustration of typical spatial clustering application for which input data are explicit spatial distances between points; (B) Illustration of clustering in some other, non-spatial dimensions, D1 and D2, for which associated spatial data in (C) do not manifest clear spatial clusters."}
+getdat <- function (ncl = 5, noise = 0.1) {
+    sizes <- ceiling (runif (ncl) * 20)
+    x <- rep (runif (ncl), times = sizes) + runif (sum (sizes), -1, 1) * noise
+    y <- rep (runif (ncl), times = sizes) + runif (sum (sizes), -1, 1) * noise
+    cols <- rep (rainbow (ncl), times = sizes)
+    data.frame (x = x, y = y, col = cols)
+}
+#layout (matrix (c (1, 2, 1, 3), 2, 2, byrow = TRUE))
+par (mfrow = c (1, 3))
+par (mar = c (2.0, 2.0, 1.5, 0.5), mgp = c (1, 0.7, 0))
+
+set.seed (3)
+dat <- getdat (ncl = 5, noise = 0.1)
+plot (dat$x, dat$y, col = dat$col, cex = 2,
+      xlab = "x", ylab = "y", xaxt = "n", yaxt = "n", main = "A")
+
+dat <- getdat (ncl = 5, noise = 0.1)
+plot (dat$x, dat$y, col = dat$col, cex = 2,
+      xlab = "D1", ylab = "D2", xaxt = "n", yaxt = "n", main = "B")
+dat <- getdat (ncl = 5, noise = 0.5)
+plot (dat$x, dat$y, col = dat$col, cex = 2,
+      xlab = "x", ylab = "y", xaxt = "n", yaxt = "n", main = "C")
+```
+
+For example, the following code illustrates the use of the `DBSCAN` algorithm
+(**D**ensity **B**ased **S**patial **C**lustering of
+**A**pplications with **N**oise) from the **R** package
+[`dbscan`](https://cran.r-project.org/package=dbscan).
+```{r, echo = FALSE}
+set.seed (3)
+dat_nospace <- getdat (ncl = 5, noise = 0.1)
+dat_space <- getdat (ncl = 5, noise = 0.2)
+nr <- min (c (nrow (dat_nospace), nrow (dat_space)))
+dat_nospace <- dat_nospace [1:nr, ]
+dat_space <- dat_space [1:nr, ]
+d_nospace <- dist (dat_nospace [, 1:2])
+d_space <- dist (dat_space [, 1:2])
+d <- d_nospace + d_space
+```
+```{r, eval = FALSE}
+d_nospace <- dist (dat_nospace) # matrix of non-spatial data
+d_space <- dist (dat_space) # 2-column matrix of spatial data
+d <- dat_nospace + d_space # simple linear addition
+```
+```{r}
+library (dbscan)
+db <- dbscan::dbscan (d, eps = 0.4) # more on the eps parameter below
+db
+```
+The result shows the appropriate number of five clusters. Further insight can be
+gained through visually inspecting the clusters in both the non-spatial and
+spatial domains. Doing so reveals (Fig. 2) that the clustering is actually quite
+representative, being clearly distinct in the non-spatial domain, and also
+reasonably distinct in the spatial domain.
+```{r, echo = FALSE, fig.width = 8, fig.height = 4, fig.cap = "Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corresponding spatial data coloured by dbscan clustering results."}
+cols <- rainbow (length (unique (db$cluster))) [db$cluster + 1] # 0-indexed
+par (mfrow = c (1, 2))
+par (mar = c (2.0, 2.0, 1.5, 0.5), mgp = c (1, 0.7, 0))
+plot (dat_nospace$x, dat_nospace$y, cex = 1, col = cols,
+      xlab = "D1", ylab = "D2", xaxt = "n", yaxt = "n", main = "non-spatial")
+plot (dat_space$x, dat_space$y, cex = 1, col = cols,
+      xlab = "x", ylab = "y", xaxt = "n", yaxt = "n", main = "spatial")
+```
+
+These results demonstrate that reasonable results can indeed be obtained through
+simple linear combination of non-spatial and spatial distances. This approach is
+very simple, and it is very easy to submit such combined distance matrices to
+high-performance clustering routines such as
+[`dbscan`](https://cran.r-project.org/package=dbscan). There are nevertheless
+two notable shortcomings:
+
+1. There is no objectively best way to combine non-spatial and spatial distance
+   matrices; and
+2. Routines such as [`dbscan`](https://cran.r-project.org/package=dbscan) still
+   require an effectively arbitrary parameter represented by the above value of
+   `eps = 0.4`. This value was simply chosen to best reflect the known structure
+   of the input clusters, but in any practical application will remain largely
+   arbitrary.
+
+Even one of the most recent **R** packages dedicated to spatial cluster
+[@Chavent2017] follows precisely this linear addition strategy, via a sole
+parameter determining the relative weights of the non-spatial and spatial data.
+
+We assert here that such approaches provide more a means of attaining
+approximately spatially-structured clustering schemes, rather than actually
+providing spatially-constrained clusters in the sense we now explore.
 
 # Spatially-constrained clustering
 
-In contrast to the approached described in the foregoing section, spatially
-constrained clustering is implemented on two distinct sets of data, both of
-which may most conveniently be conceived of and represented by distance matrices
-(whether between points or finite objects). Conventional approaches combine
-these two matrices into one prior to clustering; spatially-constrained
-clustering is performed on the matrix of distances between (non-spatial) data
-objects, while the formation of clusters is constrained such that only
-neighbouring points or objects are merged into the same cluster.
+The [`spatialcluster`
+package](https://github.com/mpadge/spatialcluster) performs strict *spatially
+constrained clustering*. This means that clusters are formed entirely on the
+basis of the non-spatial data, while the spatial data provide a constraint used
+to ensure that all clusters are spatially contiguous.
 
-We consider here two primary implementations of spatially-constrained
-clustering: clustering by average values, and clustering by extreme values.
-Clustering in the first case aims to derive clusters with the greatest internal
-intra-cluster homogeneity, while the second case aims to derive clusters with
-the maximal inter-cluster heterogeneity.
+## The SKATER algorithm
+
+One of the most widespread algorithms for spatially constrained clustering is
+the so-called "SKATER" algorithm [**S**patial **K**luster **A**nalysis by
+**T**ree **E**dge **R**emoval, @Assuncao2006], available via the **R** package
+[`spdep`](https://cran.r-project.org/package=spdep) [@Bivand2013; @Bivand2015].
+This algorithm constructs a minimum spanning tree (MST) connecting neighbours
+defined by the spatial data, with all connections defined by minimal distances
+in the non-spatial data. The SKATER algorithm constructs the simplest of all
+MSTs, by iterating through the list of neighbouring edges according to
+increasing (non-spatial) distance, and inserting edges where these connect
+previously unconnected objects.  The resultant MST is then partitioned into a
+specified number of clusters such that the intra-cluster squared deviation from
+the mean (of the non-spatial data) is minimised. Further details are given in
+@Assuncao2006.
 
 ## The REDCAP algorithms
 
-The REDCAP algorithms for spatially-constrained clustering (**RE**gionalization
-with **D**ynamically **C**onstrained **A**gglomerative **C**lustering)
-[@Guo2008] constructs minimal spanning trees through a set of spatial neighbours,
-and then
-successively bisect these trees to split the entire data set into distinct
-clusters. The algorithms implement three methods for agglomerating ("linking")
-clusters: single-linkage, average-linkage, and complete linkage, which briefly
-work as follows:
+The REDCAP algorithms for spatially-constrained clustering [**RE**gionalization
+with **D**ynamically **C**onstrained **A**gglomerative **C**lustering,
+@Guo2008] employs three distinct methods for constructing MSTs. The original
+algorithms actually develop these three methods for two distinct ways of
+constructing trees: through using nearest neighbours only ("first-order
+constraint"), or through considering all neighbours of each object ("full-order
+constrain"). The results of the cited manuscript clearly reveal the superiority
+of the latter, and only full-order constraints are considered here.
+
+The three methods refer to the methods for determining which edges are selected
+to link clusters, via either single-, average-, or complete-linkage.  These
+briefly work as follows:
 
 1. Single-linkage clustering simply loops through the list of minimal-distance,
    nearest-neighbour edges, and inserts an edge into the clustering tree if it
@@ -100,9 +201,15 @@ work as follows:
 3. Maximal-linkage clustering forms clusters through inserting the edge having
    the minimal distance to the farthest point of any cluster.
 
-All three methods effectively minimise the total intra-cluster distance, with
-single-linkage being a computationally cheap shortcut; and average and maximal
-linkage minimising the respective measures of intra-cluster distance.
+Single-linkage is equivalent to the SKATER algorithm, where the single best edge
+connecting two clusters is selected. (The SKATER algorithm is actually
+equivalent to the worst-performing REDCAP algorithm: single-linkage,
+first-order constraint.) [See @Guo2008 for details.] The resultant MSTs are then
+partitioned into specified numbers of clusters using an identical approach to
+SKATER, namely through minimising the intra-cluster squared deviation from mean
+value.
+
+
 
 # The Exact Clustering Algorithm
 
@@ -160,4 +267,4 @@ to any pair of clusters; and maximal-linkage clusters selects the edge having
 the lowest maximal distance to all points within any pair of clusters.
 
 
-# Bibliography
+# References

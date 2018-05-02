@@ -22,6 +22,7 @@ Imports:
     tibble,
     tripack
 Suggests:
+    dbscan,
     knitr,
     rmarkdown,
     roxygen2,
