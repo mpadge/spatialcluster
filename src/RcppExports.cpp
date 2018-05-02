@@ -29,6 +29,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_cut_tree
+Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl);
+RcppExport SEXP _spatialcluster_rcpp_cut_tree(SEXP treeSEXP, SEXP nclSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type tree(treeSEXP);
+    Rcpp::traits::input_parameter< const int >::type ncl(nclSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_cut_tree(tree, ncl));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_exact
 Rcpp::IntegerVector rcpp_exact(const Rcpp::DataFrame gr);
 RcppExport SEXP _spatialcluster_rcpp_exact(SEXP grSEXP) {

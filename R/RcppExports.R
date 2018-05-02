@@ -25,6 +25,19 @@ rcpp_clk <- function(gr_full, gr) {
     .Call(`_spatialcluster_rcpp_clk`, gr_full, gr)
 }
 
+#' rcpp_cut_tree
+#'
+#' Cut tree into specified number of clusters by minimising internal cluster
+#' variance.
+#'
+#' @param tree tree to be processed
+#'
+#' @return Vector of cluster IDs for each tree edge
+#' @noRd
+rcpp_cut_tree <- function(tree, ncl) {
+    .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl)
+}
+
 #' clexact_step
 #'
 #' All edges are initially in their own clusters. This merges edge#i with the

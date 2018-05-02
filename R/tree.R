@@ -117,7 +117,7 @@ scl_exact <- function (edges)
 #' @noRd
 scl_cuttree <- function (tree, edges, ncl)
 {
-    tree %<>% left_join (edges, by = c ("from", "to"))
+    tree %<>% dplyr::left_join (edges, by = c ("from", "to"))
     n <- nrow (tree)
 
     # define component as > 2 members, and cut tree until that is attained, or
