@@ -6,3 +6,5 @@
 ^.*\.Rproj$
 ^.*\.pdf$
 ^\.Rproj\.user$
+^vignettes/makefile$
+docs/

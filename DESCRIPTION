@@ -22,12 +22,16 @@ Imports:
     tibble,
     tripack
 Suggests:
+    knitr,
+    rmarkdown,
+    roxygen2,
     testthat
 LinkingTo:
     Rcpp,
     RcppArmadillo
 SystemRequirements:
     C++11,
+VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 URL: https://github.com/mpadge/spatialcluster
 BugReports: https://github.com/mpadge/spatialcluster/issues
