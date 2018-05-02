@@ -6,8 +6,9 @@ output:
     html_document:
         toc: true
         toc_float: true
-        number_sections: false
+        number_sections: true
         theme: flatly
+bibliography: spatialcluster.bib
 header-includes: 
     - \usepackage{tikz}
     - \usetikzlibrary{arrows}
@@ -18,8 +19,8 @@ vignette: >
 ---
 
 ```{r pkg-load, echo = FALSE, message = FALSE}
-#devtools::load_all (".", export_all = FALSE)
-library (spatialcluster)
+devtools::load_all (".", export_all = FALSE)
+#library (spatialcluster)
 ```
 
 # Introduction
@@ -41,18 +42,18 @@ clustered. Such arguably conventional applications of spatial clustering almost
 always demand some effectively arbitrary combination of non-spatial (or
 not-necessarily-spatial) and spatial data to attain a single metric of effective
 combined distance. This is often achieved through a simple additive weighting.
-If `d` denotes a matrix of non-spatial distances between data objects, and `xy`
+If `d` denotes a matrix of non-spatial distances between data objects, and `x`
 a structurally identical matrix of spatial distances, then a single distance
 matrix, $M$, is commonly formed as,
 \begin{equation}
-    M = \alpha d + \beta xy,
-\wnd{equation}
+    M = \alpha d + \beta x,
+\end{equation}
 where $\alpha$ and $\beta$ are effectively arbitrary parameters, and a
 clustering scheme can be more constrained by spatial structure through
 increasing the relative value of $\beta$.
 
 We concur here with the sentiment emphasised elsewhere that such approaches
-provide more a means of attained approximately spatially-structured clustering
+provide more a means of attaining approximately spatially-structured clustering
 schemes, rather than actually providing spatially-constrained clusters in the
 sense developed here.
 
@@ -61,11 +62,11 @@ sense developed here.
 In contrast to the approached described in the foregoing section, spatially
 constrained clustering is implemented on two distinct sets of data, both of
 which may most conveniently be conceived of and represented by distance matrices
-(where between points or finite objects). Conventional approaches combined these
-two matrices into one prior to clustering; spatially-constrained clustering is
-performed on the matrix of distances between (non-spatial) data objects, while
-the formation of clusters is constrained such that only neighbouring points or
-objects are merged into the same cluster.
+(whether between points or finite objects). Conventional approaches combine
+these two matrices into one prior to clustering; spatially-constrained
+clustering is performed on the matrix of distances between (non-spatial) data
+objects, while the formation of clusters is constrained such that only
+neighbouring points or objects are merged into the same cluster.
 
 We consider here two primary implementations of spatially-constrained
 clustering: clustering by average values, and clustering by extreme values.
@@ -77,7 +78,8 @@ the maximal inter-cluster heterogeneity.
 
 The REDCAP algorithms for spatially-constrained clustering (**RE**gionalization
 with **D**ynamically **C**onstrained **A**gglomerative **C**lustering)
-construct minimal spanning trees through a set of spatial neighbours, and then
+[@Guo2008] constructs minimal spanning trees through a set of spatial neighbours,
+and then
 successively bisect these trees to split the entire data set into distinct
 clusters. The algorithms implement three methods for agglomerating ("linking")
 clusters: single-linkage, average-linkage, and complete linkage, which briefly
@@ -117,14 +119,11 @@ using, for example, triangulation); a minimal-spanning tree reduces this to an
 average of under two nearest neighbours (one for terminal nodes; two otherwise).
 The reduction in computational complexity is thus $\sim O(2/3)$. Conversely, the
 loss in computational complexity through using all nearest-neighbour points as
-advocated here is relatively no too large; perhaps being around 50%. Note also
-that many clustering algorithms scale sub-linearly, often approaching
-logarithmic-scale performance. This potentially difference in efficient in cases
-of logarithmic scaling reduces to only,
-\begin{equation}
-    \frac {{\rm log} (1.5 N)} {{\rm log} (N)},
-\end{equation}
-which actually decreases with increasing $N$, to levels one may presume barely
+advocated here is relatively small; perhaps being around 50%. Note also that
+many clustering algorithms scale sub-linearly, often approaching
+logarithmic-scale performance. This potential difference in efficiency in cases
+of logarithmic scaling reduces to only ${\rm log}(1.5 N)/{\rm log} N$, which
+actually decreases with increasing $N$, to levels likely to be barely
 significant for large $N$.
 
 The algorithm proceeds through the following steps, looping until all data
@@ -132,13 +131,19 @@ objects have been allocated to a cluster, and beginning with both `i = 0` and
 `clnum = 0`. The primary data is an array of edges (`edge`) sorted by increasing
 distance.
 
-1. Select `edge [i]` connecting nodes `a` and `b`.
-2. If both `a` and `b` are already in clusters, increment `i` and continue to
-   next iteration; else
-3. If neither node is in a cluster, create new cluster number `clnum` containing
-   `a` and `b`, and increment both `i` and `clnum`; else
-4. Only one of `a` and `b` is allocated, so allocate the previously unallocated
-   node to the cluster number of the other and increment `i`.
+```{r, eval = FALSE}
+1.  Select edge [i] connecting nodes a and b.
+2.  i++
+3.  If both a and b are already in clusters:
+        continue to next iteration
+    else if neither node is in a cluster:
+        cluster (clnum) = create_new_cluster (c (a, b))
+        clnum++
+    else if only a is in a cluster:
+        set_cluster_number (a, get_cluster_number (b))
+    else if only b is in a cluster:
+        set_cluster_number (b, get_cluster_number (a))
+```
 
 This procedure allocates all nodes (data objects) to clusters. The number of
 resultant clusters can not be known in advance, and many clusters may be very
