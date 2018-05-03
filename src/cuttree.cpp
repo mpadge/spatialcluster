@@ -1,20 +1,9 @@
 #include "common.h"
 #include "cuttree.h"
 
-double simple_variance (const std::vector <double> &x)
-{
-    double s2 = 0.0, s = 0.0;
-    for (auto i: x)
-    {
-        s += i;
-        s2 += i * i;
-    }
-    const double n = static_cast <double> (x.size ());
-    return (s2 - s * s / n) / (n - 1.0);
-}
-
-// Internal variance of specified cluster number
-double calc_variance (const std::vector <EdgeComponent> &edges,
+// Internal sum of squared deviations of specified cluster number (this is just
+// the variance without the scaling by N)
+double calc_ss (const std::vector <EdgeComponent> &edges,
         const int cluster_num)
 {
     double s2 = 0.0, s = 0.0;
@@ -26,7 +15,8 @@ double calc_variance (const std::vector <EdgeComponent> &edges,
             s2 += i.d * i.d;
             count += 1.0;
         }
-    return (s2 - s * s / count) / (count - 1.0);
+    //return (s2 - s * s / count) / (count - 1.0); // variance
+    return (s2 - s * s / count);
 }
 
 size_t cluster_size (const std::vector <EdgeComponent> &edges,
@@ -71,7 +61,7 @@ std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges)
     return tree;
 }
 
-double sum_component_variances (const std::vector <EdgeComponent> &edges,
+TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
         const std::unordered_set <int> &tree)
 {
     double sa = 0.0, sa2 = 0.0, sb = 0.0, sb2 = 0.0, na = 0.0, nb = 0.0;
@@ -89,9 +79,11 @@ double sum_component_variances (const std::vector <EdgeComponent> &edges,
             nb += 1.0;
         }
     }
-    sa2 = (sa2 - sa * sa / na) / (na - 1.0);
-    sb2 = (sb2 - sb * sb / nb) / (nb - 1.0);
-    return sa2 + sb2;
+    TwoSS res;
+    // res.ss1 = (sa2 - sa * sa / na) / (na - 1.0); // variance
+    res.ss1 = (sa2 - sa * sa / na);
+    res.ss2 = (sb2 - sb * sb / nb);
+    return res;
 }
 
 // Find the component split of edges in cluster_num which yields the lowest sum
@@ -118,9 +110,11 @@ BestCut find_min_cut (std::vector <EdgeComponent> &edges,
     std::vector <EdgeComponent> edges_copy;
 
     // Remove each edge in turn
-    double vmin = INFINITE_DOUBLE;
-    int imin = INFINITE_INT, size_at_min = INFINITE_INT;
     std::unordered_set <int> tree_out;
+    BestCut the_cut;
+    the_cut.pos = INFINITE_INT;
+    the_cut.ss1 = the_cut.ss2 = INFINITE_DOUBLE;
+    double ssmin = INFINITE_DOUBLE;
     for (int i = 0; i < n; i++)
     {
         edges_copy.resize (0);
@@ -130,12 +124,14 @@ BestCut find_min_cut (std::vector <EdgeComponent> &edges,
                 edges_copy.begin ());
         edges_copy.erase (edges_copy.begin () + i);
         std::unordered_set <int> tree = build_one_tree (edges_copy);
-        double v = sum_component_variances (edges_copy, tree);
-        if (v < vmin)
+        TwoSS ss = sum_component_ss (edges_copy, tree);
+        if ((ss.ss1 + ss.ss2) < ssmin)
         {
-            vmin = v;
-            imin = i;
-            size_at_min = tree.size ();
+            ssmin = ss.ss1 + ss.ss2;
+            the_cut.pos = i;
+            the_cut.ss1 = ss.ss1;
+            the_cut.ss2 = ss.ss2;
+
             tree_out.clear ();
             for (auto t: tree)
                 tree_out.emplace (t);
@@ -148,19 +144,13 @@ BestCut find_min_cut (std::vector <EdgeComponent> &edges,
     {
         if (i.cluster_num == cluster_num)
         {
-            if (count == imin)
+            if (count == the_cut.pos)
                 i.cluster_num = INFINITE_INT;
             else if (tree_out.find (i.from) == tree_out.end ())
                 i.cluster_num = total_clusters + 1;
         }
         count++;
     }
-
-    BestCut the_cut;
-    the_cut.variance = vmin;
-    the_cut.pos = imin;
-    the_cut.n1 = size_at_min;
-    the_cut.n2 = n - size_at_min - 1;
 
     return the_cut;
 }
@@ -210,21 +200,20 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
         edges [i] = this_edge;
     }
 
-    const double var_full = calc_variance (edges, 0);
+    const double var_full = calc_ss (edges, 0);
 
-    std::vector <double> cluster_variances;
-    cluster_variances.push_back (var_full);
+    std::vector <double> cluster_ss;
+    cluster_ss.push_back (var_full);
     double var_tot = var_full;
     BestCut the_cut = find_min_cut (edges, 0);
 
     int num_clusters = 1;
     while (num_clusters < ncl)
     {
-        size_t mini = *std::min_element (cluster_variances.begin (),
-                cluster_variances.end ()); // cluster number to be split
-        the_cut = find_min_cut (edges, mini);
-        cluster_variances.insert (cluster_variances.begin () + mini,
-                the_cut.variance);
+        //size_t mini = *std::min_element (cluster_ss.begin (),
+        //        cluster_ss.end ()); // cluster number to be split
+        //the_cut = find_min_cut (edges, mini);
+        //cluster_ss.insert (cluster_ss.begin () + mini, the_cut.ss1 + the_cut.ss2);
 
         num_clusters++;
     }
