@@ -21,6 +21,12 @@
 scl_exact <- function (xy, dmat, ncl)
 {
     xy <- scl_tbl (xy)
-    edges_nn <- scl_edges_nn (xy, dmat, shortest = TRUE)
-    clusters <- rcpp_exact (edges_nn) + 1
+    edges <- scl_edges_nn (xy, dmat, shortest = TRUE)
+    # cluster numbers can be joined with edges through either from or to:
+    cl <- tibble::tibble (from = seq (nrow (xy)),
+                          cl = rcpp_exact (edges) + 1)
+    edges <- dplyr::left_join (edges, cl, by = c ("from"))
+    # edges then include initial cluster allocation
+
+    edges <- rcpp_merge_exact_clusters (edges, ncl = ncl)
 }

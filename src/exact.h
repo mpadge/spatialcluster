@@ -31,7 +31,8 @@ unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
 void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
         unsigned int num_clusters);
 
-void make_cl_hierarchy (EXDat &clexact_dat, arma::Mat <double> &cl_edges);
-
-Rcpp::IntegerVector rcpp_exact (
+Rcpp::IntegerVector rcpp_exact_initial (
         const Rcpp::DataFrame gr);
+
+Rcpp::IntegerVector rcpp_exact_merge (
+        const Rcpp::DataFrame gr, const int ncl);

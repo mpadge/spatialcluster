@@ -41,14 +41,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_exact
-Rcpp::IntegerVector rcpp_exact(const Rcpp::DataFrame gr);
-RcppExport SEXP _spatialcluster_rcpp_exact(SEXP grSEXP) {
+// rcpp_exact_initial
+Rcpp::IntegerVector rcpp_exact_initial(const Rcpp::DataFrame gr);
+RcppExport SEXP _spatialcluster_rcpp_exact_initial(SEXP grSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_exact(gr));
+    rcpp_result_gen = Rcpp::wrap(rcpp_exact_initial(gr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcpp_exact_merge
+Rcpp::IntegerVector rcpp_exact_merge(const Rcpp::DataFrame gr, const int ncl);
+RcppExport SEXP _spatialcluster_rcpp_exact_merge(SEXP grSEXP, SEXP nclSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
+    Rcpp::traits::input_parameter< const int >::type ncl(nclSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_exact_merge(gr, ncl));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -2,7 +2,8 @@
 
 #include <unordered_map>
 
-constexpr int MIN_CLUSTER_SIZE = 3;
+// clusters are of edges, so size = 2 => 3 nodes
+constexpr int MIN_CLUSTER_SIZE = 2;
 
 struct EdgeComponent
 {
