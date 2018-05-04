@@ -4,14 +4,12 @@
 \alias{plot.scl}
 \title{plot.scl}
 \usage{
-\method{plot}{scl}(x, ..., tree = FALSE, convex = TRUE, hull_alpha = 0.1)
+\method{plot}{scl}(x, ..., convex = TRUE, hull_alpha = 0.1)
 }
 \arguments{
 \item{x}{object to be plotted}
 
 \item{...}{ignored here}
-
-\item{tree}{Should the spanning tree be overlaid on the clusters?}
 
 \item{convex}{Should hull be convex? If not, the \code{ashape} routine from
 the \pkg{alphahull} package is used to generate non-convex hulls, generated
@@ -19,6 +17,8 @@ with the \code{hull_alpha} parameter}
 
 \item{hull_alpha}{alpha value of non-convex hulls (see ?alphashape::ashape
 for details).}
+
+\item{tree}{Should the spanning tree be overlaid on the clusters?}
 }
 \description{
 plot.scl
@@ -33,6 +33,4 @@ plot (scl)
 # \\coce{dmat}:
 scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 plot (scl)
-# overlay the spanning tree used to generate the clusters:
-plot (scl, tree = TRUE)
 }

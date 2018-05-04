@@ -118,9 +118,7 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
 #' # \coce{dmat}:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
-#' # overlay the spanning tree used to generate the clusters:
-#' plot (scl, tree = TRUE)
-plot.scl <- function (x, ..., tree = FALSE, convex = TRUE, hull_alpha = 0.1)
+plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 {
     if (convex)
         hulls <- scl_hulls (x$tree, x$xy)
@@ -162,21 +160,6 @@ plot.scl <- function (x, ..., tree = FALSE, convex = TRUE, hull_alpha = 0.1)
                                alpha = 0.1,
                                size = hull_width) +
         ggthemes::theme_solarized ()
-
-    if (tree)
-    {
-        the_tree <- x$tree %>%
-            dplyr::select (from, to, d) %>%
-            dplyr::bind_rows (x$tree_rest) %>%
-            dplyr::distinct ()
-        the_tree$xfr <- xy$x [the_tree$from]
-        the_tree$yfr <- xy$y [the_tree$from]
-        the_tree$xto <- xy$x [the_tree$to]
-        the_tree$yto <- xy$y [the_tree$to]
-        g <- g + ggplot2::geom_segment (ggplot2::aes (x = xfr, y = yfr,
-                                                      xend = xto, yend = yto),
-                                        colour = "#333333FF", data = the_tree)
-    }
 
     print (g)
     invisible (g)
