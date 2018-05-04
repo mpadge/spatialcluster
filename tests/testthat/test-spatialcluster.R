@@ -34,6 +34,9 @@ test_that("scl methods", {
               expect_false (identical (scl7, scl4))
               expect_false (identical (scl7, scl5))
               expect_false (identical (scl7, scl6))
+              expect_error (scl8 <- scl_redcap (xy, dmat, ncl = 4,
+                                                linkage = "blah"),
+                            "linkage must be one of")
 })
 
 test_that("recluster", {
