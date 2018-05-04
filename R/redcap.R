@@ -84,9 +84,8 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
             }
 
         }
-        trees <- scl_cuttree (tree_full, edges_nn, ncl)
 
-        tree <- tree_components (trees$tree_in)
+        tree <- scl_cuttree (tree_full, edges_nn, ncl)
 
         # meta-data:
         clo <- c ("single", "full") [match (full_order, c (FALSE, TRUE))]
@@ -94,8 +93,8 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
                       cl_order = clo,
                       linkage = linkage)
 
-        structure (list (xy = xy, tree = tree,
-                         tree_rest = trees$tree_out,
+        structure (list (xy = xy,
+                         tree = tree,
                          pars = pars),
                    class = "scl")
     }
@@ -149,14 +148,13 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
     else
         tree_full %<>% dplyr::arrange (dplyr::desc (d))
 
-    # cut tree:
-    n <- nrow (tree_full)
-    tree_rest <- tree_full [1:(n - 1), ]
-    tree <- tree_components (tree_full [ncl:n, ])
+    tree_full$clnum <- rcpp_cut_tree (tree_full, ncl)
+
+    pars <- scl$pars
+    pars$ncl <- ncl
 
     structure (list (xy = scl$xy,
-                     tree = tree,
-                     tree_rest = tree_rest,
-                     ncl = ncl),
+                     tree = tree_full,
+                     pars = pars),
                class = "scl")
 }

@@ -208,21 +208,24 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
     // map from index into ss vectors to actual cluster numbers
     std::unordered_map <size_t, int> cluster_map;
     cluster_map.emplace (0, 0);
-    std::vector <int> cluster_sizes;
-    cluster_sizes.push_back (edges.size ());
 
     int num_clusters = 1;
-    // This loop fills the four vectors (ss_diff, ss1, ss2, cluster_sizes),
-    // as well as the cluster_map.
+    // This loop fills the three vectors (ss_diff, ss1, ss2), as well as the
+    // cluster_map.
     while (num_clusters < ncl)
     {
         auto mp = std::max_element (ss_diff.begin (), ss_diff.end ());
         size_t maxi = std::distance (ss_diff.begin (), mp);
         //size_t maxi = *std::max_element (ss_diff.begin (), ss_diff.end ()); 
         if (cluster_map.find (maxi) == cluster_map.end ())
-            Rcpp::stop ("ss_diff shorter than cluster_map");
+            Rcpp::Rcout << "ss_diff has no max element in cluster_map" << std::endl;
         int clnum = cluster_map.at (maxi);
         // maxi is index of cluster to be split
+
+        if (ss_diff [maxi] == 0.0) // no further cuts possible
+        {
+            break;
+        }
         
         the_cut = find_min_cut (edges, clnum);
         // Break old clnum into 2:
@@ -238,9 +241,9 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
             }
             count++;
         }
-
         // find new best cut of now reduced cluster
         the_cut = find_min_cut (edges, clnum);
+
         ss_diff [maxi] = the_cut.ss_diff;
         ss1 [maxi] = the_cut.ss1;
         ss2 [maxi] = the_cut.ss2;
@@ -251,7 +254,6 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
         ss1.push_back (the_cut.ss1);
         ss2.push_back (the_cut.ss2);
 
-        cluster_sizes [maxi] = the_cut.n1;
         cluster_map.emplace (num_clusters, ss_diff.size () - 1);
 
         num_clusters++;
@@ -265,5 +267,5 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
         else
             res [i] = edges [i].cluster_num;
     }
-        return res;
+    return res;
 }

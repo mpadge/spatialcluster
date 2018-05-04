@@ -111,40 +111,19 @@ scl_exact <- function (edges)
 #' from which to construct the tree
 #' @param ncl Number of clusters or components into which tree is to be cut
 #'
-#' @return Two trees, \code{tree_in} containing the desired cut portion, and
-#' \code{tree_out} the excised portion, retained here to enable later
-#' reconstruction of full-tree for subsequent re-cutting.
+#' @return Modified version of \code{tree}, including an additional column
+#' specifying the cluster number of each edge, with NA for edges that lie
+#' between clusters.
+#'
+#' @note The \code{rcpp_cut_tree} routine in \code{src/cuttree} includes
+#' \code{constexpr MIN_CLUSTER_SIZE = 3}.
+#'
 #' @noRd
 scl_cuttree <- function (tree, edges, ncl)
 {
-    tree %<>% dplyr::left_join (edges, by = c ("from", "to"))
-    n <- nrow (tree)
+    tree %<>%
+        dplyr::left_join (edges, by = c ("from", "to")) %>%
+        dplyr::mutate (clnum = rcpp_cut_tree (., ncl = ncl))
 
-    # define component as > 2 members, and cut tree until that is attained, or
-    # until tree is only calculated from < half the points
-    ncomps <- 1
-    ncli <- ncl - 1
-    ncmax <- 0
-    while (ncomps < ncl & ncli < (n / 2))
-    {
-        ncli <- ncli + 1
-        cmp <- tree_components (tree [ncli:nrow (tree), ])$comp
-        ncomps <- length (which (table (cmp) > 2))
-
-        if (ncomps > ncmax)
-        {
-            ncmax <- ncomps
-            ncl_max <- ncli
-        }
-    }
-    if (ncli >= (n / 2))
-    {
-        message ("Only able to cut tree into maximum of ", ncmax,
-                 " components")
-        ncli <- ncl_max
-    }
-
-    list (tree_in = tree [ncli:n, ],
-          tree_out = tree [1:(ncli - 1), ],
-          ncl = ncli)
+    return (tree)
 }

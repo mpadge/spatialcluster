@@ -11,14 +11,14 @@
 scl_hulls <- function (tree, xy)
 {
     xy <- as.matrix (xy)
-    ncomp <- length (unique (tree$comp))
+    ncl <- length (unique (tree$clnum))
     bdry <- list ()
-    for (i in seq (ncomp))
+    for (i in seq (ncl))
     {
-        if (length (which (tree$comp == i)) > 1)
+        if (length (which (tree$clnum == i)) > 1)
         {
             xyi <- tree %>%
-                dplyr::filter (comp == i) %>%
+                dplyr::filter (clnum == i) %>%
                 dplyr::select (from, to) %>%
                 unlist () %>%
                 unique () %>%
@@ -49,14 +49,14 @@ scl_hulls <- function (tree, xy)
 scl_ahulls <- function (tree, xy, alpha = 0.1)
 {
     xymat <- as.matrix (xy)
-    ncomp <- length (unique (tree$comp))
+    ncl <- length (unique (tree$clnum))
     bdry <- list ()
-    for (i in seq (ncomp))
+    for (i in seq (ncl))
     {
-        if (length (which (tree$comp == i)) > 2)
+        if (length (which (tree$clnum == i)) > 2)
         {
             xyi <- tree %>%
-                dplyr::filter (comp == i) %>%
+                dplyr::filter (clnum == i) %>%
                 dplyr::select (from, to) %>%
                 unlist () %>%
                 unique () %>%
@@ -127,26 +127,26 @@ plot.scl <- function (x, ..., tree = FALSE, convex = TRUE, hull_alpha = 0.1)
     else
         hulls <- scl_ahulls (x$tree, x$xy, alpha = hull_alpha)
 
-    nc <- length (unique (x$tree$comp))
+    nc <- length (unique (x$tree$clnum))
 
-    # comp in cl_cols is + 1 because xy below increases cluster numbers by 1 to
+    # clnum in cl_cols is + 1 because xy below increases cluster numbers by 1 to
     # allocate cl_num == 1 to unassigned points
     cl_cols <- rainbow (nc) %>%
         tibble::as.tibble () %>%
-        dplyr::mutate (comp = seq (nc) + 1) %>%
+        dplyr::mutate (clnum = seq (nc) + 1) %>%
         dplyr::rename (col = value)
 
-    edge2vert <- dplyr::bind_rows (dplyr::select (x$tree, c (from, comp)) %>%
+    edge2vert <- dplyr::bind_rows (dplyr::select (x$tree, c (from, clnum)) %>%
                                        dplyr::rename (v = from),
-                                   dplyr::select (x$tree, c (to, comp)) %>%
+                                   dplyr::select (x$tree, c (to, clnum)) %>%
                                        dplyr::rename (v = to)) %>%
                 dplyr::arrange (v) %>%
                 unique ()
     xy <- x$xy
     xy %<>% dplyr::mutate (v = seq (nrow (xy))) %>%
         dplyr::left_join (edge2vert, by = "v") %>%
-        dplyr::mutate (comp = ifelse (is.na (comp), 1, comp + 1)) %>%
-        dplyr::left_join (cl_cols, by = "comp") %>%
+        dplyr::mutate (clnum = ifelse (is.na (clnum), 1, clnum + 1)) %>%
+        dplyr::left_join (cl_cols, by = "clnum") %>%
         dplyr::mutate (col = ifelse (is.na (col), "#333333FF", col))
 
     y <- id <- NULL # suppress no visible binding warnings
