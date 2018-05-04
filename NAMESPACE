@@ -2,6 +2,7 @@
 
 S3method(plot,scl)
 export("%>%")
+export(scl_exact)
 export(scl_recluster)
 export(scl_redcap)
 importFrom(alphahull,ashape)
