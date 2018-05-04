@@ -23,10 +23,24 @@ scl_exact <- function (xy, dmat, ncl)
     xy <- scl_tbl (xy)
     edges <- scl_edges_nn (xy, dmat, shortest = TRUE)
     # cluster numbers can be joined with edges through either from or to:
-    cl <- tibble::tibble (from = seq (nrow (xy)),
-                          cl = rcpp_exact_initial (edges) + 1)
-    edges <- dplyr::left_join (edges, cl, by = c ("from"))
-    # edges then include initial cluster allocation
+    cl <- rcpp_exact_initial (edges) + 1
+
+    # make 3 vectors of cluster numbers:
+    #   1. cl = cluster number for intra-cluster edges only;
+    #   2. cl_from = Number of origin cluster for inter-cluster edges only; and
+    #   3. cl_to = Number of destination cluster for inter-cluster edges only.
+    from_cl <- cl [edges$from]
+    to_cl <- cl [edges$to]
+    indx <- which (from_cl == to_cl)
+    cl_in <- cl_join_from <- cl_join_to <- rep (NA, nrow (edges))
+    cl_in [indx] <- from_cl [indx]
+    indx <- which (from_cl != to_cl)
+    cl_join_from [indx] <- from_cl [indx]
+    cl_join_to [indx] <- to_cl [indx]
+
+    edges$cl <- cl_in
+    edges$cl_from <- cl_join_from
+    edges$cl_to <- cl_join_to
 
     edges <- rcpp_exact_merge (edges, ncl = ncl)
 }
