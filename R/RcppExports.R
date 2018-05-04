@@ -63,40 +63,6 @@ rcpp_exact <- function(gr) {
     .Call(`_spatialcluster_rcpp_exact`, gr)
 }
 
-#' graph_from_df
-#'
-#' Convert a standard graph data.frame into an object of class graph. Graphs
-#' are standardised with the function \code{dodgr_convert_graph()$graph}, and contain
-#' only the four columns [from, to, d, w]
-#'
-#' @noRd
-NULL
-
-#' identify_graph_components
-#'
-#' Identify initial graph components for each **vertex**
-#' Identification for edges is subsequently perrformed with 
-#' \code{rcpp_get_component_vector}.
-#'
-#' @param v unordered_map <vertex_id_t, vertex_t>
-#' @param com component map from each vertex to component numbers
-#' @noRd
-NULL
-
-#' rcpp_get_component_vector
-#'
-#' Get component numbers for each edge of graph
-#'
-#' @param graph graph to be processed; stripped down and standardised to five
-#' columns
-#'
-#' @return Two vectors: one of edge IDs and one of corresponding component
-#' numbers
-#' @noRd
-rcpp_get_component_vector <- function(graph) {
-    .Call(`_spatialcluster_rcpp_get_component_vector`, graph)
-}
-
 #' rcpp_slk
 #'
 #' Full-order single linkage cluster redcap algorithm
