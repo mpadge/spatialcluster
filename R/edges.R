@@ -2,7 +2,7 @@
 #'
 #' Generate triangulated nearest-neighbour edges between a set of input points
 #'
-#' @inheritParams scl_cluster
+#' @inheritParams scl_redcap
 #' @noRd
 scl_edges_nn <- function (xy, dmat, shortest = TRUE)
 {
@@ -32,7 +32,7 @@ scl_edges_nn <- function (xy, dmat, shortest = TRUE)
 #'
 #' Generate full set of edges between a set of input points
 #'
-#' @inheritParams scl_cluster
+#' @inheritParams scl_redcap
 #' @noRd
 scl_edges_all <- function (xy, dmat, shortest = TRUE)
 {
