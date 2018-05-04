@@ -4,7 +4,7 @@
 \alias{scl_exact}
 \title{scl_exact}
 \usage{
-scl_exact(edges)
+scl_exact(xy, dmat, ncl)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
