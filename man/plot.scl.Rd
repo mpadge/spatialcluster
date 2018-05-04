@@ -17,8 +17,6 @@ with the \code{hull_alpha} parameter}
 
 \item{hull_alpha}{alpha value of non-convex hulls (see ?alphashape::ashape
 for details).}
-
-\item{tree}{Should the spanning tree be overlaid on the clusters?}
 }
 \description{
 plot.scl

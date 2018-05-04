@@ -100,7 +100,6 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
 #' plot.scl
 #' @method plot scl
 #' @param x object to be plotted
-#' @param tree Should the spanning tree be overlaid on the clusters?
 #' @param convex Should hull be convex? If not, the \code{ashape} routine from
 #' the \pkg{alphahull} package is used to generate non-convex hulls, generated
 #' with the \code{hull_alpha} parameter
