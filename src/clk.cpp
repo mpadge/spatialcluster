@@ -21,7 +21,7 @@ void clk_init (CLKDat &clk_dat,
     clk_dat.edges_all.resize (from_full.size ());
     for (int i = 0; i < from_full.size (); i++)
     {
-        oneEdge here;
+        OneEdge here;
         here.from = from_full [i];
         here.to = to_full [i];
         here.dist = d_full [i];
@@ -34,7 +34,7 @@ void clk_init (CLKDat &clk_dat,
     clk_dat.edges_nn.resize (from.size ());
     for (int i = 0; i < from.size (); i++)
     {
-        oneEdge here;
+        OneEdge here;
         here.from = from [i];
         here.to = to [i];
         here.dist = d [i];
@@ -71,7 +71,7 @@ void clk_init (CLKDat &clk_dat,
 unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
 {
     // find shortest _all edges that connects the two clusters
-    oneEdge ei = clk_dat.edges_all [i];
+    OneEdge ei = clk_dat.edges_all [i];
     const unsigned int u = clk_dat.vert2index_map.at (ei.from),
           v = clk_dat.vert2index_map.at (ei.to),
           cl_u = clk_dat.index2cl_map.at (u),
@@ -83,7 +83,7 @@ unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
     double dmin = INFINITE_DOUBLE;
     for (int j = 0; j < clk_dat.edges_nn.size (); j++)
     {
-        oneEdge ej = clk_dat.edges_nn [j];
+        OneEdge ej = clk_dat.edges_nn [j];
         unsigned int m = clk_dat.vert2index_map.at (ej.from),
                      l = clk_dat.vert2index_map.at (ej.to);
         if (((clk_dat.index2cl_map.at (m) == cl_u &&
@@ -167,7 +167,7 @@ Rcpp::IntegerVector rcpp_clk (
     std::vector <int> treevec;
     for (int i = 0; i < clk_dat.edges_all.size (); i++)
     {
-        oneEdge ei = clk_dat.edges_all [i];
+        OneEdge ei = clk_dat.edges_all [i];
         unsigned int u = clk_dat.vert2index_map.at (ei.from),
                      v = clk_dat.vert2index_map.at (ei.to);
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&

@@ -6,7 +6,7 @@ struct CLKDat
 {
     unsigned int n;
 
-    std::vector <oneEdge> edges_all, edges_nn;
+    std::vector <OneEdge> edges_all, edges_nn;
 
     arma::Mat <unsigned short> contig_mat;
     arma::Mat <double> dmax;

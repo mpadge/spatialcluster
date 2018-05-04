@@ -10,7 +10,7 @@ struct EXDat
 {
     unsigned int n;
 
-    std::vector <oneEdge> edges; // nearest neighbour edges only
+    std::vector <OneEdge> edges; // nearest neighbour edges only
     std::vector <bool> index_in_cluster;
 
     uint_map_t index2cl_map, vert2index_map, index2vert_map,
@@ -33,8 +33,3 @@ void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
 
 Rcpp::IntegerVector rcpp_exact_initial (
         const Rcpp::DataFrame gr);
-
-Rcpp::IntegerVector rcpp_exact_merge (
-        const Rcpp::DataFrame gr,
-        const int ncl,
-        const std::string method);
