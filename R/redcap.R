@@ -100,19 +100,6 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
     }
 }
 
-tree_components <- function (tree)
-{
-    tree$id <- seq (nrow (tree))
-    cmps <- rcpp_get_component_vector (tree)
-    tree <- tibble::tibble (id = as.numeric (cmps$edge_id),
-                            comp = cmps$edge_component) %>%
-        dplyr::arrange (id) %>%
-        dplyr::left_join (tree, ., by = "id") %>%
-        dplyr::select (from, to, d, comp)
-
-    return (tree)
-}
-
 #' scl_reccluster
 #'
 #' Re-cut a spatial cluster tree (\code{scl}) at a different number of clusters.
