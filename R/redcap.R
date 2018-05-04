@@ -148,7 +148,7 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
     else
         tree_full %<>% dplyr::arrange (dplyr::desc (d))
 
-    tree_full$clnum <- rcpp_cut_tree (tree_full, ncl)
+    tree_full$clnum <- rcpp_cut_tree (tree_full, ncl) + 1
 
     pars <- scl$pars
     pars$ncl <- ncl

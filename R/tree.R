@@ -123,7 +123,7 @@ scl_cuttree <- function (tree, edges, ncl)
 {
     tree %<>%
         dplyr::left_join (edges, by = c ("from", "to")) %>%
-        dplyr::mutate (clnum = rcpp_cut_tree (., ncl = ncl))
+        dplyr::mutate (clnum = rcpp_cut_tree (., ncl = ncl) + 1)
 
     return (tree)
 }
