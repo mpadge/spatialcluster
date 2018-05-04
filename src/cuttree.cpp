@@ -1,6 +1,35 @@
 #include "common.h"
 #include "cuttree.h"
 
+void fill_edges (std::vector <EdgeComponent> &edges,
+    const std::vector <std::string> &from,
+    const std::vector <std::string> &to,
+    const Rcpp::NumericVector &d)
+{
+    std::unordered_map <std::string, int> node_map;
+    int node_num = 0;
+    for (auto f: from)
+    {
+        if (node_map.find (f) == node_map.end ())
+            node_map.emplace (f, node_num++);
+    }
+    for (auto t: to)
+    {
+        if (node_map.find (t) == node_map.end ())
+            node_map.emplace (t, node_num++);
+    }
+
+    for (size_t i = 0; i < edges.size (); i++)
+    {
+        EdgeComponent this_edge;
+        this_edge.d = d [i];
+        this_edge.cluster_num = 0;
+        this_edge.from = node_map.at (from [i]);
+        this_edge.to = node_map.at (to [i]);
+        edges [i] = this_edge;
+    }
+}
+
 // Internal sum of squared deviations of specified cluster number (this is just
 // the variance without the scaling by N)
 double calc_ss (const std::vector <EdgeComponent> &edges,
@@ -37,26 +66,25 @@ std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges)
     tree.emplace (edges [0].from);
     tree.emplace (edges [0].to);
 
-    int oldj = 1, j = 1;
     bool done = false;
     while (!done)
     {
-        if (tree.find (edges [j].from) != tree.end () &&
-                tree.find (edges [j].to) == tree.end ())
+        bool added = false;
+        for (int j = 1; j < edges.size (); j++)
         {
-            tree.emplace (edges [j].to);
-            j++;
-        } else if (tree.find (edges [j].to) != tree.end () &&
-                tree.find (edges [j].from) == tree.end ())
-        {
-            tree.emplace (edges [j].from);
-            j++;
+            if (tree.find (edges [j].from) != tree.end () &&
+                    tree.find (edges [j].to) == tree.end ())
+            {
+                tree.emplace (edges [j].to);
+                added = true;
+            } else if (tree.find (edges [j].to) != tree.end () &&
+                    tree.find (edges [j].from) == tree.end ())
+            {
+                tree.emplace (edges [j].from);
+                added = true;
+            }
         }
-        if (j == oldj)
-            done = true;
-        else if (j >= edges.size ())
-            j = 1;
-        oldj = j;
+        done = !added;
     }
     return tree;
 }
@@ -65,7 +93,7 @@ TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
         const std::unordered_set <int> &tree)
 {
     double sa = 0.0, sa2 = 0.0, sb = 0.0, sb2 = 0.0, na = 0.0, nb = 0.0;
-    for (auto e:edges)
+    for (auto e: edges)
     {
         if (tree.find (e.from) != tree.end ())
         {
@@ -83,12 +111,14 @@ TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
     // res.ss1 = (sa2 - sa * sa / na) / (na - 1.0); // variance
     res.ss1 = (sa2 - sa * sa / na);
     res.ss2 = (sb2 - sb * sb / nb);
+    res.n1 = static_cast <int> (na);
+    res.n2 = static_cast <int> (nb);
     return res;
 }
 
 // Find the component split of edges in cluster_num which yields the lowest sum
-// of internal variance. NOTE: This modifies edges!
-BestCut find_min_cut (std::vector <EdgeComponent> &edges,
+// of internal variance.
+BestCut find_min_cut (const std::vector <EdgeComponent> &edges,
         const int cluster_num)
 {
     size_t n = cluster_size (edges, cluster_num);
@@ -96,25 +126,19 @@ BestCut find_min_cut (std::vector <EdgeComponent> &edges,
     // fill component vector
     std::vector <EdgeComponent> cluster_edges;
     cluster_edges.reserve (n);
-    std::unordered_set <int> cluster_numbers_set;
-    for (auto i: edges)
-    {
-        if (i.cluster_num == cluster_num)
-        {
-            cluster_edges.push_back (i);
-        }
-        cluster_numbers_set.emplace (i.cluster_num);
-    }
-    const int total_clusters = static_cast <int> (cluster_numbers_set.size ());
+    for (auto e: edges)
+        if (e.cluster_num == cluster_num)
+            cluster_edges.push_back (e);
 
     std::vector <EdgeComponent> edges_copy;
 
     // Remove each edge in turn
-    std::unordered_set <int> tree_out;
     BestCut the_cut;
-    the_cut.pos = INFINITE_INT;
+    the_cut.pos = the_cut.n1 = the_cut.n2 = INFINITE_INT;
     the_cut.ss1 = the_cut.ss2 = INFINITE_DOUBLE;
+    the_cut.ss_diff = 0.0; // default, coz search is over max ss_diff
     double ssmin = INFINITE_DOUBLE;
+    // TODO: Rewrite this to just erase and re-insert a single edge each time
     for (int i = 0; i < n; i++)
     {
         edges_copy.resize (0);
@@ -124,33 +148,30 @@ BestCut find_min_cut (std::vector <EdgeComponent> &edges,
                 edges_copy.begin ());
         edges_copy.erase (edges_copy.begin () + i);
         std::unordered_set <int> tree = build_one_tree (edges_copy);
-        TwoSS ss = sum_component_ss (edges_copy, tree);
-        if ((ss.ss1 + ss.ss2) < ssmin)
+        // only include groups with >= MIN_CLUSTER_SIZE members
+        if (tree.size () >= MIN_CLUSTER_SIZE &&
+                tree.size () < (edges_copy.size () - MIN_CLUSTER_SIZE - 1))
         {
-            ssmin = ss.ss1 + ss.ss2;
-            the_cut.pos = i;
-            the_cut.ss1 = ss.ss1;
-            the_cut.ss2 = ss.ss2;
+            TwoSS ss = sum_component_ss (edges_copy, tree);
+            if ((ss.ss1 + ss.ss2) < ssmin)
+            {
+                ssmin = ss.ss1 + ss.ss2;
+                the_cut.pos = i;
+                the_cut.ss1 = ss.ss1;
+                the_cut.ss2 = ss.ss2;
 
-            tree_out.clear ();
-            for (auto t: tree)
-                tree_out.emplace (t);
+                the_cut.n1 = ss.n1;
+                the_cut.n2 = ss.n2;
+
+                the_cut.nodes.clear ();
+                for (auto t: tree)
+                    the_cut.nodes.emplace (t);
+            }
         }
     }
 
-    // Break old cluster_num into 2:
-    int count = 0;
-    for (auto i: edges)
-    {
-        if (i.cluster_num == cluster_num)
-        {
-            if (count == the_cut.pos)
-                i.cluster_num = INFINITE_INT;
-            else if (tree_out.find (i.from) == tree_out.end ())
-                i.cluster_num = total_clusters + 1;
-        }
-        count++;
-    }
+    if (the_cut.ss1 != INFINITE_DOUBLE)
+        the_cut.ss_diff = calc_ss (edges, cluster_num) - the_cut.ss1 - the_cut.ss2;
 
     return the_cut;
 }
@@ -176,48 +197,73 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
     std::vector <std::string> to =
         Rcpp::as <std::vector <std::string> > (to_in);
 
-    std::unordered_map <std::string, int> node_map;
-    int node_num = 0;
-    for (auto f: from)
-    {
-        if (node_map.find (f) == node_map.end ())
-            node_map.emplace (f, node_num++);
-    }
-    for (auto t: to)
-    {
-        if (node_map.find (t) == node_map.end ())
-            node_map.emplace (t, node_num++);
-    }
-
     std::vector <EdgeComponent> edges (dref.size ());
-    for (size_t i = 0; i < dref.size (); i++)
-    {
-        EdgeComponent this_edge;
-        this_edge.d = dref [i];
-        this_edge.cluster_num = 0;
-        this_edge.from = node_map.at (from [i]);
-        this_edge.to = node_map.at (to [i]);
-        edges [i] = this_edge;
-    }
+    fill_edges (edges, from, to, dref);
 
-    const double var_full = calc_ss (edges, 0);
-
-    std::vector <double> cluster_ss;
-    cluster_ss.push_back (var_full);
-    double var_tot = var_full;
     BestCut the_cut = find_min_cut (edges, 0);
+    std::vector <double> ss_diff, ss1, ss2;
+    ss_diff.push_back (the_cut.ss_diff); // ss0 - ss1 - ss2
+    ss1.push_back (the_cut.ss1);
+    ss2.push_back (the_cut.ss2);
+    // map from index into ss vectors to actual cluster numbers
+    std::unordered_map <size_t, int> cluster_map;
+    cluster_map.emplace (0, 0);
+    std::vector <int> cluster_sizes;
+    cluster_sizes.push_back (edges.size ());
 
     int num_clusters = 1;
+    // This loop fills the four vectors (ss_diff, ss1, ss2, cluster_sizes),
+    // as well as the cluster_map.
     while (num_clusters < ncl)
     {
-        //size_t mini = *std::min_element (cluster_ss.begin (),
-        //        cluster_ss.end ()); // cluster number to be split
-        //the_cut = find_min_cut (edges, mini);
-        //cluster_ss.insert (cluster_ss.begin () + mini, the_cut.ss1 + the_cut.ss2);
+        auto mp = std::max_element (ss_diff.begin (), ss_diff.end ());
+        size_t maxi = std::distance (ss_diff.begin (), mp);
+        //size_t maxi = *std::max_element (ss_diff.begin (), ss_diff.end ()); 
+        if (cluster_map.find (maxi) == cluster_map.end ())
+            Rcpp::stop ("ss_diff shorter than cluster_map");
+        int clnum = cluster_map.at (maxi);
+        // maxi is index of cluster to be split
+        
+        the_cut = find_min_cut (edges, clnum);
+        // Break old clnum into 2:
+        int count = 0;
+        for (auto &e: edges)
+        {
+            if (e.cluster_num == clnum)
+            {
+                if (count == the_cut.pos)
+                    e.cluster_num = INFINITE_INT;
+                else if (the_cut.nodes.find (e.from) == the_cut.nodes.end ())
+                    e.cluster_num = num_clusters;
+            }
+            count++;
+        }
+
+        // find new best cut of now reduced cluster
+        the_cut = find_min_cut (edges, clnum);
+        ss_diff [maxi] = the_cut.ss_diff;
+        ss1 [maxi] = the_cut.ss1;
+        ss2 [maxi] = the_cut.ss2;
+        // and also of new cluster
+        the_cut = find_min_cut (edges, num_clusters);
+
+        ss_diff.push_back (the_cut.ss_diff);
+        ss1.push_back (the_cut.ss1);
+        ss2.push_back (the_cut.ss2);
+
+        cluster_sizes [maxi] = the_cut.n1;
+        cluster_map.emplace (num_clusters, ss_diff.size () - 1);
 
         num_clusters++;
     }
 
-    Rcpp::IntegerVector res;
-    return res;
+    Rcpp::IntegerVector res (edges.size ());
+    for (size_t i = 0; i < edges.size (); i++)
+    {
+        if (edges [i].cluster_num == INFINITE_INT)
+            res [i] = NA_INTEGER;
+        else
+            res [i] = edges [i].cluster_num;
+    }
+        return res;
 }

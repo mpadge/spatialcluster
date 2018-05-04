@@ -14,9 +14,9 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 
-const float INFINITE_FLOAT =  std::numeric_limits<float>::max ();
-const double INFINITE_DOUBLE =  std::numeric_limits<double>::max ();
-const int INFINITE_INT =  std::numeric_limits<int>::max ();
+constexpr float INFINITE_FLOAT =  std::numeric_limits<float>::max ();
+constexpr double INFINITE_DOUBLE =  std::numeric_limits<double>::max ();
+constexpr int INFINITE_INT =  std::numeric_limits<int>::max ();
 
 typedef std::string vertex_id_t, edge_id_t;
 typedef std::unordered_map <unsigned int,
