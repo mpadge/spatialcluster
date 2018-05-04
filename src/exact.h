@@ -35,4 +35,6 @@ Rcpp::IntegerVector rcpp_exact_initial (
         const Rcpp::DataFrame gr);
 
 Rcpp::IntegerVector rcpp_exact_merge (
-        const Rcpp::DataFrame gr, const int ncl);
+        const Rcpp::DataFrame gr,
+        const int ncl,
+        const std::string method);

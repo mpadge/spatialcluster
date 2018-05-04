@@ -221,8 +221,19 @@ Rcpp::IntegerVector rcpp_exact_initial (
 //' @noRd
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_exact_merge (
-        const Rcpp::DataFrame gr, const int ncl)
+        const Rcpp::DataFrame gr,
+        const int ncl,
+        const std::string method)
 {
+    if (strfound (method, "single")) // strfound from utils.cpp
+    {
+    } else if (strfound (method, "average"))
+    {
+    } else if (strfound (method, "max"))
+    {
+    } else
+        Rcpp::stop ("method not found for rcpp_exact_merge");
+
     Rcpp::IntegerVector res;
     return res;
 }

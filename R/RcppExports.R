@@ -69,8 +69,8 @@ rcpp_exact_initial <- function(gr) {
 #' clusters.
 #'
 #' @noRd
-rcpp_exact_merge <- function(gr, ncl) {
-    .Call(`_spatialcluster_rcpp_exact_merge`, gr, ncl)
+rcpp_exact_merge <- function(gr, ncl, method) {
+    .Call(`_spatialcluster_rcpp_exact_merge`, gr, ncl, method)
 }
 
 #' rcpp_slk

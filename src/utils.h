@@ -1,5 +1,7 @@
 #pragma once
 
+bool strfound (const std::string str, const std::string target);
+
 unsigned int sets_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,

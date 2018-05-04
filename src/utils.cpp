@@ -16,6 +16,14 @@
  * unordered_set of target indices for each cluster.
  */
 
+bool strfound (const std::string str, const std::string target)
+{
+    bool found = false;
+    if (str.find (target) != std::string::npos)
+        found = true;
+    return found;
+}
+
 unsigned int sets_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
