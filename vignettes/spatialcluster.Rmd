@@ -299,9 +299,9 @@ as follows:
    nearest-neighbour edges, and inserts each next-minima distance edge into the
    clustering tree if it is not part of any previous cluster, and if it connects
    two separate yet contiguous clusters.
-2. Average-linkage clustering assigns weights to each unassigned edge based on their
-   average distance to all edges within all adjacent clusters.  Thus when an
-   edge becomes part of a cluster, the distances to all non-assigned edges
+2. Average-linkage clustering assigns weights to each unassigned edge based on
+   their average distance to all edges within all adjacent clusters.  Thus when
+   an edge becomes part of a cluster, the distances to all non-assigned edges
    adjacent to that cluster are updated to reflect the change in average
    distance calculated over all edges in that cluster. Edges are continually
    (re-)sorted based on average distances, and the tree is built through
@@ -316,6 +316,20 @@ first-order constraint.) [See @Guo2008 for details.] The resultant MSTs are then
 partitioned into specified numbers of clusters using an identical approach to
 SKATER, namely through minimising the intra-cluster sum of squared deviations
 from mean values.
+
+
+## The REDCAP algorithms and covariance clustering
+
+The software accompanying this manuscript includes a reference implementation of
+the REDCAP algorithms [@Gu2008] for distance-based clustering. Conversion of the
+three algorithms described above to covariance based clustering is
+straightforward. The first stage of constructing MSTs via the three forms of
+linkage remains largely identical, with minimal distances simply replaced by
+maximal covariances. Tree bi-section becomes a slightly different, and
+computationally simpler, procedure, replacing the previous measure of
+intra-cluster homogeneity ($\sum_i (X_i - \overline{X} ^ 2$) with a simple
+maximum ($\sum_i X_i$). Application to the two forms of matrix remains otherwise
+identical.
 
 
 
@@ -461,6 +475,94 @@ steps:
    triangulation or $k$-nearest neighbours), and including only those neighbours
    with non-`NA` distances.
 7. Use resultant edges to calculate exact clusters using chosen linkage scheme.
+
+
+## Interpretation of OD clusters
+
+As described at the outset, clusters discerned from net covariance matrices
+derived from flow data may be either significantly positive or significantly
+negative. The results of such analyses must be interpreted with caution.
+Although all clusters may by definition be considered individually significant,
+these are clusters of **covariances** and not of underlying flows. Thus, for
+example, positive clusters calculated from origin data (row-wise covariances)
+**will not** reflect regions from which which movement is significantly more
+likely. Rather, each point in such a cluster will be a point from which movement
+covaries with all other clustered points more than expected on the basis of a
+neutral model. A positive cluster calculated from origin data may thus be
+interpreted to represent a distinct region from which movement significantly
+covaries in a manner independent of the precise point of origin. Importantly,
+the significance of these net origin- or destination-clusters does not reflect
+any net patterns of in- or out-flow: net origins (destinations) may still be
+regions of net inflow (outflow). Rather, these will be regions towards or away
+from which patterns of flow or movement covary more closely than neutrally
+expected, independent of actual net rates of flow or movement.
+
+For clarity, the following re-phrase the four kinds of cluster able to be
+discerned with these analyses:
+
+1. Positive clusters calculated from origin data represent regions **from**
+   which movement covaries significantly **more** than expected, and thus represent
+   significant net origins - and importantly, this phenomenon is independent of
+   net rates of out- or in-flow;
+2. Negative clusters calculated from origin data represent regions **from** which
+   movement covaries significantly **less** than expected, and thus represent
+   significant net **non-**origins from which movement is expected to covary yet
+   doesn't;
+3. Positive clusters calculated from destination data represent regions **toward**
+   which movement covaries significantly **more** than expected, and thus represent
+   significant net destinations; and
+4. Negative clusters calculated from destination data represent regions
+   **toward** which movement covaries significantly **less** than expected, and
+   thus represent significant net **non-**destinations.
+
+The phrases "non-origins" and "non-destinations" refer to regions within which
+movement respectively from or to adjacent locations  covaries significantly less
+than expected. Hypothetical causes are likely to be highly specific for any
+given study, but may include for example the dominance of a single location
+within these clusters to or from which movement is focussed at the expense of
+neighbouring locations. Such dominant locations would then represent locations
+which effectively act to weaken general patterns of spatial autocorrelation (or
+interaction) which would otherwise exist.
+
+
+# Appendix 1: Why clusters of significant net in- or out-flow can not be identified
+
+The present covariance analyses work by converting an observed covariance matrix
+into measures of net covariance beyond that expected on the basis of a neutral
+model. These neutral models reflect, among other aspects, expected patterns of
+spatial autocorrelation (cite Getis 1991). These models are nevertheless
+calculated from directly observed flow matrices, and themselves represent flow
+matrices which are only converted to covariance matrices to be submitted to the
+procedures developed here. It might be expected that net flow matrices could
+therefore be directly analysed in the same way to generate clusters reflecting
+significant concentrations of flow, rather than the clusters of significant
+covariance analysed in the main manuscript. This appendix briefly describes why
+this is not possible.
+
+A spatial interaction model of an observed flow matrix represents the component
+of the observed values expected to arise through spatial interaction processes
+alone. These processes are a specific form off autocorrelation, such that nearby
+points are expected to have more highly correlated values (here, of flow) than
+more distant points. A spatial interaction model will thus "predict" relatively
+similar values of flow towards two nearby points, $a$ and $A^\prime$. Observed
+values may nevertheless be distinctly different for any range of particular and
+idiosyncratic reasons - $a$ may be an important destination for some
+spatially-defined sub-section of the population, while $A^\prime$ is important
+for some other, spatially distinct sub-population. Comparing net counts alone
+will nevertheless reveal a strong similarity between these two points.
+
+In contrast, covariances between $a$ and $A^\prime$ will only be high when
+patterns of flow from the entire population towards $a$ are similar to patterns
+of flow towards $A^\prime$. The clusters discerned here are forced to be
+spatially-contiguous, and yet direct analyses of flows permits clusters to be
+formed based on processes which are potentially unrelated in space. In contrast,
+clusters discerned from analyses of covariance matrix must by definition reflect
+regions towards or away from which movement of the entire, spatially-structured
+population significantly covaries.
+
+TODO: Now develop a proper mathematical argument for this
+
+
 
 
 # References
