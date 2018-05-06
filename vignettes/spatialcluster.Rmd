@@ -19,8 +19,8 @@ vignette: >
 ---
 
 ```{r pkg-load, echo = FALSE, message = FALSE}
-devtools::load_all (".", export_all = FALSE)
-#library (spatialcluster)
+#devtools::load_all (".", export_all = FALSE)
+library (spatialcluster)
 ```
 
 # Introduction
@@ -38,6 +38,115 @@ contiguous or adjacent points may be merged into the same cluster (Fig. 1).
   spatial or non-spatial entities
 * The term "non-spatial data" also encompasses data which are not necessarily
   spatial, but which may include some spatial component.
+
+# Distance-based versus covariance-based clustering
+
+Almost all clustering routines have been developed for application to distance
+matrices. Distance-based clustering algorithms generally seek to aggregate
+objects into clusters that are maximally homogeneous. Clustering may also be
+performed on covariance or correlation matrices. The present work exclusively
+focusses on the former type because "any symmetric positive semi-definite matrix
+is a covariance matrix". The object of clustering covariance matrices is to
+maximise intra-cluster covariance while minimising inter-cluster covariance.
+Intra-cluster homogeneity is neither relevant nor important, and thus distinct
+implementations are generally required.
+
+Both the SKATER and REDCAP algorithms, for example, utilise as a measure of
+inter-cluster homogeneity the sums of squared deviations from mean values. The
+equivalent measure for covariance-based clustering is simply the sum of
+covariances. The present approach to covariance clustering extends beyond
+techniques generally considered under the umbrage of "correlation clustering".
+Correlation clustering is often applied in cases where an observation and
+reference matrix are available, with clusters defined as simply those groups for
+which observed correlations exceed reference correlations. The present approach
+also uses observation and reference matrices, while extending beyond traditional
+correlation clustering through tracing the subsequent hierarchy of merges of all
+clusters. This is particularly important in spatially-constrained clustering,
+for which sizes of clusters formed through simply correlation clustering
+techniques are generally very small.
+
+The software accompanying this manuscript has accordingly been developed to
+accept both distance and covariance matrices as input. It includes a reference
+implementation of the REDCAP algorithms adapted as described below for
+clustering covariance matrices.
+
+## Observation and reference matrices for covariance clustering
+
+The present work is focussed on spatially-constrained clustering based on
+non-spatial data representing objects which also have spatial locations.
+"Spatially-constrained" implies that the clusters are constrained to be
+spatially contiguous. Spatial data that involve counts or densities are often
+represented in terms of flow matrices or, in conventional studies of human
+transport system, "origin-destination" matrices. Such matrices are rectangular,
+and represent tallies of numbers, densities, or, in general terms, flows between
+a set of origins and a (possibly different) set of destinations.
+
+Such flow data can - and indeed often are - directly submitted to clustering
+routines, through constructing some suitably-scaled metric of distance as the
+inverse of flow. In spatial systems, however, flows from some point $A$ to
+another point $B$ are often closely related to flows from some point $A^\prime$
+near $A$ to some $B^\prime$ near $B$, with similarity positively related to the
+proximity of $A^\prime$ to $A$ and $B^\prime$ to $B$. This is nothing other than
+a definition of "autocorrelation". (It is also implicitly tautological, as are
+most definitions of this phenomenon.) Clustering with directly observed flows
+alone ignores the effects of autocorrelation, and thus introduces a host of
+well-recognised issues arising through doing so.
+
+Flow matrices may be converted into covariance matrices through populating the
+upper or lower triangle with pair-wise covariances (or through copying one
+triangle to the other to generate a symmetrical covariance matrix). Covariances
+can be calculated between the rows of a flow matrix to yield covariances in
+flows *from* each point, or between the columns to yield covariances in flows
+*to* each point. Of course, both may be combined through, for example, filling
+the upper triangle of a covariance matrix with row-wise covariances, and the
+lower triangle with column-wise covariances. The value $C_{ij}$ will then
+represent the covariance in flow *from* i and flow *from* j, while $C_{ji}$ will
+represent the covariance in flow *to* i and flow *to* j. Such compound
+covariance matrices will not be symmetrical.
+
+Both forms of population covariance matrices are explicitly demonstrated in the
+empirical application below, revealing the usefulness of considering and
+comparing both forms of covariance matrices. Values of covariance will manifest
+similar properties to raw flows, in that nearby values are likely to be more
+similar or "autocorrelated." For many spatial processes, "neutral" models of
+flows have been developed, and can be applied to yield estimates of covariances
+expected in the presence of these kinds of processes alone. Such estimated
+covariance matrices are the "reference" matrices referred to above, and are
+generated in the present work through applying spatial interaction models to the
+observed flow data, and generating corresponding covariance matrices. These
+matrices effectively represent the covariance expected in the presence of a
+particular type of autocorrelation. The difference with observed covariance
+matrices may then be interpreted to reflect the effects of processes beyond
+spatial autocorrelation.
+
+## Observation and reference matrices for correlation clustering
+
+The ability to calculate observation and reference covariance matrices enables
+a standardised covariance matrix to be generated, in which positive values
+represent values of covariance beyond those expected on the basis of the neutral
+model alone (here, a spatial interaction model). Note, moreover, than negative
+values may also be interpreted in the observe way: to reflect spatial clusters
+in which flows are significantly less likely than those expected on the basis of
+a neutral model alone. The methods developed below are applied separately to
+positive and negative values of the net covariance matrix, with clusters only
+formed from either exclusively positive or exclusively negative values.
+Covariances in such clusters will thus always be entirely significant in the
+sense of T-tests for divergence from expected values of zero. Thus by
+definition, any clusters discerned by the methodology may be presumed entirely
+significant. The software produces summary statistics for each cluster (T- and
+p-values), enabling the relative significance of different clusters to be
+compared.
+
+Note that it will not generally be possible - absent specific hypotheses - to
+provide a global statistic quantifying the significance of a clustering scheme.
+This is primarily because there is no reason to presume that positive
+net covariances will be more likely to form distinct clusters than will negative
+net covariances. The overall distribution of net covariances will thus generally
+be symmetrical, although it may also be asymmetrical when spatial patterns of
+positive net covariance differ from those of negative net covariance - for
+example through positive covariances being very strongly concentrated in a small
+number of clusters, while negative covariances remain more dispersed.
+
 
 # Spatial clustering versus spatially-constrained clustering
 
@@ -355,3 +464,11 @@ steps:
 
 
 # References
+
+Plus extra refs:
+
+http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da
+
+https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov
+
+
