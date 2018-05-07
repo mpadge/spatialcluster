@@ -12,7 +12,7 @@ void clk_init (CLKDat &clk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    int n = sets_init (from, to, clk_dat.vert2index_map,
+    size_t n = sets_init (from, to, clk_dat.vert2index_map,
             clk_dat.index2vert_map, clk_dat.index2cl_map,
             clk_dat.cl2index_map);
     clk_dat.n = n;
@@ -25,20 +25,20 @@ void clk_init (CLKDat &clk_dat,
         here.from = from_full [i];
         here.to = to_full [i];
         here.dist = d_full [i];
-        clk_dat.edges_all [i] = here;
+        clk_dat.edges_all [static_cast <size_t> (i)] = here;
     }
     // These edges are already passed in sorted form, so no need to explicitly
     // sort here.
 
     clk_dat.edges_nn.clear ();
-    clk_dat.edges_nn.resize (static_cast <int> (from.size ()));
+    clk_dat.edges_nn.resize (static_cast <size_t> (from.size ()));
     for (int i = 0; i < from.size (); i++)
     {
         OneEdge here;
         here.from = from [i];
         here.to = to [i];
         here.dist = d [i];
-        clk_dat.edges_nn [i] = here;
+        clk_dat.edges_nn [static_cast <size_t> (i)] = here;
     }
 
     // Get set of unique vertices, and store binary tree of edge distances
@@ -53,12 +53,13 @@ void clk_init (CLKDat &clk_dat,
     for (auto v: vert_set)
         clk_dat.vert2index_map.emplace (v, i++);
 
-    clk_dat.contig_mat = arma::zeros <arma::Mat <int> > (n, n);
-    clk_dat.dmax.zeros (n, n);
+    arma::uword nu = to_uword (n);
+    clk_dat.contig_mat = arma::zeros <arma::Mat <int> > (nu, nu);
+    clk_dat.dmax.zeros (nu, nu);
     for (int i = 0; i < from.length (); i++)
     {
-        index_t vf = clk_dat.vert2index_map.at (from [i]),
-                vt = clk_dat.vert2index_map.at (to [i]);
+        arma::uword vf = to_uword (clk_dat.vert2index_map.at (from [i])),
+                    vt = to_uword (clk_dat.vert2index_map.at (to [i]));
         clk_dat.contig_mat (vf, vt) = 1;
         //clk_dat.dmax (vf, vt) = d [i]; // NOPE - all dmax = 0 at start!
     }
@@ -68,23 +69,23 @@ void clk_init (CLKDat &clk_dat,
 //'
 //' @param ei The i'th edge of the full sorted list of edge weights
 //' @noRd
-int clk_step (CLKDat &clk_dat, int i)
+size_t clk_step (CLKDat &clk_dat, size_t i)
 {
     // find shortest _all edges that connects the two clusters
     OneEdge ei = clk_dat.edges_all [i];
-    const int u = clk_dat.vert2index_map.at (ei.from),
-          v = clk_dat.vert2index_map.at (ei.to),
-          cl_u = clk_dat.index2cl_map.at (u),
-          cl_v = clk_dat.index2cl_map.at (v);
+    const size_t u = clk_dat.vert2index_map.at (ei.from),
+                 v = clk_dat.vert2index_map.at (ei.to);
+    const int cl_u = clk_dat.index2cl_map.at (u),
+              cl_v = clk_dat.index2cl_map.at (v);
 
     // Find shortest edge in MST that connects u and v:
-    int mmin = INFINITE_INT, lmin = INFINITE_INT, the_edge = INFINITE_INT;
+    size_t mmin = INFINITE_INT, lmin = INFINITE_INT, the_edge = INFINITE_INT;
     double dmin = INFINITE_DOUBLE;
-    for (int j = 0; j < clk_dat.edges_nn.size (); j++)
+    for (size_t j = 0; j < clk_dat.edges_nn.size (); j++)
     {
         OneEdge ej = clk_dat.edges_nn [j];
-        int m = clk_dat.vert2index_map.at (ej.from),
-            l = clk_dat.vert2index_map.at (ej.to);
+        size_t m = clk_dat.vert2index_map.at (ej.from),
+               l = clk_dat.vert2index_map.at (ej.to);
         if (((clk_dat.index2cl_map.at (m) == cl_u &&
                         clk_dat.index2cl_map.at (l) == cl_v) ||
                     (clk_dat.index2cl_map.at (m) == cl_v &&
@@ -110,17 +111,19 @@ int clk_step (CLKDat &clk_dat, int i)
     {
         if (cl.first != lmin || cl.first != mmin)
         {
-            const double dl = clk_dat.dmax (cl.first, lmin),
-                  dm = clk_dat.dmax (cl.first, mmin);
+            arma::uword clu = static_cast <arma::uword> (cl.first),
+                lu = to_uword (lmin), mu = to_uword (mmin);
+            const double dl = clk_dat.dmax (clu, lu),
+                  dm = clk_dat.dmax (clu, mu);
             double dtemp = dl;
             if (dm < dl)
                 dtemp = dm;
-            clk_dat.dmax (cl.first, lmin) = dtemp;
+            clk_dat.dmax (clu, lu) = dtemp;
 
-            if (clk_dat.contig_mat (cl.first, lmin) == 1 ||
-                    clk_dat.contig_mat (cl.first, mmin) == 1)
+            if (clk_dat.contig_mat (clu, lu) == 1 ||
+                    clk_dat.contig_mat (clu, mu) == 1)
             {
-                clk_dat.contig_mat (cl.first, lmin) = 1;
+                clk_dat.contig_mat (clu, lu) = 1;
             }
         }
     } // end for over cl
@@ -163,17 +166,17 @@ Rcpp::IntegerVector rcpp_clk (
     CLKDat clk_dat;
     clk_init (clk_dat, from_full, to_full, d_full, from, to, d);
 
-    std::vector <int> treevec;
-    for (int i = 0; i < clk_dat.edges_all.size (); i++)
+    std::vector <size_t> treevec;
+    for (size_t i = 0; i < clk_dat.edges_all.size (); i++)
     {
         OneEdge ei = clk_dat.edges_all [i];
-        index_t u = clk_dat.vert2index_map.at (ei.from),
-                v = clk_dat.vert2index_map.at (ei.to);
+        arma::uword u = to_uword (clk_dat.vert2index_map.at (ei.from)),
+                    v = to_uword (clk_dat.vert2index_map.at (ei.to));
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
                 clk_dat.contig_mat (u, v) == 1 &&
                 ei.dist > clk_dat.dmax (u, v))
         {
-            int the_edge = clk_step (clk_dat, i);
+            size_t the_edge = clk_step (clk_dat, i);
             treevec.push_back (the_edge);
         }
     }

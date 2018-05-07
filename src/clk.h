@@ -4,7 +4,7 @@
 
 struct CLKDat
 {
-    int n;
+    size_t n;
 
     std::vector <OneEdge> edges_all, edges_nn;
 
@@ -25,7 +25,7 @@ void clk_init (CLKDat &clk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-int clk_step (CLKDat &clk_dat, int i);
+size_t clk_step (CLKDat &clk_dat, size_t i);
 
 Rcpp::IntegerVector rcpp_clk (
         const Rcpp::DataFrame gr_full,
