@@ -56,11 +56,13 @@ Rcpp::IntegerVector rcpp_slk (
      */
 
     std::unordered_set <unsigned int> the_tree;
-    int e = 0; // edge number in gr_full
+    unsigned int e = 0; // edge number in gr_full
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
-        int ifrom = vert2index_map.at (from_full (e)),
-            ito = vert2index_map.at (to_full (e));
+        unsigned int ff = static_cast <unsigned int> (from_full (e)),
+                     tf = static_cast <unsigned int> (to_full (e));
+        unsigned int ifrom = vert2index_map.at (ff),
+                     ito = vert2index_map.at (tf);
         if (index2cl_map.find (ifrom) != index2cl_map.end () &&
                 index2cl_map.find (ito) != index2cl_map.end ())
         {
@@ -94,8 +96,6 @@ Rcpp::IntegerVector rcpp_slk (
         {
             e++;
         }
-        //if (e == from_full.length ())
-        //    break;
     }
 
     std::vector <int> treevec (the_tree.begin (), the_tree.end ());
