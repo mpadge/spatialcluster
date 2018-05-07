@@ -1,12 +1,16 @@
 #pragma once
 
+#include "utils.h"
+
 // --------- COMPLETE LINKAGE CLUSTER ----------------
+
+namespace clk {
 
 struct CLKDat
 {
     size_t n;
 
-    std::vector <OneEdge> edges_all, edges_nn;
+    std::vector <utils::OneEdge> edges_all, edges_nn;
 
     arma::Mat <int> contig_mat;
     arma::Mat <double> dmax;
@@ -26,6 +30,8 @@ void clk_init (CLKDat &clk_dat,
         Rcpp::NumericVector d);
 
 size_t clk_step (CLKDat &clk_dat, size_t i);
+
+} // end namespace clk
 
 Rcpp::IntegerVector rcpp_clk (
         const Rcpp::DataFrame gr_full,

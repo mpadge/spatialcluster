@@ -1,9 +1,17 @@
 #pragma once
 
+namespace utils {
+
 bool strfound (const std::string str, const std::string target);
 
 template <typename T>
 arma::uword to_uword (const T arg);
+
+struct OneEdge
+{
+    int from, to;
+    double dist;
+};
 
 size_t sets_init (
         const Rcpp::IntegerVector &from,
@@ -13,6 +21,7 @@ size_t sets_init (
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map);
 
+// TODO: Next 2 are only used in slk, so move em there
 void mats_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
@@ -45,8 +54,4 @@ void merge_clusters (
         int merge_from,
         int merge_to);
 
-struct OneEdge
-{
-    int from, to;
-    double dist;
-};
+} // end namespace utils

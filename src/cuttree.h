@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+namespace cuttree {
+
 // clusters are of edges, so size = 2 => 3 nodes
 constexpr int MIN_CLUSTER_SIZE = 2;
 
@@ -33,9 +35,12 @@ double calc_ss (const std::vector <EdgeComponent> &edges,
 size_t cluster_size (const std::vector <EdgeComponent> &edges,
         const int cluster_num);
 std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges);
+
 TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
         const std::unordered_set <int> &tree);
 BestCut find_min_cut (const std::vector <EdgeComponent> &edges,
         const int cluster_num);
+
+} // end namespace cuttree
 
 Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl);

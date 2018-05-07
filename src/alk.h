@@ -20,6 +20,9 @@
  * idx2edgewt, so that the weight associated with any pre-merge cluster can
  * be obtained, and the edgewt2idx clusters for that weight updated.
  */
+
+namespace alk {
+
 struct ALKDat
 {
     size_t n;
@@ -50,6 +53,8 @@ size_t alk_step (ALKDat &alk_dat,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
+
+} // end namespace alk
 
 Rcpp::IntegerVector rcpp_alk (
         const Rcpp::DataFrame gr);

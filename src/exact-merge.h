@@ -8,11 +8,13 @@
 // routines to allow results from rcpp_exact_initial to be returned and cached
 // for subsequent re-merging.
 
+namespace exact_merge {
+
 struct OneCluster
 {
     int id, n;
     double dist_sum, dist_max;
-    std::vector <OneEdge> edges;
+    std::vector <utils::OneEdge> edges;
 };
 
 struct OneMerge
@@ -26,18 +28,20 @@ struct EXMerge
     // cl2index_map is from cluster numbers to indices in clusters
     std::unordered_map <int, index_t> cl2index_map;
     std::vector <OneCluster> clusters;
-    std::vector <OneEdge> edges; // edges between clusters
+    std::vector <utils::OneEdge> edges; // edges between clusters
     std::vector <OneMerge> merges;
 };
 
-void rcpp_exmerge_init (EXMerge &cldat);
-OneMerge rcpp_exmerge_merge (EXMerge &cldat,
+void exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat);
+OneMerge exmerge_merge (EXMerge &cldat,
         int clfrom_i,
         int clto_i,
         index_t ei);
-void rcpp_exmerge_single (EXMerge &cldat);
-void rcpp_exmerge_avg (EXMerge &cldat);
-void rcpp_exmerge_max (EXMerge &cldat);
+void exmerge_single (EXMerge &cldat);
+void exmerge_avg (EXMerge &cldat);
+void exmerge_max (EXMerge &cldat);
+
+} // end namespace exact_merge
 
 Rcpp::IntegerVector rcpp_exact_merge (
         const Rcpp::DataFrame gr,

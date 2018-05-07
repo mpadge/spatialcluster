@@ -45,11 +45,11 @@ Rcpp::IntegerVector rcpp_slk (
     int2indx_map_t vert2index_map;
     indx2int_map_t index2vert_map, index2cl_map;
 
-    size_t n = sets_init (from, to, vert2index_map, index2vert_map,
+    size_t n = utils::sets_init (from, to, vert2index_map, index2vert_map,
                           index2cl_map, cl2index_map);
 
-    mats_init (from, to, d, vert2index_map, contig_mat, d_mat);
-    dmat_full_init (from_full, to_full, d_full, vert2index_map, d_mat_full);
+    utils::mats_init (from, to, d, vert2index_map, contig_mat, d_mat);
+    utils::dmat_full_init (from_full, to_full, d_full, vert2index_map, d_mat_full);
 
     /* The contiguity matrix retains is shape, so is always indexed by the
      * (from, to) vectors. Merging clusters simply switches additional entries
@@ -68,12 +68,13 @@ Rcpp::IntegerVector rcpp_slk (
             int cfrom = index2cl_map.at (ifrom),
                 cto = index2cl_map.at (ito);
             if (cfrom != cto &&
-                    contig_mat (to_uword (ifrom), to_uword (ito)) > 0)
+                    contig_mat (utils::to_uword (ifrom),
+                                utils::to_uword (ito)) > 0)
             {
-                size_t ishort = find_shortest_connection (from, to, d,
+                size_t ishort = utils::find_shortest_connection (from, to, d,
                         vert2index_map, d_mat, cl2index_map, cfrom, cto);
                 the_tree.insert (ishort);
-                merge_clusters (contig_mat, index2cl_map, cl2index_map,
+                utils::merge_clusters (contig_mat, index2cl_map, cl2index_map,
                         cfrom, cto);
                 e = 0;
             } else

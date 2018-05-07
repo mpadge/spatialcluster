@@ -1,16 +1,21 @@
 #pragma once
 
+#include "utils.h"
+
 // --------- EXACT CLUSTER ----------------
 
 /* All `index2cl` values are initally set to -1, and there are no `cl2index`
  * values.  There is also a single binary vector of `index_in_cluster`, initialy
  * set to `false`.
  */
+
+namespace exact_init {
+
 struct EXDat
 {
     size_t n;
 
-    std::vector <OneEdge> edges; // nearest neighbour edges only
+    std::vector <utils::OneEdge> edges; // nearest neighbour edges only
     std::vector <bool> index_in_cluster;
 
     int2int_map_t vert2cl_map;
@@ -31,6 +36,8 @@ int clexact_step (EXDat &clexact_dat, const index_t ei,
 
 void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
         int num_clusters);
+
+} // end namespace exact_init
 
 Rcpp::IntegerVector rcpp_exact_initial (
         const Rcpp::DataFrame gr);

@@ -16,7 +16,7 @@
  * unordered_set of target indices for each cluster.
  */
 
-bool strfound (const std::string str, const std::string target)
+bool utils::strfound (const std::string str, const std::string target)
 {
     bool found = false;
     if (str.find (target) != std::string::npos)
@@ -25,13 +25,13 @@ bool strfound (const std::string str, const std::string target)
 }
 
 template <typename T>
-arma::uword to_uword (const T arg)
+arma::uword utils::to_uword (const T arg)
 {
     // uword is unsigned long
     return static_cast <arma::uword> (arg);
 }
 
-size_t sets_init (
+size_t utils::sets_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         int2indx_map_t &vert2index_map,
@@ -89,7 +89,7 @@ size_t sets_init (
 //' clusters, so is constantly modified, whereas the distance matrix is between
 //' edges, so is fixed at load time.
 //' @noRd
-void mats_init (
+void utils::mats_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
@@ -98,7 +98,7 @@ void mats_init (
         arma::Mat <double> &d_mat)
 {
     // arma::uword = unsigned int
-    const arma::uword n = to_uword (vert2index_map.size ());
+    const arma::uword n = utils::to_uword (vert2index_map.size ());
 
     contig_mat = arma::zeros <arma::Mat <int> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
@@ -107,14 +107,14 @@ void mats_init (
 
     for (int i = 0; i < from.length (); i++)
     {
-        arma::uword fi = to_uword (vert2index_map.at (from [i])),
-                    ti = to_uword (vert2index_map.at (to [i]));
+        arma::uword fi = utils::to_uword (vert2index_map.at (from [i])),
+                    ti = utils::to_uword (vert2index_map.at (to [i]));
         contig_mat (fi, ti) = 1;
         d_mat (fi, ti) = d [i];
     }
 }
 
-void dmat_full_init (
+void utils::dmat_full_init (
         const Rcpp::IntegerVector &from, // here, from_full, etc.
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
@@ -122,14 +122,14 @@ void dmat_full_init (
         arma::Mat <double> &d_mat) // here: d_mat_full
 {
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    const arma::uword n = to_uword (vert2index_map.size ());
+    const arma::uword n = utils::to_uword (vert2index_map.size ());
     d_mat.resize (n, n);
     d_mat.fill (INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
-        d_mat [to_uword (vert2index_map.at (from [i])),
-              to_uword (vert2index_map.at (to [i]))] = d [i];
+        d_mat [utils::to_uword (vert2index_map.at (from [i])),
+              utils::to_uword (vert2index_map.at (to [i]))] = d [i];
     }
 }
 
@@ -142,7 +142,7 @@ void dmat_full_init (
 //'
 //' @return Index directly into from, to - **NOT** into the actual matrices!
 //' @noRd
-size_t find_shortest_connection (
+size_t utils::find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,
         Rcpp::NumericVector &d,
@@ -166,8 +166,8 @@ size_t find_shortest_connection (
     for (auto i: index_i)
         for (auto j: index_j)
         {
-            arma::uword ia = to_uword (i),
-                        ja = to_uword (j);
+            arma::uword ia = utils::to_uword (i),
+                        ja = utils::to_uword (j);
             if (d_mat (ia, ja) < dmin)
             {
                 dmin = d_mat (ia, ja);
@@ -204,7 +204,7 @@ size_t find_shortest_connection (
 //' merge two clusters in the contiguity matrix, reducing the size of the matrix
 //' by one row and column.
 //' @noRd
-void merge_clusters (
+void utils::merge_clusters (
         arma::Mat <int> &contig_mat,
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map,
