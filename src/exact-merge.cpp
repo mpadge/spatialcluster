@@ -12,13 +12,13 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
     Rcpp::IntegerVector clfrom = gr ["cl_from"];
     Rcpp::IntegerVector clto = gr ["cl_to"];
 
-    const unsigned int n = static_cast <unsigned int> (d.size ());
+    const size_t n = static_cast <size_t> (d.size ());
     
     cldat.edges.resize (n);
     int2intset_map_t cl2edge_map;
     // The EXMerge struct has a set of inter-cluster edges which are filled
     // here; the rest of the struct is filled below
-    for (unsigned int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         if (clnum [i] >= 0) // edge in a cluster
         {
@@ -35,14 +35,14 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
             edgei.from = clfrom [i];
             edgei.to = clto [i];
             edgei.dist = d [i];
-            cldat.edges [i] = edgei;
+            cldat.edges [static_cast <size_t> (i)] = edgei;
         }
     }
 
     // Fill intra-cluster data:
-    const unsigned int ncl = static_cast <unsigned int> (cl2edge_map.size ());
+    const size_t ncl = cl2edge_map.size ();
     cldat.clusters.resize (ncl);
-    for (unsigned int i = 0; i < ncl; i++)
+    for (int i = 0; i < ncl; i++)
     {
         OneCluster cli;
         intset_t edgeset = cl2edge_map.at (i);
@@ -56,7 +56,7 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
             if (ei > cli.dist_max)
                 cli.dist_max = ei;
         }
-        cldat.clusters [i] = cli;
+        cldat.clusters [static_cast <size_t> (i)] = cli;
 
         cldat.cl2index_map.emplace (i, i);
     }
@@ -65,10 +65,10 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
 // merge cluster clfrom with clto; clto remains as it was but is no longer
 // indexed so simply ignored from that point on
 OneMerge rcpp_exmerge_merge (EXMerge &cldat,
-        int clfrom_i, int clto_i, unsigned int ei)
+        int clfrom_i, int clto_i, index_t ei)
 {
-    unsigned int cl_from_i_idx = cldat.cl2index_map.at (clfrom_i),
-                 cl_to_i_idx = cldat.cl2index_map.at (clto_i);
+    index_t cl_from_i_idx = cldat.cl2index_map.at (clfrom_i),
+            cl_to_i_idx = cldat.cl2index_map.at (clto_i);
     OneCluster clfrom = cldat.clusters [cl_from_i_idx],
                clto = cldat.clusters [cl_to_i_idx];
     clto.n += clfrom.n;
@@ -95,7 +95,7 @@ OneMerge rcpp_exmerge_merge (EXMerge &cldat,
 void rcpp_exmerge_single (EXMerge &cldat)
 {
     std::unordered_set <std::string> merges;
-    unsigned int edgei = 0;
+    index_t edgei = 0;
     while (cldat.clusters.size () > 1)
     {
         std::string merge_pr = std::to_string (cldat.edges [edgei].from) + "-" +
@@ -103,8 +103,8 @@ void rcpp_exmerge_single (EXMerge &cldat)
         if (merges.find (merge_pr) == merges.end ())
         {
             OneMerge the_merge = rcpp_exmerge_merge (cldat,
-                    static_cast <int> (cldat.edges [edgei].from),
-                    static_cast <int> (cldat.edges [edgei].to),
+                    cldat.edges [edgei].from,
+                    cldat.edges [edgei].to,
                     edgei);
         }
         edgei++;

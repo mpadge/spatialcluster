@@ -24,7 +24,7 @@ struct OneMerge
 struct EXMerge
 {
     // cl2index_map is from cluster numbers to indices in clusters
-    std::unordered_map <int, unsigned int> cl2index_map;
+    std::unordered_map <int, index_t> cl2index_map;
     std::vector <OneCluster> clusters;
     std::vector <OneEdge> edges; // edges between clusters
     std::vector <OneMerge> merges;
@@ -34,7 +34,7 @@ void rcpp_exmerge_init (EXMerge &cldat);
 OneMerge rcpp_exmerge_merge (EXMerge &cldat,
         int clfrom_i,
         int clto_i,
-        unsigned int ei);
+        index_t ei);
 void rcpp_exmerge_single (EXMerge &cldat);
 void rcpp_exmerge_avg (EXMerge &cldat);
 void rcpp_exmerge_max (EXMerge &cldat);
