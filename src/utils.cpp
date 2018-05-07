@@ -51,16 +51,18 @@ unsigned int sets_init (
     }
 
     std::unordered_set <unsigned int> eset;
-    for (int i = 0; i < from.length (); i++)
+    for (unsigned int i = 0; i < from.length (); i++)
     {
-        unsigned int fi = vert2index_map.at (from [i]);
+        unsigned int ff = static_cast <unsigned int> (from [i]),
+                     fi = vert2index_map.at (ff);
         eset.clear ();
         eset.insert (fi);
         cl2index_map.emplace (fi, eset);
     }
-    for (int i = 0; i < to.length (); i++)
+    for (unsigned int i = 0; i < to.length (); i++)
     {
-        unsigned int ti = vert2index_map.at (to [i]);
+        unsigned int tf = static_cast <unsigned int> (to [i]),
+                     ti = vert2index_map.at (tf);
         if (cl2index_map.find (ti) == cl2index_map.end ())
             eset.clear ();
         else
@@ -69,7 +71,7 @@ unsigned int sets_init (
         cl2index_map.emplace (ti, eset);
     }
     
-    const unsigned int n = vert_set.size ();
+    const unsigned int n = static_cast <unsigned int> (vert_set.size ());
     // Initially assign all verts to clusters of same number:
     for (unsigned int i = 0; i < n; i++)
         index2cl_map.emplace (i, i);
@@ -89,7 +91,7 @@ void mats_init (
         arma::Mat <unsigned short> &contig_mat,
         arma::Mat <double> &d_mat)
 {
-    const unsigned int n = vert2index_map.size ();
+    const unsigned int n = static_cast <unsigned int> (vert2index_map.size ());
 
     contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
@@ -98,8 +100,10 @@ void mats_init (
 
     for (int i = 0; i < from.length (); i++)
     {
-        unsigned int fi = vert2index_map.at (from [i]),
-                     ti = vert2index_map.at (to [i]);
+        unsigned int ff = static_cast <unsigned int> (from [i]),
+                     fi = vert2index_map.at (ff),
+                     tf = static_cast <unsigned int> (to [i]),
+                     ti = vert2index_map.at (tf);
         contig_mat (fi, ti) = 1;
         d_mat (fi, ti) = d [i];
     }
@@ -113,13 +117,17 @@ void dmat_full_init (
         arma::Mat <double> &d_mat) // here, d_mat_full
 {
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    d_mat.resize (vert2index_map.size (), vert2index_map.size ());
+    const unsigned int n = static_cast <unsigned int> (vert2index_map.size ());
+    d_mat.resize (n, n);
     d_mat.fill (INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
-        d_mat [vert2index_map.at (from [i]),
-              vert2index_map.at (to [i])] = d [i];
+        unsigned int ff = static_cast <unsigned int> (from [i]),
+                     fi = vert2index_map.at (ff),
+                     tf = static_cast <unsigned int> (to [i]),
+                     ti = vert2index_map.at (tf);
+        d_mat [vert2index_map.at (fi), vert2index_map.at (ti)] = d [i];
     }
 }
 
@@ -174,10 +182,14 @@ unsigned int find_shortest_connection (
     // convert short_i and short_j to a single edge 
     // TODO: Make a std::map of vert2dist to avoid this loop
     unsigned int shortest = INFINITE_INT;
-    for (int i = 0; i < from.length (); i++)
+    for (unsigned int i = 0; i < from.length (); i++)
     {
-        if (vert2index_map.at (from [i]) == short_i &&
-                vert2index_map.at (to [i]) == short_j)
+        unsigned int ff = static_cast <unsigned int> (from [i]),
+                     fi = vert2index_map.at (ff),
+                     tf = static_cast <unsigned int> (to [i]),
+                     ti = vert2index_map.at (tf);
+        if (vert2index_map.at (fi) == short_i &&
+                vert2index_map.at (ti) == short_j)
         {
             shortest = i;
             break;
