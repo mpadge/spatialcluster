@@ -11,8 +11,11 @@ struct CLKDat
     arma::Mat <unsigned short> contig_mat;
     arma::Mat <double> dmax;
 
-    uint_map_t index2cl_map, vert2index_map, index2vert_map;
+    //uint_map_t index2cl_map, vert2index_map, index2vert_map;
     uint_set_map_t cl2index_map;
+
+    indx2int_map_t index2cl_map, index2vert_map;
+    int2indx_map_t vert2index_map;
 };
 
 void clk_init (CLKDat &clk_dat,

@@ -41,8 +41,9 @@ Rcpp::IntegerVector rcpp_slk (
     // vert2index and index2vert are retained at initial values which map (from,
     // to) vectors to matrix indices. All operations are performed on matrices
     // directly, with membership re-traced at the end via index2vert_map.
-    uint_map_t vert2index_map, index2vert_map, index2cl_map;
     uint_set_map_t cl2index_map;
+    int2indx_map_t vert2index_map;
+    indx2int_map_t index2vert_map, index2cl_map;
 
     unsigned int n = sets_init (from, to, vert2index_map, index2vert_map,
             index2cl_map, cl2index_map);

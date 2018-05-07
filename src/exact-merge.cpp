@@ -15,19 +15,18 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
     const unsigned int n = static_cast <unsigned int> (d.size ());
     
     cldat.edges.resize (n);
-    std::unordered_map <unsigned int,
-        std::unordered_set <unsigned int> > cl2edge_map;
+    int2intset_map_t cl2edge_map;
     // The EXMerge struct has a set of inter-cluster edges which are filled
     // here; the rest of the struct is filled below
     for (unsigned int i = 0; i < n; i++)
     {
         if (clnum [i] >= 0) // edge in a cluster
         {
-            unsigned int clnum_i = static_cast <unsigned int> (clnum [i]);
-            std::unordered_set <unsigned int> edgeset;
+            int clnum_i = clnum [i];
+            intset_t edgeset;
             if (cl2edge_map.find (clnum_i) != cl2edge_map.end ())
                 edgeset = cl2edge_map.at (clnum_i);
-            edgeset.emplace (i);
+            edgeset.emplace (static_cast <int> (i));
             cl2edge_map [clnum_i] = edgeset;
         } else // fill inter-cluster edge
         {
@@ -46,7 +45,7 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
     for (unsigned int i = 0; i < ncl; i++)
     {
         OneCluster cli;
-        std::unordered_set <unsigned int> edgeset = cl2edge_map.at (i);
+        intset_t edgeset = cl2edge_map.at (i);
         cli.id = static_cast <int> (i);
         cli.n = static_cast <int> (edgeset.size ());
         cli.dist_sum = 0.0;
