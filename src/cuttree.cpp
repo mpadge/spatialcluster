@@ -19,10 +19,10 @@ void fill_edges (std::vector <EdgeComponent> &edges,
             node_map.emplace (t, node_num++);
     }
 
-    for (int i = 0; i < edges.size (); i++)
+    for (size_t i = 0; i < edges.size (); i++)
     {
         EdgeComponent this_edge;
-        this_edge.d = d [i];
+        this_edge.d = d [static_cast <int> (i)];
         this_edge.cluster_num = 0;
         this_edge.from = node_map.at (from [i]);
         this_edge.to = node_map.at (to [i]);
@@ -70,7 +70,7 @@ std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges)
     while (!done)
     {
         bool added = false;
-        for (int j = 1; j < edges.size (); j++)
+        for (size_t j = 1; j < edges.size (); j++)
         {
             if (tree.find (edges [j].from) != tree.end () &&
                     tree.find (edges [j].to) == tree.end ())
@@ -217,8 +217,7 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
         auto mp = std::max_element (ss_diff.begin (), ss_diff.end ());
         long int maxi_int = std::distance (ss_diff.begin (), mp);
         // could assert non-negative here, but no need
-        int maxi = static_cast <int> (maxi_int);
-        //size_t maxi = *std::max_element (ss_diff.begin (), ss_diff.end ()); 
+        size_t maxi = static_cast <size_t> (maxi_int);
         if (cluster_map.find (maxi) == cluster_map.end ())
             Rcpp::Rcout << "ss_diff has no max element in cluster_map" << std::endl;
         int clnum = cluster_map.at (maxi);
@@ -264,10 +263,10 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
     Rcpp::IntegerVector res (edges.size ());
     for (int i = 0; i < edges.size (); i++)
     {
-        if (edges [i].cluster_num == INFINITE_INT)
+        if (edges [static_cast <size_t> (i)].cluster_num == INFINITE_INT)
             res [i] = NA_INTEGER;
         else
-            res [i] = edges [i].cluster_num;
+            res [i] = edges [static_cast <size_t> (i)].cluster_num;
     }
     return res;
 }
