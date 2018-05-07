@@ -33,8 +33,8 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
         {
             OneEdge edgei;
             // from and to hold cluster numbers, NOT vertex numbers
-            edgei.from = static_cast <unsigned int> (clfrom [i]);
-            edgei.to = static_cast <unsigned int> (clto [i]);
+            edgei.from = clfrom [i];
+            edgei.to = clto [i];
             edgei.dist = d [i];
             cldat.edges [i] = edgei;
         }

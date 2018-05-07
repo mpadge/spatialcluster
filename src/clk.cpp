@@ -22,8 +22,8 @@ void clk_init (CLKDat &clk_dat,
     for (unsigned int i = 0; i < from_full.size (); i++)
     {
         OneEdge here;
-        here.from = static_cast <unsigned int> (from_full [i]);
-        here.to = static_cast <unsigned int> (to_full [i]);
+        here.from = from_full [i];
+        here.to = to_full [i];
         here.dist = d_full [i];
         clk_dat.edges_all [i] = here;
     }
@@ -35,8 +35,8 @@ void clk_init (CLKDat &clk_dat,
     for (unsigned int i = 0; i < from.size (); i++)
     {
         OneEdge here;
-        here.from = static_cast <unsigned int> (from [i]);
-        here.to = static_cast <unsigned int> (to [i]);
+        here.from = from [i];
+        here.to = to [i];
         here.dist = d [i];
         clk_dat.edges_nn [i] = here;
     }
@@ -74,8 +74,10 @@ unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
 {
     // find shortest _all edges that connects the two clusters
     OneEdge ei = clk_dat.edges_all [i];
-    const unsigned int u = clk_dat.vert2index_map.at (ei.from),
-          v = clk_dat.vert2index_map.at (ei.to),
+    const unsigned int eif = static_cast <unsigned int> (ei.from),
+          eit = static_cast <unsigned int> (ei.to),
+          u = clk_dat.vert2index_map.at (eif),
+          v = clk_dat.vert2index_map.at (eit),
           cl_u = clk_dat.index2cl_map.at (u),
           cl_v = clk_dat.index2cl_map.at (v);
 
@@ -86,8 +88,10 @@ unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
     for (unsigned int j = 0; j < clk_dat.edges_nn.size (); j++)
     {
         OneEdge ej = clk_dat.edges_nn [j];
-        unsigned int m = clk_dat.vert2index_map.at (ej.from),
-                     l = clk_dat.vert2index_map.at (ej.to);
+        unsigned int ejf = static_cast <unsigned int> (ej.from),
+                     ejt = static_cast <unsigned int> (ej.to),
+                     m = clk_dat.vert2index_map.at (ejf),
+                     l = clk_dat.vert2index_map.at (ejt);
         if (((clk_dat.index2cl_map.at (m) == cl_u &&
                         clk_dat.index2cl_map.at (l) == cl_v) ||
                     (clk_dat.index2cl_map.at (m) == cl_v &&
@@ -170,8 +174,10 @@ Rcpp::IntegerVector rcpp_clk (
     for (unsigned int i = 0; i < clk_dat.edges_all.size (); i++)
     {
         OneEdge ei = clk_dat.edges_all [i];
-        unsigned int u = clk_dat.vert2index_map.at (ei.from),
-                     v = clk_dat.vert2index_map.at (ei.to);
+        unsigned int eif = static_cast <unsigned int> (ei.from),
+                     eit = static_cast <unsigned int> (ei.to),
+                     u = clk_dat.vert2index_map.at (eif),
+                     v = clk_dat.vert2index_map.at (eit);
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
                 clk_dat.contig_mat (u, v) == 1 &&
                 ei.dist > clk_dat.dmax (u, v))

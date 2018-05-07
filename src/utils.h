@@ -44,6 +44,6 @@ void merge_clusters (
 
 struct OneEdge
 {
-    unsigned int from, to;
+    int from, to;
     double dist;
 };

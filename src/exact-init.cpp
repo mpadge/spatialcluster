@@ -30,8 +30,8 @@ void clexact_init (EXDat &clexact_dat,
     for (unsigned int i = 0; i < from.size (); i++)
     {
         OneEdge here;
-        here.from = static_cast <unsigned int> (from [i]);
-        here.to = static_cast <unsigned int> (to [i]);
+        here.from = from [i];
+        here.to = to [i];
         here.dist = d [i];
         clexact_dat.edges [i] = here;
     }
@@ -46,8 +46,10 @@ void assign_first_edge (EXDat &clexact_dat)
 {
     unsigned int clnum = 0, ei = 0;
     OneEdge edge = clexact_dat.edges [ei];
-    unsigned int ito = clexact_dat.vert2index_map.at (edge.to),
-                 ifrom = clexact_dat.vert2index_map.at (edge.from);
+    unsigned int eto = static_cast <unsigned int> (edge.to),
+                 efrom = static_cast <unsigned int> (edge.from),
+                 ito = clexact_dat.vert2index_map.at (eto),
+                 ifrom = clexact_dat.vert2index_map.at (efrom);
 
     clexact_dat.index2cl_map [ito] = clnum;
     clexact_dat.index2cl_map [ifrom] = clnum;
@@ -76,8 +78,10 @@ unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
 {
     bool from_in = false, to_in = false;
     OneEdge edge = clexact_dat.edges [ei];
-    unsigned int ito = clexact_dat.vert2index_map.at (edge.to);
-    unsigned int ifrom = clexact_dat.vert2index_map.at (edge.from);
+    unsigned int eto = static_cast <unsigned int> (edge.to),
+                 efrom = static_cast <unsigned int> (edge.from),
+                 ito = clexact_dat.vert2index_map.at (eto),
+                 ifrom = clexact_dat.vert2index_map.at (efrom);
     if (clexact_dat.index_in_cluster [ito])
         to_in = true;
     if (clexact_dat.index_in_cluster [ifrom])
@@ -142,8 +146,10 @@ void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
     arma::Mat <double> vert_dists (clexact_dat.n, clexact_dat.n);
     for (auto ei: clexact_dat.edges)
     {
-        unsigned int i = clexact_dat.vert2index_map.at (ei.from),
-                     j = clexact_dat.vert2index_map.at (ei.to);
+        unsigned int eto = static_cast <unsigned int> (ei.to),
+                     efrom = static_cast <unsigned int> (ei.from),
+                     i = clexact_dat.vert2index_map.at (efrom),
+                     j = clexact_dat.vert2index_map.at (eto);
         vert_dists (i, j) = vert_dists (j, i) = ei.dist;
     }
 
