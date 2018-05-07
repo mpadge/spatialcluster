@@ -24,7 +24,14 @@ bool strfound (const std::string str, const std::string target)
     return found;
 }
 
-int sets_init (
+template <typename T>
+arma::uword to_uword (const T arg)
+{
+    // uword is unsigned long
+    return static_cast <arma::uword> (arg);
+}
+
+size_t sets_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         int2indx_map_t &vert2index_map,
@@ -75,7 +82,7 @@ int sets_init (
     for (int i = 0; i < n; i++)
         index2cl_map.emplace (static_cast <size_t> (i), i);
 
-    return n;
+    return static_cast <size_t> (n);
 }
 
 //' initial contiguity and distance matrices. The contiguity matrix is between
@@ -91,7 +98,7 @@ void mats_init (
         arma::Mat <double> &d_mat)
 {
     // arma::uword = unsigned int
-    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
+    const arma::uword n = to_uword (vert2index_map.size ());
 
     contig_mat = arma::zeros <arma::Mat <int> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
@@ -100,8 +107,8 @@ void mats_init (
 
     for (int i = 0; i < from.length (); i++)
     {
-        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
-                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
+        arma::uword fi = to_uword (vert2index_map.at (from [i])),
+                    ti = to_uword (vert2index_map.at (to [i]));
         contig_mat (fi, ti) = 1;
         d_mat (fi, ti) = d [i];
     }
@@ -115,14 +122,14 @@ void dmat_full_init (
         arma::Mat <double> &d_mat) // here: d_mat_full
 {
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
+    const arma::uword n = to_uword (vert2index_map.size ());
     d_mat.resize (n, n);
     d_mat.fill (INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
-        d_mat [static_cast <arma::uword> (vert2index_map.at (from [i])),
-              static_cast <arma::uword> (vert2index_map.at (to [i]))] = d [i];
+        d_mat [to_uword (vert2index_map.at (from [i])),
+              to_uword (vert2index_map.at (to [i]))] = d [i];
     }
 }
 
@@ -159,8 +166,8 @@ size_t find_shortest_connection (
     for (auto i: index_i)
         for (auto j: index_j)
         {
-            arma::uword ia = static_cast <arma::uword> (i),
-                        ja = static_cast <arma::uword> (j);
+            arma::uword ia = to_uword (i),
+                        ja = to_uword (j);
             if (d_mat (ia, ja) < dmin)
             {
                 dmin = d_mat (ia, ja);

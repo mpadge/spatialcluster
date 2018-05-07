@@ -2,7 +2,10 @@
 
 bool strfound (const std::string str, const std::string target);
 
-int sets_init (
+template <typename T>
+arma::uword to_uword (const T arg);
+
+size_t sets_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         int2indx_map_t &vert2index_map,

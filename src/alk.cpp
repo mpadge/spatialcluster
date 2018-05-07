@@ -10,7 +10,7 @@ void alk_init (ALKDat &alk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    int n = sets_init (from, to, alk_dat.vert2index_map,
+    size_t n = sets_init (from, to, alk_dat.vert2index_map,
             alk_dat.index2vert_map, alk_dat.index2cl_map,
             alk_dat.cl2index_map);
     alk_dat.n = n;
@@ -64,17 +64,18 @@ void alk_init (ALKDat &alk_dat,
         }
     }
 
-    alk_dat.contig_mat = arma::zeros <arma::Mat <int> > (n, n);
-    alk_dat.num_edges = arma::ones <arma::Mat <int> > (n, n);
-    alk_dat.avg_dist.set_size (n, n);
+    arma::uword nu = to_uword (n);
+    alk_dat.contig_mat = arma::zeros <arma::Mat <int> > (nu, nu);
+    alk_dat.num_edges = arma::ones <arma::Mat <int> > (nu, nu);
+    alk_dat.avg_dist.set_size (nu, nu);
     //alk_dat.avg_dist.fill (INFINITE_DOUBLE);
     alk_dat.avg_dist.fill (0.0);
-    alk_dat.dmat.set_size (n, n);
+    alk_dat.dmat.set_size (nu, nu);
     alk_dat.dmat.fill (INFINITE_DOUBLE);
     for (int i = 0; i < from.length (); i++)
     {
-        index_t vf = alk_dat.vert2index_map.at (from [i]),
-                vt = alk_dat.vert2index_map.at (to [i]);
+        arma::uword vf = to_uword (alk_dat.vert2index_map.at (from [i])),
+                    vt = to_uword (alk_dat.vert2index_map.at (to [i]));
         alk_dat.contig_mat (vf, vt) = 1;
         alk_dat.num_edges (vf, vt) = 1;
         //alk_dat.avg_dist (vf, vt) = 0.0;
@@ -86,7 +87,7 @@ void alk_init (ALKDat &alk_dat,
 // update both idx2edgewt and edgewt2idx maps to reflect merging of cluster m
 // into cluster l (using Guo's original notation there). The cl2index
 // and index2cl maps are updated in `merge_clusters`
-void update_edgewt_maps (ALKDat &alk_dat, int m, int l)
+void update_edgewt_maps (ALKDat &alk_dat, index_t m, index_t l)
 {
     std::unordered_set <double> wtsl = alk_dat.idx2edgewt_map.at (l),
         wtsm = alk_dat.idx2edgewt_map.at (m);
@@ -134,7 +135,7 @@ void update_edgewt_maps (ALKDat &alk_dat, int m, int l)
     }
 }
 
-int alk_step (ALKDat &alk_dat,
+size_t alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
@@ -150,8 +151,9 @@ int alk_step (ALKDat &alk_dat,
     std::pair <index_t, index_t> pr =
         alk_dat.edgewt2idx_pair_map.at (edge_dist);
     index_t l = pr.first, m = pr.second;
-    while (l == m || alk_dat.contig_mat (l, m) == 0 ||
-            edge_dist < alk_dat.avg_dist (l, m))
+    arma::uword lu = to_uword (l), mu = to_uword (m);
+    while (l == m || alk_dat.contig_mat (lu, mu) == 0 ||
+            edge_dist < alk_dat.avg_dist (lu, mu))
     {
         node = tree.nextHi (node);
         if (node == nullptr)
@@ -160,15 +162,18 @@ int alk_step (ALKDat &alk_dat,
         pr = alk_dat.edgewt2idx_pair_map.at (edge_dist);
         l = pr.first;
         m = pr.second;
+        lu = to_uword (l);
+        mu = to_uword (m);
     }
+    int li = static_cast <int> (l), mi = static_cast <int> (m);
     
-    int ishort = find_shortest_connection (from, to, d,
+    size_t ishort = find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
-            alk_dat.cl2index_map, m, l);
+            alk_dat.cl2index_map, mi, li);
     // ishort is return value; an index into (from, to)
     merge_clusters (alk_dat.contig_mat,
             alk_dat.index2cl_map,
-            alk_dat.cl2index_map, m, l);
+            alk_dat.cl2index_map, mi, li);
     update_edgewt_maps (alk_dat, m, l);
 
     /* Cluster numbers start off here the same as vertex numbers, and so are
@@ -185,26 +190,27 @@ int alk_step (ALKDat &alk_dat,
     {
         if (cl.first != l || cl.first != m)
         {
-            const double tempd_l = alk_dat.avg_dist (cl.first, l),
-                   tempd_m = alk_dat.avg_dist (cl.first, m);
-            const int nedges_l = alk_dat.num_edges (cl.first, l),
-                      nedges_m = alk_dat.num_edges (cl.first, m);
+            arma::uword clu = static_cast <arma::uword> (cl.first);
+            const double tempd_l = alk_dat.avg_dist (clu, lu),
+                         tempd_m = alk_dat.avg_dist (clu, mu);
+            const int nedges_l = alk_dat.num_edges (clu, lu),
+                      nedges_m = alk_dat.num_edges (clu, mu);
 
-            alk_dat.avg_dist (cl.first, l) =
+            alk_dat.avg_dist (clu, lu) =
                 (tempd_l * nedges_l + tempd_m * nedges_m) /
                 static_cast <double> (nedges_l + nedges_m);
-            alk_dat.num_edges (cl.first, l) = nedges_l + nedges_m;
+            alk_dat.num_edges (clu, lu) = nedges_l + nedges_m;
 
-            if (alk_dat.contig_mat (cl.first, l) == 1 ||
-                    alk_dat.contig_mat (cl.first, m) == 1)
+            if (alk_dat.contig_mat (clu, lu) == 1 ||
+                    alk_dat.contig_mat (clu, mu) == 1)
             {
-                alk_dat.contig_mat (cl.first, l) = 1;
+                alk_dat.contig_mat (clu, lu) = 1;
                 if (tempd_l > 0.0)
                     tree.remove (tempd_l);
                 if (tempd_m > 0.0)
                     tree.remove (tempd_m);
                 
-                double tempd = alk_dat.avg_dist (cl.first, l);
+                double tempd = alk_dat.avg_dist (clu, lu);
                 if (tempd > 0.0)
                 {
                     tree.insert (tempd);
@@ -212,14 +218,15 @@ int alk_step (ALKDat &alk_dat,
                         std::make_pair (cl.first, l);
 
                     std::unordered_set <double> wtset;
-                    if (alk_dat.idx2edgewt_map.find (cl.first) ==
+                    index_t cli_idx = static_cast <index_t> (cl.first);
+                    if (alk_dat.idx2edgewt_map.find (cli_idx) ==
                             alk_dat.idx2edgewt_map.end ())
                         wtset.clear ();
                     else
-                        wtset = alk_dat.idx2edgewt_map.at (cl.first);
+                        wtset = alk_dat.idx2edgewt_map.at (cli_idx);
                     wtset.emplace (tempd);
-                    alk_dat.idx2edgewt_map.erase (cl.first);
-                    alk_dat.idx2edgewt_map.emplace (cl.first, wtset);
+                    alk_dat.idx2edgewt_map.erase (cli_idx);
+                    alk_dat.idx2edgewt_map.emplace (cli_idx, wtset);
                 }
             } // end if C(c, l) = 1 or C(c, m) = 1 in Guo's terminology
         } // end if cl.first != (cfrom, cto)
@@ -252,13 +259,13 @@ Rcpp::IntegerVector rcpp_alk (
     ALKDat alk_dat;
     BinarySearchTree tree;
     alk_init (alk_dat, tree, from, to, d);
-    const int n = alk_dat.n;
+    const size_t n = alk_dat.n;
 
-    std::unordered_set <int> the_tree;
+    std::unordered_set <size_t> the_tree;
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
-        int ishort = alk_step (alk_dat, tree, from, to, d);
+        size_t ishort = alk_step (alk_dat, tree, from, to, d);
         the_tree.insert (ishort);
     }
 

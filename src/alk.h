@@ -22,7 +22,7 @@
  */
 struct ALKDat
 {
-    int n;
+    size_t n;
 
     std::unordered_map <double,
         std::pair <index_t, index_t> > edgewt2idx_pair_map;
@@ -43,9 +43,9 @@ void alk_init (ALKDat &alk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void update_edgewt_maps (ALKDat &alk_dat, int l, int m);
+void update_edgewt_maps (ALKDat &alk_dat, index_t l, index_t m);
 
-int alk_step (ALKDat &alk_dat,
+size_t alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
