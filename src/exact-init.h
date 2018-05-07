@@ -13,9 +13,10 @@ struct EXDat
     std::vector <OneEdge> edges; // nearest neighbour edges only
     std::vector <bool> index_in_cluster;
 
-    uint_map_t index2cl_map, vert2index_map, index2vert_map,
-               vert2cl_map;
-    uint_set_map_t cl2index_map;
+    int2int_map_t vert2cl_map;
+    int2indx_map_t vert2index_map;
+    indx2int_map_t index2cl_map, index2vert_map;
+    int2intset_map_t cl2index_map;
 };
 
 void clexact_init (EXDat &clexact_dat,

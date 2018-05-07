@@ -56,7 +56,7 @@ void assign_first_edge (EXDat &clexact_dat)
     clexact_dat.index_in_cluster [ito] = true;
     clexact_dat.index_in_cluster [ifrom] = true;
 
-    std::unordered_set <unsigned int> cli;
+    intset_t cli;
     cli.insert (ito);
     cli.insert (ifrom);
     clexact_dat.cl2index_map.emplace (clnum, cli);
@@ -104,7 +104,7 @@ unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
         clexact_dat.index2cl_map [ifrom] = clnum_i;
         clexact_dat.index2cl_map [ito] = clnum_i;
 
-        std::unordered_set <unsigned int> cli;
+        intset_t cli;
         if (clexact_dat.cl2index_map.find (clnum_i) !=
                 clexact_dat.cl2index_map.end ())
             cli = clexact_dat.cl2index_map.at (clnum_i);
@@ -128,10 +128,10 @@ unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
 void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
         unsigned int num_clusters)
 {
-    std::unordered_map <unsigned int, std::set <unsigned int> > vert_sets;
-    for (unsigned int i = 0; i < num_clusters; i++)
+    int2intset_map_t vert_sets;
+    for (int i = 0; i < num_clusters; i++)
     {
-        std::set <unsigned int> verts;
+        intset_t verts;
         for (auto vi: clexact_dat.vert2cl_map)
         {
             if (vi.second == i)
@@ -156,14 +156,14 @@ void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
     for (unsigned int i = 0; i < (num_clusters - 1); i++)
         for (unsigned int j = (i + 1); j < num_clusters; j++)
         {
-            std::set <unsigned int> verts_i = vert_sets.at (i),
-                verts_j = vert_sets.at (j);
+            intset_t verts_i = vert_sets.at (i),
+                     verts_j = vert_sets.at (j);
             double max_d = 0.0;
             for (auto vi: verts_i)
                 for (auto vj: verts_j)
                 {
-                    unsigned int ii = clexact_dat.vert2index_map.at (vi),
-                           jj = clexact_dat.vert2index_map.at (vj);
+                    int ii = clexact_dat.vert2index_map.at (vi),
+                        jj = clexact_dat.vert2index_map.at (vj);
                     if (vert_dists (ii, jj) > max_d)
                         max_d = vert_dists (ii, jj);
                 }

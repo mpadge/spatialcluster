@@ -8,7 +8,7 @@ unsigned int sets_init (
         int2indx_map_t &vert2index_map,
         indx2int_map_t &index2vert_map,
         indx2int_map_t &index2cl_map,
-        uint_set_map_t &cl2index_map);
+        int2intset_map_t &cl2index_map);
 
 void mats_init (
         const Rcpp::IntegerVector &from,
@@ -31,14 +31,14 @@ unsigned int find_shortest_connection (
         Rcpp::NumericVector &d,
         int2indx_map_t &vert2index_map,
         arma::Mat <double> &d_mat,
-        uint_set_map_t &cl2index_map,
+        int2intset_map_t &cl2index_map,
         const unsigned int cfrom,
         const unsigned int cto);
 
 void merge_clusters (
         arma::Mat <unsigned short> &contig_mat,
         indx2int_map_t &index2cl_map,
-        uint_set_map_t &cl2index_map,
+        int2intset_map_t &cl2index_map,
         const unsigned int merge_from,
         const unsigned int merge_to);
 

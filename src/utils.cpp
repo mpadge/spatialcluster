@@ -30,7 +30,7 @@ unsigned int sets_init (
         int2indx_map_t &vert2index_map,
         indx2int_map_t &index2vert_map,
         indx2int_map_t &index2cl_map,
-        uint_set_map_t &cl2index_map)
+        int2intset_map_t &cl2index_map)
 {
     vert2index_map.clear ();
     index2vert_map.clear ();
@@ -50,7 +50,7 @@ unsigned int sets_init (
         vert2index_map.emplace (v, i++);
     }
 
-    std::unordered_set <unsigned int> eset;
+    intset_t eset;
     for (unsigned int i = 0; i < from.length (); i++)
     {
         unsigned int ff = static_cast <unsigned int> (from [i]),
@@ -146,7 +146,7 @@ unsigned int find_shortest_connection (
         Rcpp::NumericVector &d,
         int2indx_map_t &vert2index_map,
         arma::Mat <double> &d_mat,
-        uint_set_map_t &cl2index_map,
+        int2intset_map_t &cl2index_map,
         const unsigned int cfrom,
         const unsigned int cto)
 {
@@ -154,8 +154,8 @@ unsigned int find_shortest_connection (
         Rcpp::stop ("cluster index not found");
     if (cl2index_map.find (cto) == cl2index_map.end ())
         Rcpp::stop ("cluster index not found");
-    std::unordered_set <unsigned int> index_i = cl2index_map.at (cfrom),
-        index_j = cl2index_map.at (cto);
+    intset_t index_i = cl2index_map.at (cfrom),
+             index_j = cl2index_map.at (cto);
 
     double dmin = INFINITE_DOUBLE;
     unsigned int short_i = INFINITE_INT, short_j = INFINITE_INT;
@@ -207,7 +207,7 @@ unsigned int find_shortest_connection (
 void merge_clusters (
         arma::Mat <unsigned short> &contig_mat,
         indx2int_map_t &index2cl_map,
-        uint_set_map_t &cl2index_map,
+        int2intset_map_t &cl2index_map,
         const unsigned int cluster_from,
         const unsigned int cluster_to)
 {
@@ -221,9 +221,8 @@ void merge_clusters (
         }
     }
 
-    std::unordered_set <unsigned int>
-        idx_from = cl2index_map.at (cluster_from),
-        idx_to = cl2index_map.at (cluster_to);
+    intset_t idx_from = cl2index_map.at (cluster_from),
+             idx_to = cl2index_map.at (cluster_to);
 
     // not directonal here, so need both directions:
     for (auto i: idx_from)
