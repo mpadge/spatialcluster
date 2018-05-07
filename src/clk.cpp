@@ -18,12 +18,12 @@ void clk_init (CLKDat &clk_dat,
     clk_dat.n = n;
 
     clk_dat.edges_all.clear ();
-    clk_dat.edges_all.resize (from_full.size ());
-    for (int i = 0; i < from_full.size (); i++)
+    clk_dat.edges_all.resize (static_cast <size_t> (from_full.size ()));
+    for (unsigned int i = 0; i < from_full.size (); i++)
     {
         OneEdge here;
-        here.from = from_full [i];
-        here.to = to_full [i];
+        here.from = static_cast <unsigned int> (from_full [i]);
+        here.to = static_cast <unsigned int> (to_full [i]);
         here.dist = d_full [i];
         clk_dat.edges_all [i] = here;
     }
@@ -31,12 +31,12 @@ void clk_init (CLKDat &clk_dat,
     // sort here.
 
     clk_dat.edges_nn.clear ();
-    clk_dat.edges_nn.resize (from.size ());
-    for (int i = 0; i < from.size (); i++)
+    clk_dat.edges_nn.resize (static_cast <unsigned int> (from.size ()));
+    for (unsigned int i = 0; i < from.size (); i++)
     {
         OneEdge here;
-        here.from = from [i];
-        here.to = to [i];
+        here.from = static_cast <unsigned int> (from [i]);
+        here.to = static_cast <unsigned int> (to [i]);
         here.dist = d [i];
         clk_dat.edges_nn [i] = here;
     }
@@ -55,10 +55,12 @@ void clk_init (CLKDat &clk_dat,
 
     clk_dat.contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
     clk_dat.dmax.zeros (n, n);
-    for (int i = 0; i < from.length (); i++)
+    for (unsigned int i = 0; i < from.length (); i++)
     {
-        unsigned int vf = clk_dat.vert2index_map.at (from [i]),
-                     vt = clk_dat.vert2index_map.at (to [i]);
+        unsigned int ff = static_cast <unsigned int> (from [i]),
+                     tf = static_cast <unsigned int> (to [i]),
+                     vf = clk_dat.vert2index_map.at (ff),
+                     vt = clk_dat.vert2index_map.at (tf);
         clk_dat.contig_mat (vf, vt) = 1;
         //clk_dat.dmax (vf, vt) = d [i]; // NOPE - all dmax = 0 at start!
     }
@@ -81,7 +83,7 @@ unsigned int clk_step (CLKDat &clk_dat, unsigned int i)
     unsigned int mmin = INFINITE_INT, lmin = INFINITE_INT,
                  the_edge = INFINITE_INT;
     double dmin = INFINITE_DOUBLE;
-    for (int j = 0; j < clk_dat.edges_nn.size (); j++)
+    for (unsigned int j = 0; j < clk_dat.edges_nn.size (); j++)
     {
         OneEdge ej = clk_dat.edges_nn [j];
         unsigned int m = clk_dat.vert2index_map.at (ej.from),
@@ -164,8 +166,8 @@ Rcpp::IntegerVector rcpp_clk (
     CLKDat clk_dat;
     clk_init (clk_dat, from_full, to_full, d_full, from, to, d);
 
-    std::vector <int> treevec;
-    for (int i = 0; i < clk_dat.edges_all.size (); i++)
+    std::vector <unsigned int> treevec;
+    for (unsigned int i = 0; i < clk_dat.edges_all.size (); i++)
     {
         OneEdge ei = clk_dat.edges_all [i];
         unsigned int u = clk_dat.vert2index_map.at (ei.from),
