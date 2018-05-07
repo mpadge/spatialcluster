@@ -32,8 +32,10 @@ void alk_init (ALKDat &alk_dat,
     // Construct idx2edgewt_map and edgewt2idx_pair_map
     for (int i = 0; i < from.size (); i++)
     {
-        unsigned int fi = alk_dat.vert2index_map.at (from [i]),
-                     ti = alk_dat.vert2index_map.at (to [i]);
+        unsigned int fu = static_cast <unsigned int> (from [i]),
+                     tu = static_cast <unsigned int> (to [i]);
+        unsigned int fi = alk_dat.vert2index_map.at (fu),
+                     ti = alk_dat.vert2index_map.at (tu);
         alk_dat.edgewt2idx_pair_map.emplace (d [i], std::make_pair (fi, ti));
 
         // idx2edgewt_map.second is an unordered set that needs to be expanded
@@ -73,8 +75,10 @@ void alk_init (ALKDat &alk_dat,
     alk_dat.dmat.fill (INFINITE_DOUBLE);
     for (int i = 0; i < from.length (); i++)
     {
-        unsigned int vf = alk_dat.vert2index_map.at (from [i]),
-                     vt = alk_dat.vert2index_map.at (to [i]);
+        unsigned int fu = static_cast <unsigned int> (from [i]),
+                     tu = static_cast <unsigned int> (to [i]);
+        unsigned int vf = alk_dat.vert2index_map.at (fu),
+                     vt = alk_dat.vert2index_map.at (tu);
         alk_dat.contig_mat (vf, vt) = 1;
         alk_dat.num_edges (vf, vt) = 1;
         //alk_dat.avg_dist (vf, vt) = 0.0;
@@ -137,7 +141,7 @@ void update_edgewt_maps (ALKDat &alk_dat,
     }
 }
 
-int alk_step (ALKDat &alk_dat,
+unsigned int alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
@@ -165,7 +169,7 @@ int alk_step (ALKDat &alk_dat,
         m = pr.second;
     }
     
-    int ishort = find_shortest_connection (from, to, d,
+    unsigned int ishort = find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
             alk_dat.cl2index_map, m, l);
     // ishort is return value; an index into (from, to)
@@ -196,7 +200,8 @@ int alk_step (ALKDat &alk_dat,
             alk_dat.avg_dist (cl.first, l) =
                 (tempd_l * nedges_l + tempd_m * nedges_m) /
                 static_cast <double> (nedges_l + nedges_m);
-            alk_dat.num_edges (cl.first, l) = nedges_l + nedges_m;
+            alk_dat.num_edges (cl.first, l) = static_cast <unsigned short> (
+                                                nedges_l + nedges_m);
 
             if (alk_dat.contig_mat (cl.first, l) == 1 ||
                     alk_dat.contig_mat (cl.first, m) == 1)

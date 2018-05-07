@@ -132,7 +132,7 @@ void dmat_full_init (
 //'
 //' @return Index directly into from, to - **NOT** into the actual matrices!
 //' @noRd
-int find_shortest_connection (
+unsigned int find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,
         Rcpp::NumericVector &d,
@@ -150,7 +150,7 @@ int find_shortest_connection (
         index_j = cl2index_map.at (cto);
 
     double dmin = INFINITE_DOUBLE;
-    int short_i = INFINITE_INT, short_j = INFINITE_INT;
+    unsigned int short_i = INFINITE_INT, short_j = INFINITE_INT;
 
     // from and to here are not directional, so need to examine both directions
     for (auto i: index_i)
@@ -173,7 +173,7 @@ int find_shortest_connection (
 
     // convert short_i and short_j to a single edge 
     // TODO: Make a std::map of vert2dist to avoid this loop
-    int shortest = INFINITE_INT;
+    unsigned int shortest = INFINITE_INT;
     for (int i = 0; i < from.length (); i++)
     {
         if (vert2index_map.at (from [i]) == short_i &&

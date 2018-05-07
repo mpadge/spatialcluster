@@ -45,7 +45,7 @@ void alk_init (ALKDat &alk_dat,
 void update_edgewt_maps (ALKDat &alk_dat,
         unsigned int l, unsigned int m);
 
-int alk_step (ALKDat &alk_dat,
+unsigned int alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,

@@ -25,7 +25,7 @@ void dmat_full_init (
         const uint_map_t &vert2index_map,
         arma::Mat <double> &d_mat);
 
-int find_shortest_connection (
+unsigned int find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,
         Rcpp::NumericVector &d,
