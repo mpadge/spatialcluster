@@ -1,7 +1,8 @@
 #include "common.h"
 #include "exact-merge.h"
 
-// load data from rcpp_exact_initial into the EXMerge struct
+// load data from rcpp_exact_initial into the EXMerge struct. The gr data are
+// pre-sorted by increasing d.
 void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
 {
     Rcpp::IntegerVector from = gr ["from"];
@@ -29,8 +30,8 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
         } else // fill inter-cluster edge
         {
             OneEdge edgei;
-            edgei.from = clfrom [i];
-            edgei.to = clto [i];
+            edgei.from = clfrom [i]; // edges hold cluster numbers,
+            edgei.to = clto [i];     // NOT vertex numbers
             edgei.dist = d [i];
             cldat.edges [i] = edgei;
         }
@@ -54,11 +55,59 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
                 cli.dist_max = ei;
         }
         cldat.clusters [i] = cli;
+
+        cldat.cl2index_map.emplace (i, i);
     }
+}
+
+// merge cluster clfrom with clto; clto remains as it was but is no longer
+// indexed so simply ignored from that point on
+OneMerge rcpp_exmerge_merge (EXMerge &cldat, int clfrom_i, int clto_i, int ei)
+{
+    int cl_from_i_idx = cldat.cl2index_map.at (clfrom_i),
+        cl_to_i_idx = cldat.cl2index_map.at (clto_i);
+    OneCluster clfrom = cldat.clusters [cl_from_i_idx],
+               clto = cldat.clusters [cl_to_i_idx];
+    clto.n += clfrom.n;
+    clto.dist_sum += clfrom.dist_sum;
+    if (clfrom.dist_max > clto.dist_max)
+        clto.dist_max = clfrom.dist_max;
+
+    std::vector <OneEdge> edges_from = clfrom.edges, edges_to = clto.edges;
+    edges_to.insert (edges_to.end (), edges_from.begin (), edges_from.end ());
+    clto.edges.clear ();
+    clto.edges.shrink_to_fit ();
+    clto.edges = edges_to;
+
+    cldat.cl2index_map.at (clfrom_i) = cldat.cl2index_map.at (clto_i);
+
+    OneMerge the_merge;
+    the_merge.cli = clfrom_i;
+    the_merge.clj = clto_i;
+    the_merge.merge_dist = cldat.edges [ei].dist;
+
+    return the_merge;
 }
 
 void rcpp_exmerge_single (EXMerge &cldat)
 {
+    std::unordered_set <std::string> merges;
+    int edgei = 0;
+    while (cldat.clusters.size () > 1)
+    {
+        std::string merge_pr = std::to_string (cldat.edges [edgei].from) + "-" +
+                               std::to_string (cldat.edges [edgei].to);
+        if (merges.find (merge_pr) == merges.end ())
+        {
+            OneMerge the_merge = rcpp_exmerge_merge (cldat,
+                    cldat.edges [edgei].from,
+                    cldat.edges [edgei].to,
+                    edgei);
+        }
+        edgei++;
+        if (edgei == cldat.edges.size ())
+            break;
+    }
 }
 
 void rcpp_exmerge_avg (EXMerge &cldat)
@@ -88,10 +137,13 @@ Rcpp::IntegerVector rcpp_exact_merge (
 
     if (strfound (method, "single")) // strfound from utils.cpp
     {
+        rcpp_exmerge_single (clmerge_dat);
     } else if (strfound (method, "average"))
     {
+        rcpp_exmerge_avg (clmerge_dat);
     } else if (strfound (method, "max"))
     {
+        rcpp_exmerge_max (clmerge_dat);
     } else
         Rcpp::stop ("method not found for rcpp_exact_merge");
 

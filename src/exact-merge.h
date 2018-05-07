@@ -15,14 +15,23 @@ struct OneCluster
     std::vector <OneEdge> edges;
 };
 
+struct OneMerge
+{
+    int cli, clj;
+    double merge_dist;
+};
+
 struct EXMerge
 {
+    // cl2index_map is from cluster numbers to indices in clusters
+    std::unordered_map <int, int> cl2index_map;
     std::vector <OneCluster> clusters;
-    //std::unordered_map <int, int> clfrom2indx_map, clto2index_map;
     std::vector <OneEdge> edges; // edges between clusters
+    std::vector <OneMerge> merges;
 };
 
 void rcpp_exmerge_init (EXMerge &cldat);
+OneMerge rcpp_exmerge_merge (EXMerge &cldat, int clfrom_i, int clto_i, int ei);
 void rcpp_exmerge_single (EXMerge &cldat);
 void rcpp_exmerge_avg (EXMerge &cldat);
 void rcpp_exmerge_max (EXMerge &cldat);
