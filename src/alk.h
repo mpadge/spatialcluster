@@ -32,7 +32,7 @@ struct ALKDat
     arma::Mat <unsigned short> contig_mat, num_edges;
     arma::Mat <double> dmat, avg_dist;
 
-    int2intset_map_t cl2index_map;
+    int2indxset_map_t cl2index_map;
     indx2int_map_t index2cl_map, index2vert_map;
     int2indx_map_t vert2index_map;
 };

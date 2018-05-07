@@ -24,45 +24,43 @@ bool strfound (const std::string str, const std::string target)
     return found;
 }
 
-unsigned int sets_init (
+int sets_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         int2indx_map_t &vert2index_map,
         indx2int_map_t &index2vert_map,
         indx2int_map_t &index2cl_map,
-        int2intset_map_t &cl2index_map)
+        int2indxset_map_t &cl2index_map)
 {
     vert2index_map.clear ();
     index2vert_map.clear ();
     index2cl_map.clear ();
     cl2index_map.clear ();
 
-    std::unordered_set <unsigned int> vert_set;
+    intset_t vert_set;
     for (int i = 0; i < from.size (); i++)
     {
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
     }
-    unsigned int i = 0;
+    int i = 0;
     for (auto v: vert_set)
     {
         index2vert_map.emplace (i, v);
         vert2index_map.emplace (v, i++);
     }
 
-    intset_t eset;
-    for (unsigned int i = 0; i < from.length (); i++)
+    indxset_t eset;
+    for (int i = 0; i < from.length (); i++)
     {
-        unsigned int ff = static_cast <unsigned int> (from [i]),
-                     fi = vert2index_map.at (ff);
+        size_t fi = vert2index_map.at (from [i]);
         eset.clear ();
         eset.insert (fi);
         cl2index_map.emplace (fi, eset);
     }
-    for (unsigned int i = 0; i < to.length (); i++)
+    for (int i = 0; i < to.length (); i++)
     {
-        unsigned int tf = static_cast <unsigned int> (to [i]),
-                     ti = vert2index_map.at (tf);
+        size_t ti = vert2index_map.at (to [i]);
         if (cl2index_map.find (ti) == cl2index_map.end ())
             eset.clear ();
         else
@@ -71,10 +69,10 @@ unsigned int sets_init (
         cl2index_map.emplace (ti, eset);
     }
     
-    const unsigned int n = static_cast <unsigned int> (vert_set.size ());
+    const int n = static_cast <int> (vert_set.size ());
     // Initially assign all verts to clusters of same number:
-    for (unsigned int i = 0; i < n; i++)
-        index2cl_map.emplace (i, i);
+    for (int i = 0; i < n; i++)
+        index2cl_map.emplace (static_cast <size_t> (i), i);
 
     return n;
 }
@@ -146,7 +144,7 @@ unsigned int find_shortest_connection (
         Rcpp::NumericVector &d,
         int2indx_map_t &vert2index_map,
         arma::Mat <double> &d_mat,
-        int2intset_map_t &cl2index_map,
+        int2indxset_map_t &cl2index_map,
         const unsigned int cfrom,
         const unsigned int cto)
 {
@@ -154,7 +152,7 @@ unsigned int find_shortest_connection (
         Rcpp::stop ("cluster index not found");
     if (cl2index_map.find (cto) == cl2index_map.end ())
         Rcpp::stop ("cluster index not found");
-    intset_t index_i = cl2index_map.at (cfrom),
+    indxset_t index_i = cl2index_map.at (cfrom),
              index_j = cl2index_map.at (cto);
 
     double dmin = INFINITE_DOUBLE;
@@ -207,9 +205,9 @@ unsigned int find_shortest_connection (
 void merge_clusters (
         arma::Mat <unsigned short> &contig_mat,
         indx2int_map_t &index2cl_map,
-        int2intset_map_t &cl2index_map,
-        const unsigned int cluster_from,
-        const unsigned int cluster_to)
+        int2indxset_map_t &cl2index_map,
+        int cluster_from,
+        int cluster_to)
 {
     // Set all contig_mat (cluster_from, .) to 1
     for (unsigned int i = 0; i < contig_mat.n_rows; i++)
@@ -221,8 +219,8 @@ void merge_clusters (
         }
     }
 
-    intset_t idx_from = cl2index_map.at (cluster_from),
-             idx_to = cl2index_map.at (cluster_to);
+    indxset_t idx_from = cl2index_map.at (cluster_from),
+              idx_to = cl2index_map.at (cluster_to);
 
     // not directonal here, so need both directions:
     for (auto i: idx_from)
