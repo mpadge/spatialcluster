@@ -60,13 +60,14 @@ int sets_init (
     }
     for (int i = 0; i < to.length (); i++)
     {
-        size_t ti = vert2index_map.at (to [i]);
-        if (cl2index_map.find (ti) == cl2index_map.end ())
+        // all verts are their own clusters, so cast indx to cli
+        int cli = static_cast <int> (vert2index_map.at (to [i]));
+        if (cl2index_map.find (cli) == cl2index_map.end ())
             eset.clear ();
         else
-            eset = cl2index_map.at (ti);
-        eset.emplace (ti);
-        cl2index_map.emplace (ti, eset);
+            eset = cl2index_map.at (cli);
+        eset.emplace (cli);
+        cl2index_map.emplace (cli, eset);
     }
     
     const int n = static_cast <int> (vert_set.size ());
@@ -89,7 +90,8 @@ void mats_init (
         arma::Mat <unsigned short> &contig_mat,
         arma::Mat <double> &d_mat)
 {
-    const unsigned int n = static_cast <unsigned int> (vert2index_map.size ());
+    // arma::uword = unsigned int
+    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
 
     contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
@@ -98,10 +100,8 @@ void mats_init (
 
     for (int i = 0; i < from.length (); i++)
     {
-        unsigned int ff = static_cast <unsigned int> (from [i]),
-                     fi = vert2index_map.at (ff),
-                     tf = static_cast <unsigned int> (to [i]),
-                     ti = vert2index_map.at (tf);
+        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
+                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
         contig_mat (fi, ti) = 1;
         d_mat (fi, ti) = d [i];
     }
@@ -112,20 +112,17 @@ void dmat_full_init (
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
         const int2indx_map_t &vert2index_map,
-        arma::Mat <double> &d_mat) // here, d_mat_full
+        arma::Mat <double> &d_mat) // here: d_mat_full
 {
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    const unsigned int n = static_cast <unsigned int> (vert2index_map.size ());
+    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
     d_mat.resize (n, n);
     d_mat.fill (INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
-        unsigned int ff = static_cast <unsigned int> (from [i]),
-                     fi = vert2index_map.at (ff),
-                     tf = static_cast <unsigned int> (to [i]),
-                     ti = vert2index_map.at (tf);
-        d_mat [vert2index_map.at (fi), vert2index_map.at (ti)] = d [i];
+        d_mat [static_cast <arma::uword> (vert2index_map.at (from [i])),
+              static_cast <arma::uword> (vert2index_map.at (to [i]))] = d [i];
     }
 }
 
@@ -138,15 +135,15 @@ void dmat_full_init (
 //'
 //' @return Index directly into from, to - **NOT** into the actual matrices!
 //' @noRd
-unsigned int find_shortest_connection (
+size_t find_shortest_connection (
         Rcpp::IntegerVector &from,
         Rcpp::IntegerVector &to,
         Rcpp::NumericVector &d,
         int2indx_map_t &vert2index_map,
         arma::Mat <double> &d_mat,
         int2indxset_map_t &cl2index_map,
-        const unsigned int cfrom,
-        const unsigned int cto)
+        const int cfrom,
+        const int cto)
 {
     if (cl2index_map.find (cfrom) == cl2index_map.end ())
         Rcpp::stop ("cluster index not found");
@@ -156,20 +153,22 @@ unsigned int find_shortest_connection (
              index_j = cl2index_map.at (cto);
 
     double dmin = INFINITE_DOUBLE;
-    unsigned int short_i = INFINITE_INT, short_j = INFINITE_INT;
+    size_t short_i = INFINITE_INT, short_j = INFINITE_INT;
 
     // from and to here are not directional, so need to examine both directions
     for (auto i: index_i)
         for (auto j: index_j)
         {
-            if (d_mat (i, j) < dmin)
+            arma::uword ia = static_cast <arma::uword> (i),
+                        ja = static_cast <arma::uword> (j);
+            if (d_mat (ia, ja) < dmin)
             {
-                dmin = d_mat (i, j);
+                dmin = d_mat (ia, ja);
                 short_i = i;
                 short_j = j;
-            } else if (d_mat (j, i) < dmin)
+            } else if (d_mat (ja, ia) < dmin)
             {
-                dmin = d_mat (j, i);
+                dmin = d_mat (ja, ia);
                 short_i = j;
                 short_j = i;
             }
@@ -179,17 +178,13 @@ unsigned int find_shortest_connection (
 
     // convert short_i and short_j to a single edge 
     // TODO: Make a std::map of vert2dist to avoid this loop
-    unsigned int shortest = INFINITE_INT;
-    for (unsigned int i = 0; i < from.length (); i++)
+    size_t shortest = INFINITE_INT;
+    for (int i = 0; i < from.length (); i++) // int for Rcpp index
     {
-        unsigned int ff = static_cast <unsigned int> (from [i]),
-                     fi = vert2index_map.at (ff),
-                     tf = static_cast <unsigned int> (to [i]),
-                     ti = vert2index_map.at (tf);
-        if (vert2index_map.at (fi) == short_i &&
-                vert2index_map.at (ti) == short_j)
+        if (vert2index_map.at (from [i]) == short_i &&
+                vert2index_map.at (to [i]) == short_j)
         {
-            shortest = i;
+            shortest = static_cast <size_t> (i);
             break;
         }
     }
@@ -209,13 +204,19 @@ void merge_clusters (
         int cluster_from,
         int cluster_to)
 {
+    if (cluster_from < 0)
+        Rcpp::stop ("cluster_from must be non-zero");
+    if (cluster_to < 0)
+        Rcpp::stop ("cluster_to must be non-zero");
+    arma::uword cfr = static_cast <arma::uword> (cluster_from),
+                cto = static_cast <arma::uword> (cluster_to);
     // Set all contig_mat (cluster_from, .) to 1
-    for (unsigned int i = 0; i < contig_mat.n_rows; i++)
+    for (arma::uword i = 0; i < contig_mat.n_rows; i++)
     {
-        if (contig_mat (cluster_from, i) == 1 )
+        if (contig_mat (cfr, i) == 1 )
         {
-            contig_mat (cluster_to, i) = 1;
-            contig_mat (i, cluster_to) = 1;
+            contig_mat (cto, i) = 1;
+            contig_mat (i, cto) = 1;
         }
     }
 
@@ -226,7 +227,9 @@ void merge_clusters (
     for (auto i: idx_from)
         for (auto j: idx_to)
         {
-            contig_mat (i, j) = contig_mat (j, i) = 1;
+            arma::uword ia = static_cast <arma::uword> (i),
+                        ja = static_cast <arma::uword> (j);
+            contig_mat (ia, ja) = contig_mat (ja, ia) = 1;
         }
 
     // then re-number all cluster numbers in cl2index 
