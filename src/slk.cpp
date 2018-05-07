@@ -34,7 +34,7 @@ Rcpp::IntegerVector rcpp_slk (
     from = from - 1;
     to = to - 1;
 
-    arma::Mat <unsigned short> contig_mat;
+    arma::Mat <int> contig_mat;
     arma::Mat <double> d_mat, d_mat_full;
 
     // index2cl and cl2index are dynamically updated with cluster memberships;
@@ -45,8 +45,8 @@ Rcpp::IntegerVector rcpp_slk (
     int2indx_map_t vert2index_map;
     indx2int_map_t index2vert_map, index2cl_map;
 
-    unsigned int n = sets_init (from, to, vert2index_map, index2vert_map,
-            index2cl_map, cl2index_map);
+    int n = sets_init (from, to, vert2index_map, index2vert_map,
+                       index2cl_map, cl2index_map);
 
     mats_init (from, to, d, vert2index_map, contig_mat, d_mat);
     dmat_full_init (from_full, to_full, d_full, vert2index_map, d_mat_full);
@@ -56,34 +56,20 @@ Rcpp::IntegerVector rcpp_slk (
      * from  0 to 1.
      */
 
-    std::unordered_set <unsigned int> the_tree;
-    unsigned int e = 0; // edge number in gr_full
+    indxset_t the_tree;
+    int e = 0; // edge number in gr_full
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
-        unsigned int ff = static_cast <unsigned int> (from_full (e)),
-                     tf = static_cast <unsigned int> (to_full (e));
-        unsigned int ifrom = vert2index_map.at (ff),
-                     ito = vert2index_map.at (tf);
+        index_t ifrom = vert2index_map.at (from_full (e)),
+                ito = vert2index_map.at (to_full (e));
         if (index2cl_map.find (ifrom) != index2cl_map.end () &&
                 index2cl_map.find (ito) != index2cl_map.end ())
         {
-            unsigned int cfrom = index2cl_map.at (ifrom),
-                         cto = index2cl_map.at (ito);
+            int cfrom = index2cl_map.at (ifrom),
+                cto = index2cl_map.at (ito);
             if (cfrom != cto && contig_mat (ifrom, ito) > 0)
             {
-                if (cl2index_map.find (cfrom) == cl2index_map.end ())
-                {
-                    Rcpp::Rcout << "cfrom [" << ifrom << "] = " << cfrom <<
-                        " not in cl2index_map" << std::endl;
-                    Rcpp::stop ("shite");
-                }
-                if (cl2index_map.find (cto) == cl2index_map.end ())
-                {
-                    Rcpp::Rcout << "cto [" << ito << "] = " << cto <<
-                        " not in cl2index_map" << std::endl;
-                    Rcpp::stop ("shite");
-                }
-                unsigned int ishort = find_shortest_connection (from, to, d,
+                size_t ishort = find_shortest_connection (from, to, d,
                         vert2index_map, d_mat, cl2index_map, cfrom, cto);
                 the_tree.insert (ishort);
                 merge_clusters (contig_mat, index2cl_map, cl2index_map,
@@ -99,7 +85,7 @@ Rcpp::IntegerVector rcpp_slk (
         }
     }
 
-    std::vector <int> treevec (the_tree.begin (), the_tree.end ());
+    std::vector <index_t> treevec (the_tree.begin (), the_tree.end ());
 
     return Rcpp::wrap (treevec);
 }

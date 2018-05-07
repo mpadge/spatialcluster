@@ -4,11 +4,11 @@
 
 struct CLKDat
 {
-    unsigned int n;
+    int n;
 
     std::vector <OneEdge> edges_all, edges_nn;
 
-    arma::Mat <unsigned short> contig_mat;
+    arma::Mat <int> contig_mat;
     arma::Mat <double> dmax;
 
     int2indxset_map_t cl2index_map;
@@ -25,7 +25,7 @@ void clk_init (CLKDat &clk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-unsigned int clk_step (CLKDat &clk_dat, unsigned int i);
+int clk_step (CLKDat &clk_dat, int i);
 
 Rcpp::IntegerVector rcpp_clk (
         const Rcpp::DataFrame gr_full,

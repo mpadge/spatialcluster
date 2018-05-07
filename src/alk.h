@@ -22,14 +22,14 @@
  */
 struct ALKDat
 {
-    unsigned int n;
+    int n;
 
     std::unordered_map <double,
-        std::pair <unsigned int, unsigned int> > edgewt2idx_pair_map;
-    std::unordered_map <unsigned int, std::unordered_set <double> >
+        std::pair <index_t, index_t> > edgewt2idx_pair_map;
+    std::unordered_map <index_t, std::unordered_set <double> >
         idx2edgewt_map; // all wts associated with that cluster
 
-    arma::Mat <unsigned short> contig_mat, num_edges;
+    arma::Mat <int> contig_mat, num_edges;
     arma::Mat <double> dmat, avg_dist;
 
     int2indxset_map_t cl2index_map;
@@ -43,10 +43,9 @@ void alk_init (ALKDat &alk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void update_edgewt_maps (ALKDat &alk_dat,
-        unsigned int l, unsigned int m);
+void update_edgewt_maps (ALKDat &alk_dat, int l, int m);
 
-unsigned int alk_step (ALKDat &alk_dat,
+int alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,

@@ -87,13 +87,13 @@ void mats_init (
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
         const int2indx_map_t &vert2index_map,
-        arma::Mat <unsigned short> &contig_mat,
+        arma::Mat <int> &contig_mat,
         arma::Mat <double> &d_mat)
 {
     // arma::uword = unsigned int
     const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
 
-    contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
+    contig_mat = arma::zeros <arma::Mat <int> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
     d_mat.resize (n, n);
     d_mat.fill (INFINITE_DOUBLE);
@@ -198,7 +198,7 @@ size_t find_shortest_connection (
 //' by one row and column.
 //' @noRd
 void merge_clusters (
-        arma::Mat <unsigned short> &contig_mat,
+        arma::Mat <int> &contig_mat,
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map,
         int cluster_from,

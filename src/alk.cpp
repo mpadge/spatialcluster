@@ -10,12 +10,12 @@ void alk_init (ALKDat &alk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    unsigned int n = sets_init (from, to, alk_dat.vert2index_map,
+    int n = sets_init (from, to, alk_dat.vert2index_map,
             alk_dat.index2vert_map, alk_dat.index2cl_map,
             alk_dat.cl2index_map);
     alk_dat.n = n;
 
-    std::unordered_set <unsigned int> vert_set;
+    intset_t vert_set;
 
     // Get set of unique vertices, and store binary tree of edge distances
     for (int i = 0; i < from.size (); i++)
@@ -25,17 +25,15 @@ void alk_init (ALKDat &alk_dat,
         tree.insert (d [i]);
     }
     // Construct vert2index_map to map each unique vertex to an index
-    unsigned int i = 0;
+    index_t i = 0;
     for (auto v: vert_set)
         alk_dat.vert2index_map.emplace (v, i++);
 
     // Construct idx2edgewt_map and edgewt2idx_pair_map
     for (int i = 0; i < from.size (); i++)
     {
-        unsigned int fu = static_cast <unsigned int> (from [i]),
-                     tu = static_cast <unsigned int> (to [i]);
-        unsigned int fi = alk_dat.vert2index_map.at (fu),
-                     ti = alk_dat.vert2index_map.at (tu);
+        index_t fi = alk_dat.vert2index_map.at (from [i]),
+                ti = alk_dat.vert2index_map.at (to [i]);
         alk_dat.edgewt2idx_pair_map.emplace (d [i], std::make_pair (fi, ti));
 
         // idx2edgewt_map.second is an unordered set that needs to be expanded
@@ -66,8 +64,8 @@ void alk_init (ALKDat &alk_dat,
         }
     }
 
-    alk_dat.contig_mat = arma::zeros <arma::Mat <unsigned short> > (n, n);
-    alk_dat.num_edges = arma::ones <arma::Mat <unsigned short> > (n, n);
+    alk_dat.contig_mat = arma::zeros <arma::Mat <int> > (n, n);
+    alk_dat.num_edges = arma::ones <arma::Mat <int> > (n, n);
     alk_dat.avg_dist.set_size (n, n);
     //alk_dat.avg_dist.fill (INFINITE_DOUBLE);
     alk_dat.avg_dist.fill (0.0);
@@ -75,10 +73,8 @@ void alk_init (ALKDat &alk_dat,
     alk_dat.dmat.fill (INFINITE_DOUBLE);
     for (int i = 0; i < from.length (); i++)
     {
-        unsigned int fu = static_cast <unsigned int> (from [i]),
-                     tu = static_cast <unsigned int> (to [i]);
-        unsigned int vf = alk_dat.vert2index_map.at (fu),
-                     vt = alk_dat.vert2index_map.at (tu);
+        index_t vf = alk_dat.vert2index_map.at (from [i]),
+                vt = alk_dat.vert2index_map.at (to [i]);
         alk_dat.contig_mat (vf, vt) = 1;
         alk_dat.num_edges (vf, vt) = 1;
         //alk_dat.avg_dist (vf, vt) = 0.0;
@@ -90,8 +86,7 @@ void alk_init (ALKDat &alk_dat,
 // update both idx2edgewt and edgewt2idx maps to reflect merging of cluster m
 // into cluster l (using Guo's original notation there). The cl2index
 // and index2cl maps are updated in `merge_clusters`
-void update_edgewt_maps (ALKDat &alk_dat,
-        unsigned int m, unsigned int l)
+void update_edgewt_maps (ALKDat &alk_dat, int m, int l)
 {
     std::unordered_set <double> wtsl = alk_dat.idx2edgewt_map.at (l),
         wtsm = alk_dat.idx2edgewt_map.at (m);
@@ -103,8 +98,7 @@ void update_edgewt_maps (ALKDat &alk_dat,
 
     for (auto w: wtsl)
     {
-        std::pair <unsigned int, unsigned int> pr =
-            alk_dat.edgewt2idx_pair_map.at (w);
+        std::pair <index_t, index_t> pr = alk_dat.edgewt2idx_pair_map.at (w);
         bool update = true;
         if (pr.first == m)
             pr.first = l;
@@ -130,8 +124,7 @@ void update_edgewt_maps (ALKDat &alk_dat,
     {
         for (auto w: wts)
         {
-            std::pair <unsigned int, unsigned int> pr =
-                alk_dat.edgewt2idx_pair_map.at (w);
+            std::pair <index_t, index_t> pr = alk_dat.edgewt2idx_pair_map.at (w);
             if (pr.first == m)
                 pr.first = l;
             if (pr.second == m)
@@ -141,7 +134,7 @@ void update_edgewt_maps (ALKDat &alk_dat,
     }
 }
 
-unsigned int alk_step (ALKDat &alk_dat,
+int alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
@@ -154,9 +147,9 @@ unsigned int alk_step (ALKDat &alk_dat,
     double edge_dist = tree.treeMin();
     tree_node * node = tree.getRoot ();
     node = tree.getNode (node, edge_dist);
-    std::pair <unsigned int, unsigned int> pr =
+    std::pair <index_t, index_t> pr =
         alk_dat.edgewt2idx_pair_map.at (edge_dist);
-    unsigned int l = pr.first, m = pr.second;
+    index_t l = pr.first, m = pr.second;
     while (l == m || alk_dat.contig_mat (l, m) == 0 ||
             edge_dist < alk_dat.avg_dist (l, m))
     {
@@ -169,7 +162,7 @@ unsigned int alk_step (ALKDat &alk_dat,
         m = pr.second;
     }
     
-    unsigned int ishort = find_shortest_connection (from, to, d,
+    int ishort = find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
             alk_dat.cl2index_map, m, l);
     // ishort is return value; an index into (from, to)
@@ -194,14 +187,13 @@ unsigned int alk_step (ALKDat &alk_dat,
         {
             const double tempd_l = alk_dat.avg_dist (cl.first, l),
                    tempd_m = alk_dat.avg_dist (cl.first, m);
-            const unsigned int nedges_l = alk_dat.num_edges (cl.first, l),
-                  nedges_m = alk_dat.num_edges (cl.first, m);
+            const int nedges_l = alk_dat.num_edges (cl.first, l),
+                      nedges_m = alk_dat.num_edges (cl.first, m);
 
             alk_dat.avg_dist (cl.first, l) =
                 (tempd_l * nedges_l + tempd_m * nedges_m) /
                 static_cast <double> (nedges_l + nedges_m);
-            alk_dat.num_edges (cl.first, l) = static_cast <unsigned short> (
-                                                nedges_l + nedges_m);
+            alk_dat.num_edges (cl.first, l) = nedges_l + nedges_m;
 
             if (alk_dat.contig_mat (cl.first, l) == 1 ||
                     alk_dat.contig_mat (cl.first, m) == 1)
@@ -260,17 +252,17 @@ Rcpp::IntegerVector rcpp_alk (
     ALKDat alk_dat;
     BinarySearchTree tree;
     alk_init (alk_dat, tree, from, to, d);
-    const unsigned int n = alk_dat.n;
+    const int n = alk_dat.n;
 
-    std::unordered_set <unsigned int> the_tree;
+    std::unordered_set <int> the_tree;
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
-        unsigned int ishort = alk_step (alk_dat, tree, from, to, d);
+        int ishort = alk_step (alk_dat, tree, from, to, d);
         the_tree.insert (ishort);
     }
 
-    std::vector <unsigned int> treevec (the_tree.begin (), the_tree.end ());
+    std::vector <int> treevec (the_tree.begin (), the_tree.end ());
 
     return Rcpp::wrap (treevec);
 }
