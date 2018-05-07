@@ -8,7 +8,7 @@
  */
 struct EXDat
 {
-    unsigned int n;
+    size_t n;
 
     std::vector <OneEdge> edges; // nearest neighbour edges only
     std::vector <bool> index_in_cluster;
@@ -26,11 +26,11 @@ void clexact_init (EXDat &clexact_dat,
 
 void assign_first_edge (EXDat &clexact_dat);
 
-unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
-        const unsigned int clnum);
+int clexact_step (EXDat &clexact_dat, const index_t ei,
+        const int clnum);
 
 void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
-        unsigned int num_clusters);
+        int num_clusters);
 
 Rcpp::IntegerVector rcpp_exact_initial (
         const Rcpp::DataFrame gr);

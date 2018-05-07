@@ -9,15 +9,15 @@ void clexact_init (EXDat &clexact_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    std::unordered_set <unsigned int> vert_set;
+    intset_t vert_set;
     for (int i = 0; i < from.size (); i++)
     {
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
     }
-    clexact_dat.n = static_cast <unsigned int> (vert_set.size ());
+    clexact_dat.n = vert_set.size ();
 
-    unsigned int i = 0;
+    index_t i = 0;
     for (auto v: vert_set)
     {
         clexact_dat.index2vert_map.emplace (i, v);
@@ -26,14 +26,14 @@ void clexact_init (EXDat &clexact_dat,
     }
 
     clexact_dat.edges.clear ();
-    clexact_dat.edges.resize (static_cast <unsigned int> (from.size ()));
-    for (unsigned int i = 0; i < from.size (); i++)
+    clexact_dat.edges.resize (static_cast <size_t> (from.size ()));
+    for (int i = 0; i < from.size (); i++)
     {
         OneEdge here;
         here.from = from [i];
         here.to = to [i];
         here.dist = d [i];
-        clexact_dat.edges [i] = here;
+        clexact_dat.edges [static_cast <size_t> (i)] = here;
     }
 
     clexact_dat.index_in_cluster.resize (clexact_dat.n);
@@ -44,12 +44,11 @@ void clexact_init (EXDat &clexact_dat,
 
 void assign_first_edge (EXDat &clexact_dat)
 {
-    unsigned int clnum = 0, ei = 0;
+    int clnum = 0;
+    index_t ei = 0;
     OneEdge edge = clexact_dat.edges [ei];
-    unsigned int eto = static_cast <unsigned int> (edge.to),
-                 efrom = static_cast <unsigned int> (edge.from),
-                 ito = clexact_dat.vert2index_map.at (eto),
-                 ifrom = clexact_dat.vert2index_map.at (efrom);
+    index_t ito = clexact_dat.vert2index_map.at (edge.to),
+            ifrom = clexact_dat.vert2index_map.at (edge.from);
 
     clexact_dat.index2cl_map [ito] = clnum;
     clexact_dat.index2cl_map [ifrom] = clnum;
@@ -57,8 +56,8 @@ void assign_first_edge (EXDat &clexact_dat)
     clexact_dat.index_in_cluster [ifrom] = true;
 
     intset_t cli;
-    cli.insert (ito);
-    cli.insert (ifrom);
+    cli.insert (static_cast <int> (ito));
+    cli.insert (static_cast <int> (ifrom));
     clexact_dat.cl2index_map.emplace (clnum, cli);
 
     clexact_dat.vert2cl_map.emplace (edge.to, clnum);
@@ -73,21 +72,19 @@ void assign_first_edge (EXDat &clexact_dat)
 //'
 //' @param ei The i'th edge of the sorted list of NN edge weights
 //' @noRd
-unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
-        const unsigned int clnum)
+int clexact_step (EXDat &clexact_dat, const index_t ei,
+        const int clnum)
 {
     bool from_in = false, to_in = false;
     OneEdge edge = clexact_dat.edges [ei];
-    unsigned int eto = static_cast <unsigned int> (edge.to),
-                 efrom = static_cast <unsigned int> (edge.from),
-                 ito = clexact_dat.vert2index_map.at (eto),
-                 ifrom = clexact_dat.vert2index_map.at (efrom);
+    index_t ito = clexact_dat.vert2index_map.at (edge.to),
+            ifrom = clexact_dat.vert2index_map.at (edge.from);
     if (clexact_dat.index_in_cluster [ito])
         to_in = true;
     if (clexact_dat.index_in_cluster [ifrom])
         from_in = true;
 
-    unsigned int clnum_i = clnum;
+    int clnum_i = clnum;
 
     if (from_in && to_in)
     {
@@ -108,8 +105,8 @@ unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
         if (clexact_dat.cl2index_map.find (clnum_i) !=
                 clexact_dat.cl2index_map.end ())
             cli = clexact_dat.cl2index_map.at (clnum_i);
-        cli.insert (ito);
-        cli.insert (ifrom);
+        cli.insert (static_cast <int> (ito));
+        cli.insert (static_cast <int> (ifrom));
         clexact_dat.cl2index_map [clnum_i] = cli;
 
         // These values may already be in the map here, but that's okay
@@ -126,7 +123,7 @@ unsigned int clexact_step (EXDat &clexact_dat, const unsigned int ei,
 //' used to construct the hierarchical relationships
 //' @noRd
 void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
-        unsigned int num_clusters)
+        int num_clusters)
 {
     int2intset_map_t vert_sets;
     for (int i = 0; i < num_clusters; i++)
@@ -143,18 +140,17 @@ void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
     }
 
     // need a (sparse) matrix of all pairwise edge distances:
-    arma::Mat <double> vert_dists (clexact_dat.n, clexact_dat.n);
+    arma::uword nu = to_uword (clexact_dat.n);
+    arma::Mat <double> vert_dists (nu, nu);
     for (auto ei: clexact_dat.edges)
     {
-        unsigned int eto = static_cast <unsigned int> (ei.to),
-                     efrom = static_cast <unsigned int> (ei.from),
-                     i = clexact_dat.vert2index_map.at (efrom),
-                     j = clexact_dat.vert2index_map.at (eto);
+        arma::uword i = to_uword (clexact_dat.vert2index_map.at (ei.from)),
+                    j = to_uword (clexact_dat.vert2index_map.at (ei.to));
         vert_dists (i, j) = vert_dists (j, i) = ei.dist;
     }
 
-    for (unsigned int i = 0; i < (num_clusters - 1); i++)
-        for (unsigned int j = (i + 1); j < num_clusters; j++)
+    for (int i = 0; i < (num_clusters - 1); i++)
+        for (int j = (i + 1); j < num_clusters; j++)
         {
             intset_t verts_i = vert_sets.at (i),
                      verts_j = vert_sets.at (j);
@@ -162,12 +158,16 @@ void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
             for (auto vi: verts_i)
                 for (auto vj: verts_j)
                 {
-                    int ii = clexact_dat.vert2index_map.at (vi),
-                        jj = clexact_dat.vert2index_map.at (vj);
-                    if (vert_dists (ii, jj) > max_d)
-                        max_d = vert_dists (ii, jj);
+                    arma::uword viu = static_cast <arma::uword> (
+                            clexact_dat.vert2index_map.at (vi)),
+                                vju = static_cast <arma::uword> (
+                            clexact_dat.vert2index_map.at (vj));
+                    if (vert_dists (viu, vju) > max_d)
+                        max_d = vert_dists (viu, vju);
                 }
-            cl_edges (i, j) = cl_edges (j, i) = max_d;
+            arma::uword iu = static_cast <arma::uword> (i),
+                        ju = static_cast <arma::uword> (j);
+            cl_edges (iu, ju) = cl_edges (ju, iu) = max_d;
         }
 }
 
@@ -196,25 +196,26 @@ Rcpp::IntegerVector rcpp_exact_initial (
     clexact_init (clexact_dat, from, to, d);
 
     assign_first_edge (clexact_dat);
-    unsigned int clnum = 1; // #1 assigned in assign_first_edge
-    unsigned int ei = 1; // index of next edge to be assigned
+    int clnum = 1; // #1 assigned in assign_first_edge
+    index_t ei = 1; // index of next edge to be assigned
 
     while (clexact_dat.vert2cl_map.size () < clexact_dat.n)
     {
-        unsigned int clnum_i = clexact_step (clexact_dat, ei, clnum);
+        int clnum_i = clexact_step (clexact_dat, ei, clnum);
         ei++;
         if (clnum_i == clnum)
             clnum++;
     }
 
     // Then construct the hierarchical relationships among clusters
-    arma::Mat <double> cl_edges (clnum, clnum);
+    arma::uword cu = static_cast <arma::uword> (clnum);
+    arma::Mat <double> cl_edges (cu, cu);
     fill_cl_edges (clexact_dat, cl_edges, clnum);
 
     // Then construct vector mapping edges to cluster numbers
-    std::vector <unsigned int> clvec (clexact_dat.n);
+    std::vector <int> clvec (clexact_dat.n);
     for (auto ci: clexact_dat.vert2cl_map)
-        clvec [ci.first] = ci.second;
+        clvec [static_cast <size_t> (ci.first)] = ci.second;
     
     return Rcpp::wrap (clvec);
 }
