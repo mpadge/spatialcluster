@@ -12,40 +12,43 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
     Rcpp::IntegerVector clfrom = gr ["cl_from"];
     Rcpp::IntegerVector clto = gr ["cl_to"];
 
-    const int n = d.size ();
+    const unsigned int n = static_cast <unsigned int> (d.size ());
     
     cldat.edges.resize (n);
-    std::unordered_map <int, std::unordered_set <int> > cl2edge_map;
+    std::unordered_map <unsigned int,
+        std::unordered_set <unsigned int> > cl2edge_map;
     // The EXMerge struct has a set of inter-cluster edges which are filled
     // here; the rest of the struct is filled below
-    for (int i = 0; i < n; i++)
+    for (unsigned int i = 0; i < n; i++)
     {
         if (clnum [i] >= 0) // edge in a cluster
         {
-            std::unordered_set <int> edgeset;
-            if (cl2edge_map.find (clnum [i]) != cl2edge_map.end ())
-                edgeset = cl2edge_map.at (clnum [i]);
+            unsigned int clnum_i = static_cast <unsigned int> (clnum [i]);
+            std::unordered_set <unsigned int> edgeset;
+            if (cl2edge_map.find (clnum_i) != cl2edge_map.end ())
+                edgeset = cl2edge_map.at (clnum_i);
             edgeset.emplace (i);
-            cl2edge_map [clnum [i]] = edgeset;
+            cl2edge_map [clnum_i] = edgeset;
         } else // fill inter-cluster edge
         {
             OneEdge edgei;
-            edgei.from = clfrom [i]; // edges hold cluster numbers,
-            edgei.to = clto [i];     // NOT vertex numbers
+            // from and to hold cluster numbers, NOT vertex numbers
+            edgei.from = static_cast <unsigned int> (clfrom [i]);
+            edgei.to = static_cast <unsigned int> (clto [i]);
             edgei.dist = d [i];
             cldat.edges [i] = edgei;
         }
     }
 
     // Fill intra-cluster data:
-    const int ncl = cl2edge_map.size ();
+    const unsigned int ncl = static_cast <unsigned int> (cl2edge_map.size ());
     cldat.clusters.resize (ncl);
-    for (int i = 0; i < ncl; i++)
+    for (unsigned int i = 0; i < ncl; i++)
     {
         OneCluster cli;
-        std::unordered_set <int> edgeset = cl2edge_map.at (i);
-        cli.id = i;
-        cli.n = edgeset.size ();
+        std::unordered_set <unsigned int> edgeset = cl2edge_map.at (i);
+        cli.id = static_cast <int> (i);
+        cli.n = static_cast <int> (edgeset.size ());
         cli.dist_sum = 0.0;
         cli.dist_max = 0.0;
         for (auto ei: edgeset)
@@ -62,10 +65,11 @@ void rcpp_exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat)
 
 // merge cluster clfrom with clto; clto remains as it was but is no longer
 // indexed so simply ignored from that point on
-OneMerge rcpp_exmerge_merge (EXMerge &cldat, int clfrom_i, int clto_i, int ei)
+OneMerge rcpp_exmerge_merge (EXMerge &cldat,
+        int clfrom_i, int clto_i, unsigned int ei)
 {
-    int cl_from_i_idx = cldat.cl2index_map.at (clfrom_i),
-        cl_to_i_idx = cldat.cl2index_map.at (clto_i);
+    unsigned int cl_from_i_idx = cldat.cl2index_map.at (clfrom_i),
+                 cl_to_i_idx = cldat.cl2index_map.at (clto_i);
     OneCluster clfrom = cldat.clusters [cl_from_i_idx],
                clto = cldat.clusters [cl_to_i_idx];
     clto.n += clfrom.n;
@@ -92,7 +96,7 @@ OneMerge rcpp_exmerge_merge (EXMerge &cldat, int clfrom_i, int clto_i, int ei)
 void rcpp_exmerge_single (EXMerge &cldat)
 {
     std::unordered_set <std::string> merges;
-    int edgei = 0;
+    unsigned int edgei = 0;
     while (cldat.clusters.size () > 1)
     {
         std::string merge_pr = std::to_string (cldat.edges [edgei].from) + "-" +
@@ -100,8 +104,8 @@ void rcpp_exmerge_single (EXMerge &cldat)
         if (merges.find (merge_pr) == merges.end ())
         {
             OneMerge the_merge = rcpp_exmerge_merge (cldat,
-                    cldat.edges [edgei].from,
-                    cldat.edges [edgei].to,
+                    static_cast <int> (cldat.edges [edgei].from),
+                    static_cast <int> (cldat.edges [edgei].to),
                     edgei);
         }
         edgei++;

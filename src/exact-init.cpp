@@ -15,7 +15,7 @@ void clexact_init (EXDat &clexact_dat,
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
     }
-    clexact_dat.n = vert_set.size ();
+    clexact_dat.n = static_cast <unsigned int> (vert_set.size ());
 
     unsigned int i = 0;
     for (auto v: vert_set)
@@ -26,12 +26,12 @@ void clexact_init (EXDat &clexact_dat,
     }
 
     clexact_dat.edges.clear ();
-    clexact_dat.edges.resize (from.size ());
-    for (int i = 0; i < from.size (); i++)
+    clexact_dat.edges.resize (static_cast <unsigned int> (from.size ()));
+    for (unsigned int i = 0; i < from.size (); i++)
     {
         OneEdge here;
-        here.from = from [i];
-        here.to = to [i];
+        here.from = static_cast <unsigned int> (from [i]);
+        here.to = static_cast <unsigned int> (to [i]);
         here.dist = d [i];
         clexact_dat.edges [i] = here;
     }
