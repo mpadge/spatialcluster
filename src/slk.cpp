@@ -45,8 +45,8 @@ Rcpp::IntegerVector rcpp_slk (
     int2indx_map_t vert2index_map;
     indx2int_map_t index2vert_map, index2cl_map;
 
-    int n = sets_init (from, to, vert2index_map, index2vert_map,
-                       index2cl_map, cl2index_map);
+    size_t n = sets_init (from, to, vert2index_map, index2vert_map,
+                          index2cl_map, cl2index_map);
 
     mats_init (from, to, d, vert2index_map, contig_mat, d_mat);
     dmat_full_init (from_full, to_full, d_full, vert2index_map, d_mat_full);
@@ -57,7 +57,7 @@ Rcpp::IntegerVector rcpp_slk (
      */
 
     indxset_t the_tree;
-    int e = 0; // edge number in gr_full
+    size_t e = 0; // edge number in gr_full
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         index_t ifrom = vert2index_map.at (from_full (e)),
@@ -67,7 +67,8 @@ Rcpp::IntegerVector rcpp_slk (
         {
             int cfrom = index2cl_map.at (ifrom),
                 cto = index2cl_map.at (ito);
-            if (cfrom != cto && contig_mat (ifrom, ito) > 0)
+            if (cfrom != cto &&
+                    contig_mat (to_uword (ifrom), to_uword (ito)) > 0)
             {
                 size_t ishort = find_shortest_connection (from, to, d,
                         vert2index_map, d_mat, cl2index_map, cfrom, cto);
