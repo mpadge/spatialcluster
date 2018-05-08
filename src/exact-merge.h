@@ -33,9 +33,30 @@ struct ExMergeDat
     std::vector <OneMerge> merges;
 };
 
+struct OneAvgDist
+{
+    int cli, clj;
+    size_t ni, nj;
+    double di, dj, d, average; 
+    // di, dj are dist_sums, d is min dist of connecting edge
+};
+
+struct AvgDists
+{
+    std::vector <OneAvgDist> avg_dists;
+};
+
 void init (const Rcpp::DataFrame &gr, ExMergeDat &cldat);
+
 OneMerge merge (ExMergeDat &cldat, index_t ei);
 void single (ExMergeDat &cldat);
+
+bool avgdist_sorter (const OneAvgDist &lhs, const OneAvgDist &rhs);
+size_t count_num_clusters (ExMergeDat &cldat,
+        const std::unordered_map <std::string, double> &edge_dist_map);
+void fill_avg_dists (ExMergeDat &cldat,
+        const std::unordered_map <std::string, double> &edge_dist_map,
+        AvgDists &cl_dists);
 void avg (ExMergeDat &cldat);
 void max (ExMergeDat &cldat);
 

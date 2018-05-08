@@ -16,7 +16,8 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     const size_t n = static_cast <size_t> (d.size ());
     
     cldat.edges.resize (n);
-    int2intset_map_t cl2edge_map;
+    int2intset_map_t cl2edge_map; // TODO: Delete that!
+    std::unordered_map <int, std::unordered_set <double> > cl2dist_map;
     size_t edge_count = 0;
     for (int i = 1; i < static_cast <int> (n); i++)
     {
@@ -24,10 +25,16 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
         {
             int clnum_i = clnum [i];
             intset_t edgeset;
+            std::unordered_set <double> distset;
             if (cl2edge_map.find (clnum_i) != cl2edge_map.end ())
+            {
                 edgeset = cl2edge_map.at (clnum_i);
+                distset = cl2dist_map.at (clnum_i);
+            }
             edgeset.emplace (i);
+            distset.emplace (d [i]);
             cl2edge_map [clnum_i] = edgeset;
+            cl2dist_map [clnum_i] = distset;
         } else 
             edge_count++;
     }
@@ -49,19 +56,20 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     }
 
     // Fill intra-cluster data:
-    for (auto i: cl2edge_map)
+    for (auto i: cl2dist_map)
     {
-        intset_t edgeset = i.second;
+        //intset_t edgeset = i.second;
+        std::unordered_set <double> distset = i.second;
         OneCluster cli;
         cli.id = i.first;
-        cli.n = edgeset.size ();
+        cli.n = distset.size ();
         cli.dist_sum = 0.0;
         cli.dist_max = 0.0;
-        for (auto ei: edgeset)
+        for (auto di: distset)
         {
-            cli.dist_sum += ei;
-            if (ei > cli.dist_max)
-                cli.dist_max = ei;
+            cli.dist_sum += di;
+            if (di > cli.dist_max)
+                cli.dist_max = di;
         }
         cldat.clusters.emplace (i.first, cli);
 
@@ -133,10 +141,91 @@ void ex_merge::single (ex_merge::ExMergeDat &cldat)
     }
 }
 
+bool ex_merge::avgdist_sorter (const OneAvgDist &lhs, const OneAvgDist &rhs)
+{
+    return lhs.average < rhs.average;
+}
+
+size_t ex_merge::count_num_clusters (ex_merge::ExMergeDat &cldat,
+        const std::unordered_map <std::string, double> &edge_dist_map)
+{
+    // Number of clusters is probably just cldat.edges.size (), but may be less
+    // if multiple edges connect same clusters
+    const size_t n = cldat.clusters.size ();
+    size_t nc = 0;
+    for (int i = 0; i < (n - 1); i++)
+        for (int j = (i + 1); j < n; j++)
+        {
+            // The [] operator requires the unordered_map to be **NON**const
+            std::string eij = std::to_string (cldat.clusters [i].id) + "-" +
+                              std::to_string (cldat.clusters [j].id);
+            if (edge_dist_map.find (eij) != edge_dist_map.end ())
+                nc++;
+        }
+
+    return nc;
+}
+
+void ex_merge::fill_avg_dists (ex_merge::ExMergeDat &cldat,
+        const std::unordered_map <std::string, double> &edge_dist_map,
+        ex_merge::AvgDists &cl_dists)
+{
+    size_t nc = 0;
+    for (int i = 0; i < (cldat.clusters.size () - 1); i++)
+        for (int j = (i + 1); j < cldat.clusters.size (); j++)
+        {
+            std::string eij = std::to_string (cldat.clusters [i].id) + "-" +
+                              std::to_string (cldat.clusters [j].id);
+            if (edge_dist_map.find (eij) != edge_dist_map.end ())
+            {
+                ex_merge::OneAvgDist onedist;
+                onedist.cli = cldat.clusters [i].id;
+                onedist.clj = cldat.clusters [j].id;
+                onedist.di = cldat.clusters [i].dist_sum;
+                onedist.dj = cldat.clusters [j].dist_sum;
+                onedist.ni = cldat.clusters [i].n;
+                onedist.nj = cldat.clusters [j].n;
+                onedist.d = edge_dist_map.at (eij);
+
+                onedist.average = (onedist.di + onedist.dj + onedist.d) /
+                    static_cast <double> (onedist.ni + onedist.nj + 1);
+
+                cl_dists.avg_dists [nc++] = onedist;
+            }
+        }
+
+    std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
+            &ex_merge::avgdist_sorter);
+}
+
 // Successively merge pairs of clusters which yield the lower average
 // intra-cluster edge distance
 void ex_merge::avg (ex_merge::ExMergeDat &cldat)
 {
+    std::unordered_map <std::string, double> edge_dist_map;
+    for (auto ei: cldat.edges)
+    {
+        std::string es = std::to_string (ei.from) + "-" +
+                         std::to_string (ei.to);
+        if (edge_dist_map.find (es) == edge_dist_map.end ())
+            edge_dist_map.emplace (es, ei.dist);
+        else if (ei.dist < edge_dist_map.at (es)) // this is not likely, but possible
+            edge_dist_map [es] = ei.dist;
+    }
+
+    // work out how many unique inter-cluster edges there are. This is probably
+    // just cldat.edges.size (), but may be less.
+    size_t nc = ex_merge::count_num_clusters (cldat, edge_dist_map);
+
+    AvgDists cl_dists;
+    cl_dists.avg_dists.resize (nc);
+    ex_merge::fill_avg_dists (cldat, edge_dist_map, cl_dists);
+
+    for (auto i: cl_dists.avg_dists)
+        Rcpp::Rcout << i.cli << " -> " << i.clj << ": " <<
+            i.average << std::endl;
+
+    Rcpp::Rcout << "---done---" << std::endl;
 }
 
 void ex_merge::max (ex_merge::ExMergeDat &cldat)

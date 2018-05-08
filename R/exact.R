@@ -18,8 +18,10 @@
 #'
 #'
 #' @export
-scl_exact <- function (xy, dmat, ncl)
+scl_exact <- function (xy, dmat, ncl, method = "single")
 {
+    method <- scl_linkage_type (method)
+
     xy <- scl_tbl (xy)
     edges <- scl_edges_nn (xy, dmat, shortest = TRUE)
     # cluster numbers can be joined with edges through either from or to:
@@ -45,7 +47,7 @@ scl_exact <- function (xy, dmat, ncl)
     edges$cl_from [is.na (edges$cl_from)] <- -1
     edges$cl_to [is.na (edges$cl_to)] <- -1
 
-    merges <- rcpp_exact_merge (edges, method = "single") %>%
+    merges <- rcpp_exact_merge (edges, method = method) %>%
         data.frame ()
 
     merges <- tibble::tibble (from = as.integer (merges$from),
