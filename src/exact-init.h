@@ -9,9 +9,9 @@
  * set to `false`.
  */
 
-namespace exact_init {
+namespace ex_init {
 
-struct EXDat
+struct ExInitDat
 {
     size_t n;
 
@@ -24,20 +24,20 @@ struct EXDat
     int2intset_map_t cl2index_map;
 };
 
-void clexact_init (EXDat &clexact_dat,
+void init (ExInitDat &clexact_dat,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void assign_first_edge (EXDat &clexact_dat);
+void assign_first_edge (ExInitDat &clexact_dat);
 
-int clexact_step (EXDat &clexact_dat, const index_t ei,
+int step (ExInitDat &clexact_dat, const index_t ei,
         const int clnum);
 
-void fill_cl_edges (EXDat &clexact_dat, arma::Mat <double> &cl_edges,
+void fill_cl_edges (ExInitDat &clexact_dat, arma::Mat <double> &cl_edges,
         int num_clusters);
 
-} // end namespace exact_init
+} // end namespace ex_init
 
 Rcpp::IntegerVector rcpp_exact_initial (
         const Rcpp::DataFrame gr);

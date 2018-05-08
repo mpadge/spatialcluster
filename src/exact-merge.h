@@ -8,7 +8,7 @@
 // routines to allow results from rcpp_exact_initial to be returned and cached
 // for subsequent re-merging.
 
-namespace exact_merge {
+namespace ex_merge {
 
 struct OneCluster
 {
@@ -23,7 +23,7 @@ struct OneMerge
     double merge_dist;
 };
 
-struct EXMerge
+struct ExMergeDat
 {
     // cl2index_map is from cluster numbers to indices in clusters
     std::unordered_map <int, index_t> cl2index_map;
@@ -32,16 +32,16 @@ struct EXMerge
     std::vector <OneMerge> merges;
 };
 
-void exmerge_init (const Rcpp::DataFrame &gr, EXMerge &cldat);
-OneMerge exmerge_merge (EXMerge &cldat,
+void init (const Rcpp::DataFrame &gr, ExMergeDat &cldat);
+OneMerge merge (ExMergeDat &cldat,
         int clfrom_i,
         int clto_i,
         index_t ei);
-void exmerge_single (EXMerge &cldat);
-void exmerge_avg (EXMerge &cldat);
-void exmerge_max (EXMerge &cldat);
+void single (ExMergeDat &cldat);
+void avg (ExMergeDat &cldat);
+void max (ExMergeDat &cldat);
 
-} // end namespace exact_merge
+} // end namespace ex_merge
 
 Rcpp::IntegerVector rcpp_exact_merge (
         const Rcpp::DataFrame gr,

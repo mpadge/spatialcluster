@@ -4,7 +4,7 @@
 
 // --------- EXACT CLUSTER ----------------
 
-void exact_init::clexact_init (exact_init::EXDat &clexact_dat,
+void ex_init::init (ex_init::ExInitDat &clexact_dat,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
@@ -42,7 +42,7 @@ void exact_init::clexact_init (exact_init::EXDat &clexact_dat,
 }
 
 
-void exact_init::assign_first_edge (exact_init::EXDat &clexact_dat)
+void ex_init::assign_first_edge (ex_init::ExInitDat &clexact_dat)
 {
     int clnum = 0;
     index_t ei = 0;
@@ -65,14 +65,14 @@ void exact_init::assign_first_edge (exact_init::EXDat &clexact_dat)
 }
 
 
-//' clexact_step
+//' step
 //'
 //' All edges are initially in their own clusters. This merges edge#i with the
 //' next closest edge
 //'
 //' @param ei The i'th edge of the sorted list of NN edge weights
 //' @noRd
-int exact_init::clexact_step (exact_init::EXDat &clexact_dat,
+int ex_init::step (ex_init::ExInitDat &clexact_dat,
         const index_t ei, const int clnum)
 {
     bool from_in = false, to_in = false;
@@ -122,7 +122,7 @@ int exact_init::clexact_step (exact_init::EXDat &clexact_dat,
 //' Fill (arma) matrix of strongest/shortest connections between all clusters
 //' used to construct the hierarchical relationships
 //' @noRd
-void exact_init::fill_cl_edges (exact_init::EXDat &clexact_dat,
+void ex_init::fill_cl_edges (ex_init::ExInitDat &clexact_dat,
         arma::Mat <double> &cl_edges, int num_clusters)
 {
     int2intset_map_t vert_sets;
@@ -192,16 +192,16 @@ Rcpp::IntegerVector rcpp_exact_initial (
     from = from - 1;
     to = to - 1;
 
-    exact_init::EXDat clexact_dat;
-    exact_init::clexact_init (clexact_dat, from, to, d);
+    ex_init::ExInitDat clexact_dat;
+    ex_init::init (clexact_dat, from, to, d);
 
-    exact_init::assign_first_edge (clexact_dat);
+    ex_init::assign_first_edge (clexact_dat);
     int clnum = 1; // #1 assigned in assign_first_edge
     index_t ei = 1; // index of next edge to be assigned
 
     while (clexact_dat.vert2cl_map.size () < clexact_dat.n)
     {
-        int clnum_i = clexact_step (clexact_dat, ei, clnum);
+        int clnum_i = ex_init::step (clexact_dat, ei, clnum);
         ei++;
         if (clnum_i == clnum)
             clnum++;
@@ -210,7 +210,7 @@ Rcpp::IntegerVector rcpp_exact_initial (
     // Then construct the hierarchical relationships among clusters
     arma::uword cu = static_cast <arma::uword> (clnum);
     arma::Mat <double> cl_edges (cu, cu);
-    exact_init::fill_cl_edges (clexact_dat, cl_edges, clnum);
+    ex_init::fill_cl_edges (clexact_dat, cl_edges, clnum);
 
     // Then construct vector mapping edges to cluster numbers
     std::vector <int> clvec (clexact_dat.n);

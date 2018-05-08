@@ -38,7 +38,7 @@ rcpp_cut_tree <- function(tree, ncl) {
     .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl)
 }
 
-#' clexact_step
+#' step
 #'
 #' All edges are initially in their own clusters. This merges edge#i with the
 #' next closest edge
