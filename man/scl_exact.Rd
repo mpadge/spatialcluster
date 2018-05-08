@@ -16,6 +16,9 @@ has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 columns.}
 
 \item{ncl}{Desired number of clusters}
+
+\item{method}{One of \code{"single"}, \code{"average"}, or
+\code{"complete"}; see \link{scl_redap} for details.}
 }
 \value{
 A object of class \code{scl} with \code{tree} containing the

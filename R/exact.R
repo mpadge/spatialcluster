@@ -9,6 +9,8 @@
 #' has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 #' columns.
 #' @param ncl Desired number of clusters
+#' @param method One of \code{"single"}, \code{"average"}, or
+#' \code{"complete"}; see \link{scl_redap} for details.
 #'
 #' @return A object of class \code{scl} with \code{tree} containing the
 #' clustering scheme, and \code{xy} the original coordinate data of the
