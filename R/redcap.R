@@ -153,5 +153,5 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
     structure (list (xy = scl$xy,
                      tree = tree_full,
                      pars = pars),
-               class = "scl")
+               class = "scl_redcap")
 }

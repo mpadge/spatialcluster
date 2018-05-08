@@ -8,7 +8,7 @@ test_that("structure", {
               expect_is (scl, "scl_redcap")
               expect_true (scl$pars$ncl >= 4)
               expect_true (all (names (scl) %in%
-                                c ("xy", "tree", "tree_rest", "pars")))
+                                c ("xy", "tree", "nodes", "pars")))
               expect_true (nrow (scl$tree) < n)
 })
 

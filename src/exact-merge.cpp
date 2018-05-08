@@ -49,11 +49,11 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     }
 
     // Fill intra-cluster data:
-    for (int i = 1; i < static_cast <int> (n); i++)
+    for (auto i: cl2edge_map)
     {
+        intset_t edgeset = i.second;
         OneCluster cli;
-        intset_t edgeset = cl2edge_map.at (i);
-        cli.id = i;
+        cli.id = i.first;
         cli.n = edgeset.size ();
         cli.dist_sum = 0.0;
         cli.dist_max = 0.0;
@@ -63,12 +63,12 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
             if (ei > cli.dist_max)
                 cli.dist_max = ei;
         }
-        cldat.clusters.emplace (i, cli);
+        cldat.clusters.emplace (i.first, cli);
 
-        cldat.cl_remap.emplace (i, i);
+        cldat.cl_remap.emplace (i.first, i.first);
         intset_t members;
-        members.emplace (i);
-        cldat.cl_members.emplace (i, members);
+        members.emplace (i.first);
+        cldat.cl_members.emplace (i.first, members);
     }
 }
 
