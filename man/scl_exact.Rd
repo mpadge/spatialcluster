@@ -18,7 +18,7 @@ columns.}
 \item{ncl}{Desired number of clusters}
 
 \item{method}{One of \code{"single"}, \code{"average"}, or
-\code{"complete"}; see \link{scl_redap} for details.}
+\code{"complete"}; see \link{scl_redcap} for details.}
 }
 \value{
 A object of class \code{scl} with \code{tree} containing the
