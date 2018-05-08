@@ -68,8 +68,8 @@ Rcpp::IntegerVector rcpp_slk (
             int cfrom = index2cl_map.at (ifrom),
                 cto = index2cl_map.at (ito);
             if (cfrom != cto &&
-                    contig_mat (utils::to_uword (ifrom),
-                                utils::to_uword (ito)) > 0)
+                    contig_mat (static_cast <arma::uword> (ifrom),
+                                static_cast <arma::uword> (ito)) > 0)
             {
                 size_t ishort = utils::find_shortest_connection (from, to, d,
                         vert2index_map, d_mat, cl2index_map, cfrom, cto);

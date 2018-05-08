@@ -4,9 +4,6 @@ namespace utils {
 
 bool strfound (const std::string str, const std::string target);
 
-template <typename T>
-arma::uword to_uword (const T arg);
-
 struct OneEdge
 {
     int from, to;

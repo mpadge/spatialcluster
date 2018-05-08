@@ -140,12 +140,14 @@ void ex_init::fill_cl_edges (ex_init::ExInitDat &clexact_dat,
     }
 
     // need a (sparse) matrix of all pairwise edge distances:
-    arma::uword nu = utils::to_uword (clexact_dat.n);
+    arma::uword nu = static_cast <arma::uword> (clexact_dat.n);
     arma::Mat <double> vert_dists (nu, nu);
     for (auto ei: clexact_dat.edges)
     {
-        arma::uword i = utils::to_uword (clexact_dat.vert2index_map.at (ei.from)),
-                    j = utils::to_uword (clexact_dat.vert2index_map.at (ei.to));
+        arma::uword i = static_cast <arma::uword> (
+                                    clexact_dat.vert2index_map.at (ei.from)),
+                    j = static_cast <arma::uword> (
+                                    clexact_dat.vert2index_map.at (ei.to));
         vert_dists (i, j) = vert_dists (j, i) = ei.dist;
     }
 

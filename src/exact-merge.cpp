@@ -18,7 +18,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     cldat.edges.resize (n);
     int2intset_map_t cl2edge_map;
     size_t edge_count = 0;
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i < static_cast <int> (n); i++)
     {
         if (clnum [i] >= 0) // edge in a cluster
         {
@@ -35,7 +35,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     // fill inter-cluster edges
     cldat.edges.resize (edge_count);
     edge_count = 0;
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i < static_cast <int> (n); i++)
     {
         if (clnum [i] < 0) // edge not in a cluster
         {
@@ -49,8 +49,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     }
 
     // Fill intra-cluster data:
-    const size_t ncl = cl2edge_map.size ();
-    for (int i = 0; i < ncl; i++)
+    for (int i = 1; i < static_cast <int> (n); i++)
     {
         OneCluster cli;
         intset_t edgeset = cl2edge_map.at (i);
@@ -134,6 +133,8 @@ void ex_merge::single (ex_merge::ExMergeDat &cldat)
     }
 }
 
+// Successively merge pairs of clusters which yield the lower average
+// intra-cluster edge distance
 void ex_merge::avg (ex_merge::ExMergeDat &cldat)
 {
 }

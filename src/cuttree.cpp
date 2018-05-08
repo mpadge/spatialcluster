@@ -142,7 +142,7 @@ cuttree::BestCut cuttree::find_min_cut (
     the_cut.ss_diff = 0.0; // default, coz search is over max ss_diff
     double ssmin = INFINITE_DOUBLE;
     // TODO: Rewrite this to just erase and re-insert a single edge each time
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i < static_cast <int> (n); i++)
     {
         edges_copy.resize (0);
         edges_copy.shrink_to_fit ();
@@ -268,7 +268,7 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
     }
 
     Rcpp::IntegerVector res (edges.size ());
-    for (int i = 0; i < edges.size (); i++)
+    for (int i = 0; i < static_cast <int> (edges.size ()); i++)
     {
         if (edges [static_cast <size_t> (i)].cluster_num == INFINITE_INT)
             res [i] = NA_INTEGER;

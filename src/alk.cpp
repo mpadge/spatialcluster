@@ -64,7 +64,7 @@ void alk::alk_init (alk::ALKDat &alk_dat,
         }
     }
 
-    arma::uword nu = utils::to_uword (n);
+    arma::uword nu = static_cast <arma::uword> (n);
     alk_dat.contig_mat = arma::zeros <arma::Mat <int> > (nu, nu);
     alk_dat.num_edges = arma::ones <arma::Mat <int> > (nu, nu);
     alk_dat.avg_dist.set_size (nu, nu);
@@ -74,8 +74,10 @@ void alk::alk_init (alk::ALKDat &alk_dat,
     alk_dat.dmat.fill (INFINITE_DOUBLE);
     for (int i = 0; i < from.length (); i++)
     {
-        arma::uword vf = utils::to_uword (alk_dat.vert2index_map.at (from [i])),
-                    vt = utils::to_uword (alk_dat.vert2index_map.at (to [i]));
+        arma::uword vf = static_cast <arma::uword> (
+                                    alk_dat.vert2index_map.at (from [i])),
+                    vt = static_cast <arma::uword> (
+                                    alk_dat.vert2index_map.at (to [i]));
         alk_dat.contig_mat (vf, vt) = 1;
         alk_dat.num_edges (vf, vt) = 1;
         //alk_dat.avg_dist (vf, vt) = 0.0;
@@ -151,7 +153,8 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
     std::pair <index_t, index_t> pr =
         alk_dat.edgewt2idx_pair_map.at (edge_dist);
     index_t l = pr.first, m = pr.second;
-    arma::uword lu = utils::to_uword (l), mu = utils::to_uword (m);
+    arma::uword lu = static_cast <arma::uword> (l),
+                mu = static_cast <arma::uword> (m);
     while (l == m || alk_dat.contig_mat (lu, mu) == 0 ||
             edge_dist < alk_dat.avg_dist (lu, mu))
     {
@@ -162,8 +165,8 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
         pr = alk_dat.edgewt2idx_pair_map.at (edge_dist);
         l = pr.first;
         m = pr.second;
-        lu = utils::to_uword (l);
-        mu = utils::to_uword (m);
+        lu = static_cast <arma::uword> (l);
+        mu = static_cast <arma::uword> (m);
     }
     int li = static_cast <int> (l), mi = static_cast <int> (m);
     
@@ -188,7 +191,8 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
 
     for (auto cl: alk_dat.cl2index_map)
     {
-        if (cl.first != l || cl.first != m)
+        if (cl.first != static_cast <int> (l) ||
+                cl.first != static_cast <int> (m))
         {
             arma::uword clu = static_cast <arma::uword> (cl.first);
             const double tempd_l = alk_dat.avg_dist (clu, lu),

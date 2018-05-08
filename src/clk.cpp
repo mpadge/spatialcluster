@@ -52,13 +52,15 @@ void clk::clk_init (clk::CLKDat &clk_dat,
     for (auto v: vert_set)
         clk_dat.vert2index_map.emplace (v, i++);
 
-    arma::uword nu = utils::to_uword (n);
+    arma::uword nu = static_cast <arma::uword> (n);
     clk_dat.contig_mat = arma::zeros <arma::Mat <int> > (nu, nu);
     clk_dat.dmax.zeros (nu, nu);
     for (int i = 0; i < from.length (); i++)
     {
-        arma::uword vf = utils::to_uword (clk_dat.vert2index_map.at (from [i])),
-                    vt = utils::to_uword (clk_dat.vert2index_map.at (to [i]));
+        arma::uword vf = static_cast <arma::uword> (
+                                        clk_dat.vert2index_map.at (from [i])),
+                    vt = static_cast <arma::uword> (
+                                        clk_dat.vert2index_map.at (to [i]));
         clk_dat.contig_mat (vf, vt) = 1;
         //clk_dat.dmax (vf, vt) = d [i]; // NOPE - all dmax = 0 at start!
     }
@@ -108,10 +110,12 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
 
     for (auto cl: clk_dat.cl2index_map)
     {
-        if (cl.first != lmin || cl.first != mmin)
+        if (cl.first != static_cast <int> (lmin) ||
+                cl.first != static_cast <int> (mmin))
         {
             arma::uword clu = static_cast <arma::uword> (cl.first),
-                lu = utils::to_uword (lmin), mu = utils::to_uword (mmin);
+                        lu = static_cast <arma::uword> (lmin),
+                        mu = static_cast <arma::uword> (mmin);
             const double dl = clk_dat.dmax (clu, lu),
                   dm = clk_dat.dmax (clu, mu);
             double dtemp = dl;
@@ -169,8 +173,10 @@ Rcpp::IntegerVector rcpp_clk (
     for (size_t i = 0; i < clk_dat.edges_all.size (); i++)
     {
         utils::OneEdge ei = clk_dat.edges_all [i];
-        arma::uword u = utils::to_uword (clk_dat.vert2index_map.at (ei.from)),
-                    v = utils::to_uword (clk_dat.vert2index_map.at (ei.to));
+        arma::uword u = static_cast <arma::uword> (
+                                    clk_dat.vert2index_map.at (ei.from)),
+                    v = static_cast <arma::uword> (
+                                    clk_dat.vert2index_map.at (ei.to));
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
                 clk_dat.contig_mat (u, v) == 1 &&
                 ei.dist > clk_dat.dmax (u, v))
