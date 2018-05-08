@@ -53,7 +53,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_exact_merge
-Rcpp::IntegerVector rcpp_exact_merge(const Rcpp::DataFrame gr, const int ncl, const std::string method);
+Rcpp::NumericMatrix rcpp_exact_merge(const Rcpp::DataFrame gr, const int ncl, const std::string method);
 RcppExport SEXP _spatialcluster_rcpp_exact_merge(SEXP grSEXP, SEXP nclSEXP, SEXP methodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

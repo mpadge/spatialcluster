@@ -17,8 +17,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     
     cldat.edges.resize (n);
     int2intset_map_t cl2edge_map;
-    // The ExMergeDat struct has a set of inter-cluster edges which are filled
-    // here; the rest of the struct is filled below
+    size_t edge_count = 0;
     for (int i = 0; i < n; i++)
     {
         if (clnum [i] >= 0) // edge in a cluster
@@ -27,28 +26,36 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
             intset_t edgeset;
             if (cl2edge_map.find (clnum_i) != cl2edge_map.end ())
                 edgeset = cl2edge_map.at (clnum_i);
-            edgeset.emplace (static_cast <int> (i));
+            edgeset.emplace (i);
             cl2edge_map [clnum_i] = edgeset;
-        } else // fill inter-cluster edge
+        } else 
+            edge_count++;
+    }
+
+    // fill inter-cluster edges
+    cldat.edges.resize (edge_count);
+    edge_count = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (clnum [i] < 0) // edge not in a cluster
         {
             utils::OneEdge edgei;
             // from and to hold cluster numbers, NOT vertex numbers
             edgei.from = clfrom [i];
             edgei.to = clto [i];
             edgei.dist = d [i];
-            cldat.edges [static_cast <size_t> (i)] = edgei;
+            cldat.edges [edge_count++] = edgei;
         }
     }
 
     // Fill intra-cluster data:
     const size_t ncl = cl2edge_map.size ();
-    cldat.clusters.resize (ncl);
     for (int i = 0; i < ncl; i++)
     {
         OneCluster cli;
         intset_t edgeset = cl2edge_map.at (i);
-        cli.id = static_cast <int> (i);
-        cli.n = static_cast <int> (edgeset.size ());
+        cli.id = i;
+        cli.n = edgeset.size ();
         cli.dist_sum = 0.0;
         cli.dist_max = 0.0;
         for (auto ei: edgeset)
@@ -57,56 +64,71 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
             if (ei > cli.dist_max)
                 cli.dist_max = ei;
         }
-        cldat.clusters [static_cast <size_t> (i)] = cli;
+        cldat.clusters.emplace (i, cli);
 
-        cldat.cl2index_map.emplace (i, i);
+        cldat.cl_remap.emplace (i, i);
+        intset_t members;
+        members.emplace (i);
+        cldat.cl_members.emplace (i, members);
     }
 }
 
-// merge cluster clfrom with clto; clto remains as it was but is no longer
+// merge cluster clfrom with clto; clfrom remains as it was but is no longer
 // indexed so simply ignored from that point on
-ex_merge::OneMerge ex_merge::merge (ex_merge::ExMergeDat &cldat,
-        int clfrom_i, int clto_i, index_t ei)
+ex_merge::OneMerge ex_merge::merge (ex_merge::ExMergeDat &cldat, index_t ei)
 {
-    index_t cl_from_i_idx = cldat.cl2index_map.at (clfrom_i),
-            cl_to_i_idx = cldat.cl2index_map.at (clto_i);
-    ex_merge::OneCluster clfrom = cldat.clusters [cl_from_i_idx],
-               clto = cldat.clusters [cl_to_i_idx];
+    const int cl_from_i = cldat.cl_remap.at (cldat.edges [ei].from),
+              cl_to_i = cldat.cl_remap.at (cldat.edges [ei].to);
+
+    ex_merge::OneCluster clfrom = cldat.clusters.at (cl_from_i),
+                         clto = cldat.clusters.at (cl_to_i);
     clto.n += clfrom.n;
     clto.dist_sum += clfrom.dist_sum;
     if (clfrom.dist_max > clto.dist_max)
         clto.dist_max = clfrom.dist_max;
 
-    std::vector <utils::OneEdge> edges_from = clfrom.edges, edges_to = clto.edges;
+    std::vector <utils::OneEdge> edges_from = clfrom.edges,
+                                 edges_to = clto.edges;
     edges_to.insert (edges_to.end (), edges_from.begin (), edges_from.end ());
     clto.edges.clear ();
     clto.edges.shrink_to_fit ();
     clto.edges = edges_to;
 
-    cldat.cl2index_map.at (clfrom_i) = cldat.cl2index_map.at (clto_i);
+    cldat.clusters.erase (cl_from_i);
+    cldat.clusters [cl_to_i] = clto;
+
+    cldat.cl_remap [cl_from_i] = cldat.cl_remap [cl_to_i];
+    intset_t members_f = cldat.cl_members.at (cl_from_i),
+             members_t = cldat.cl_members.at (cl_to_i);
+    members_t.insert (members_f.begin (), members_f.end ());
+    cldat.cl_members [cl_to_i] = members_t;
+    for (auto m: members_t)
+        cldat.cl_remap [m] = cldat.cl_remap [cl_to_i];
 
     ex_merge::OneMerge the_merge;
-    the_merge.cli = clfrom_i;
-    the_merge.clj = clto_i;
+    the_merge.cli = cl_from_i;
+    the_merge.clj = cl_to_i;
     the_merge.merge_dist = cldat.edges [ei].dist;
 
     return the_merge;
 }
 
+// Each merge joins from to to; from remains unchanged but is no longer indexed.
+// Edges nevertheless always refer to original (non-merged) cluster numbers, so
+// need to be re-mapped via the cl_remap
 void ex_merge::single (ex_merge::ExMergeDat &cldat)
 {
-    std::unordered_set <std::string> merges;
     index_t edgei = 0;
+    int junk = 0; // TODO: Delete!
     while (cldat.clusters.size () > 1)
     {
-        std::string merge_pr = std::to_string (cldat.edges [edgei].from) + "-" +
-                               std::to_string (cldat.edges [edgei].to);
-        if (merges.find (merge_pr) == merges.end ())
+        int clfr = cldat.cl_remap.at (cldat.edges [edgei].from),
+            clto = cldat.cl_remap.at (cldat.edges [edgei].to);
+        if (clfr != clto)
         {
-            OneMerge the_merge = merge (cldat,
-                    cldat.edges [edgei].from,
-                    cldat.edges [edgei].to,
-                    edgei);
+            Rcpp::Rcout << "(" << junk++ << ") ";
+            OneMerge the_merge = merge (cldat, edgei);
+            cldat.merges.push_back (the_merge);
         }
         edgei++;
         if (edgei == cldat.edges.size ())
@@ -131,7 +153,7 @@ void ex_merge::max (ex_merge::ExMergeDat &cldat)
 //'
 //' @noRd
 // [[Rcpp::export]]
-Rcpp::IntegerVector rcpp_exact_merge (
+Rcpp::NumericMatrix rcpp_exact_merge (
         const Rcpp::DataFrame gr,
         const int ncl,
         const std::string method)
@@ -151,6 +173,13 @@ Rcpp::IntegerVector rcpp_exact_merge (
     } else
         Rcpp::stop ("method not found for exact_merge");
 
-    Rcpp::IntegerVector res;
+    const size_t n = clmerge_dat.merges.size ();
+    Rcpp::NumericMatrix res (static_cast <int> (n), 3);
+    for (size_t i = 0; i < n; i++)
+    {
+        res (i, 0) = clmerge_dat.merges [i].cli;
+        res (i, 1) = clmerge_dat.merges [i].clj;
+        res (i, 2) = clmerge_dat.merges [i].merge_dist;
+    }
     return res;
 }

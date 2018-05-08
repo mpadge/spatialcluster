@@ -12,7 +12,8 @@ namespace ex_merge {
 
 struct OneCluster
 {
-    int id, n;
+    int id;
+    size_t n;
     double dist_sum, dist_max;
     std::vector <utils::OneEdge> edges;
 };
@@ -25,25 +26,22 @@ struct OneMerge
 
 struct ExMergeDat
 {
-    // cl2index_map is from cluster numbers to indices in clusters
-    std::unordered_map <int, index_t> cl2index_map;
-    std::vector <OneCluster> clusters;
+    std::unordered_map <int, int> cl_remap;
+    std::unordered_map <int, intset_t> cl_members;
+    std::unordered_map <int, OneCluster> clusters;
     std::vector <utils::OneEdge> edges; // edges between clusters
     std::vector <OneMerge> merges;
 };
 
 void init (const Rcpp::DataFrame &gr, ExMergeDat &cldat);
-OneMerge merge (ExMergeDat &cldat,
-        int clfrom_i,
-        int clto_i,
-        index_t ei);
+OneMerge merge (ExMergeDat &cldat, index_t ei);
 void single (ExMergeDat &cldat);
 void avg (ExMergeDat &cldat);
 void max (ExMergeDat &cldat);
 
 } // end namespace ex_merge
 
-Rcpp::IntegerVector rcpp_exact_merge (
+Rcpp::NumericMatrix rcpp_exact_merge (
         const Rcpp::DataFrame gr,
         const int ncl,
         const std::string method);
