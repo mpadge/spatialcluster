@@ -53,7 +53,8 @@ scl_exact <- function (xy, dmat, ncl)
                               dist = merges$dist)
 
     structure (list (merges = merges,
-                     ord = order_merges (merges)),
+                     ord = order_merges (merges),
+                     nodes = exact_cluster_nodes (edges, merges, ncl)),
                class = "scl_exact")
 }
 
@@ -74,5 +75,30 @@ order_merges <- function (merges)
                     nodes [ii:length (nodes)])
     }
     nodes <- as.numeric (nodes [2:length (nodes)])
+    return (nodes)
+}
+
+#' exact_cluster_nodes
+#'
+#' Transform edge and merge data into rectangle of nodes and cluster IDs
+#' @noRd
+exact_cluster_nodes <- function (edges, merges, ncl)
+{
+    edges$cl [edges$cl < 0] <- NA
+    ncl_exact <- length (unique (edges$cl))
+    merge_tree <- merges [1:(ncl_exact - ncl - 1), ]
+    for (i in seq (nrow (merge_tree)))
+        edges$cl [edges$cl == merge_tree$from [i]] <- merge_tree$to [i]
+
+    nodes <- tibble::tibble (node = c (edges$from, edges$to),
+                             cluster = rep (edges$cl, 2)) %>%
+        dplyr::distinct () %>%
+        dplyr::arrange (node) %>%
+        dplyr::filter (!is.na (cluster))
+
+    # re-order cluster numbers by frequencies
+    nt <- sort (table (nodes$cluster), decreasing = TRUE)
+    nodes$cluster <- match (nodes$cluster, names (nt))
+
     return (nodes)
 }
