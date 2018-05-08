@@ -97,8 +97,8 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
     return (bdry)
 }
 
-#' plot.scl
-#' @method plot scl
+#' plot.scl_redcap
+#' @method plot scl_redcap
 #' @param x object to be plotted
 #' @param convex Should hull be convex? If not, the \code{ashape} routine from
 #' the \pkg{alphahull} package is used to generate non-convex hulls, generated
@@ -117,7 +117,7 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
 #' # \coce{dmat}:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
-plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
+plot.scl_redcap <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 {
     if (convex)
         hulls <- scl_hulls (x$tree, x$xy)

@@ -42,5 +42,32 @@ scl_exact <- function (xy, dmat, ncl)
     edges$cl_from <- cl_join_from
     edges$cl_to <- cl_join_to
 
-    edges <- rcpp_exact_merge (edges, ncl = ncl)
+    merges <- rcpp_exact_merge (edges, ncl = ncl, method = "single") %>%
+        data.frame ()
+
+    merges <- tibble::tibble (from = as.integer (merges$from),
+                              to = as.integer (merges$to),
+                              dist = merges$dist)
+
+    structure (list (merges = merges,
+                     ord = order_merges (merges)),
+               class = "scl_exact")
+}
+
+#' order_merges
+#'
+#' Order merges so they can be plotted as dendrogram
+#' @param merges output from rccp_exact_merge
+#' @noRd
+order_merges <- function (merges)
+{
+    nodes <- merges [nrow (merges), 1:2]
+    for (i in rev (seq (nrow (merges))) [-1])
+    {
+        ii <- which (nodes == merges [i, 2])
+        nodes <- c (nodes [1:(ii - 1)],
+                    merges [i, 1],
+                    nodes [ii:length (nodes)])
+    }
+    nodes <- nodes [2:length (nodes)]
 }

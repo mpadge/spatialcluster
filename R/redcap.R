@@ -50,7 +50,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 {
     linkage <- scl_linkage_type (linkage)
 
-    if (is (xy, "scl"))
+    if (is (xy, "scl_redcap"))
     {
         message ("scl_redcap is for initial cluster construction; ",
                  "passing to scl_recluster")
@@ -96,7 +96,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
         structure (list (xy = xy,
                          tree = tree,
                          pars = pars),
-                   class = "scl")
+                   class = "scl_redcap")
     }
 }
 
@@ -124,7 +124,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 #' plot (scl)
 scl_recluster <- function (scl, ncl, shortest = TRUE)
 {
-    if (!is (scl, "scl"))
+    if (!is (scl, "scl_redcap"))
         stop ("scl_recluster can only be applied to 'scl' objects ",
               "returned from scl_redcap")
 

@@ -119,14 +119,12 @@ ex_merge::OneMerge ex_merge::merge (ex_merge::ExMergeDat &cldat, index_t ei)
 void ex_merge::single (ex_merge::ExMergeDat &cldat)
 {
     index_t edgei = 0;
-    int junk = 0; // TODO: Delete!
     while (cldat.clusters.size () > 1)
     {
         int clfr = cldat.cl_remap.at (cldat.edges [edgei].from),
             clto = cldat.cl_remap.at (cldat.edges [edgei].to);
         if (clfr != clto)
         {
-            Rcpp::Rcout << "(" << junk++ << ") ";
             OneMerge the_merge = merge (cldat, edgei);
             cldat.merges.push_back (the_merge);
         }
@@ -181,5 +179,14 @@ Rcpp::NumericMatrix rcpp_exact_merge (
         res (i, 1) = clmerge_dat.merges [i].clj;
         res (i, 2) = clmerge_dat.merges [i].merge_dist;
     }
+
+    std::vector <std::string> colnames (3);
+    colnames [0] = "from";
+    colnames [1] = "to";
+    colnames [2] = "dist";
+    Rcpp::List dimnames (2);
+    dimnames (1) = colnames;
+    res.attr ("dimnames") = dimnames;
+
     return res;
 }

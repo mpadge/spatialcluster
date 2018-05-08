@@ -4,7 +4,7 @@ test_that("scl structure", {
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
               scl <- scl_redcap (xy, dmat, ncl = 4)
-              expect_is (scl, "scl")
+              expect_is (scl, "scl_redcap")
               expect_true (scl$pars$ncl >= 4)
               expect_true (all (names (scl) %in%
                                 c ("xy", "tree", "tree_rest", "pars")))
