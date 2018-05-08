@@ -153,7 +153,6 @@ void ex_merge::max (ex_merge::ExMergeDat &cldat)
 // [[Rcpp::export]]
 Rcpp::NumericMatrix rcpp_exact_merge (
         const Rcpp::DataFrame gr,
-        const int ncl,
         const std::string method)
 {
     ex_merge::ExMergeDat clmerge_dat;

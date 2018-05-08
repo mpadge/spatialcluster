@@ -43,5 +43,4 @@ void max (ExMergeDat &cldat);
 
 Rcpp::NumericMatrix rcpp_exact_merge (
         const Rcpp::DataFrame gr,
-        const int ncl,
         const std::string method);

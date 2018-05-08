@@ -38,11 +38,14 @@ scl_exact <- function (xy, dmat, ncl)
     cl_join_from [indx] <- from_cl [indx]
     cl_join_to [indx] <- to_cl [indx]
 
-    edges$cl <- cl_in
-    edges$cl_from <- cl_join_from
-    edges$cl_to <- cl_join_to
+    edges$cl <- cl_in - 1 # convert back to C++ 0-indexed values
+    edges$cl_from <- cl_join_from - 1
+    edges$cl_to <- cl_join_to - 1
+    edges$cl [is.na (edges$cl)] <- -1
+    edges$cl_from [is.na (edges$cl_from)] <- -1
+    edges$cl_to [is.na (edges$cl_to)] <- -1
 
-    merges <- rcpp_exact_merge (edges, ncl = ncl, method = "single") %>%
+    merges <- rcpp_exact_merge (edges, method = "single") %>%
         data.frame ()
 
     merges <- tibble::tibble (from = as.integer (merges$from),
@@ -61,7 +64,8 @@ scl_exact <- function (xy, dmat, ncl)
 #' @noRd
 order_merges <- function (merges)
 {
-    nodes <- merges [nrow (merges), 1:2]
+    merges <- as.matrix (merges)
+    nodes <- merges [nrow (merges), c ("from", "to")]
     for (i in rev (seq (nrow (merges))) [-1])
     {
         ii <- which (nodes == merges [i, 2])
@@ -69,5 +73,6 @@ order_merges <- function (merges)
                     merges [i, 1],
                     nodes [ii:length (nodes)])
     }
-    nodes <- nodes [2:length (nodes)]
+    nodes <- as.numeric (nodes [2:length (nodes)])
+    return (nodes)
 }

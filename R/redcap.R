@@ -95,9 +95,19 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 
         structure (list (xy = xy,
                          tree = tree,
+                         nodes = tree_nodes (tree),
                          pars = pars),
                    class = "scl_redcap")
     }
+}
+
+# Match cluster numbers in edge tree to actual nodes
+tree_nodes <- function (tree)
+{
+    tibble::tibble (node = c (tree$from, tree$to),
+                    cl = rep (tree$clnum, 2)) %>%
+        dplyr::distinct () %>%
+        dplyr::arrange (node)
 }
 
 #' scl_reccluster
