@@ -19,8 +19,8 @@ vignette: >
 ---
 
 ```{r pkg-load, echo = FALSE, message = FALSE}
-#devtools::load_all (".", export_all = FALSE)
-library (spatialcluster)
+devtools::load_all (".", export_all = FALSE)
+#library (spatialcluster)
 ```
 
 # Introduction

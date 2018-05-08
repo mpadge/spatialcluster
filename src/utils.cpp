@@ -30,6 +30,8 @@ arma::uword utils::to_uword (const T arg)
     // uword is unsigned long
     return static_cast <arma::uword> (arg);
 }
+template arma::uword utils::to_uword (const int arg);
+template arma::uword utils::to_uword (const size_t arg);
 
 size_t utils::sets_init (
         const Rcpp::IntegerVector &from,
