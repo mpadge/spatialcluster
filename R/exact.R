@@ -54,7 +54,8 @@ scl_exact <- function (xy, dmat, ncl)
 
     structure (list (merges = merges,
                      ord = order_merges (merges),
-                     nodes = exact_cluster_nodes (edges, merges, ncl)),
+                     nodes = exact_cluster_nodes (edges, merges, ncl),
+                     ncl = ncl),
                class = "scl_exact")
 }
 
