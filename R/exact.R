@@ -18,8 +18,12 @@
 #' to be re-cut to a different number of clusters via \link{scl_recluster},
 #' rather than calculating clusters anew.
 #'
-#'
 #' @export
+#' @examples
+#' n <- 100
+#' xy <- matrix (runif (2 * n), ncol = 2)
+#' dmat <- matrix (runif (n ^ 2), ncol = n)
+#' scl <- scl_exact (xy, dmat, ncl = 4)
 scl_exact <- function (xy, dmat, ncl, method = "single")
 {
     method <- scl_linkage_type (method)
@@ -75,12 +79,14 @@ order_merges <- function (merges)
     for (i in rev (seq (nrow (merges))) [-1])
     {
         ii <- which (nodes == merges [i, 2])
-        nodes <- c (nodes [1:(ii - 1)],
-                    merges [i, 1],
-                    nodes [ii:length (nodes)])
+        n1 <- n2 <- NULL
+        if (ii > 1)
+            n1 <- nodes [1:(ii - 1)]
+        if (ii <= length (nodes))
+            n2 <- nodes [ii:length (nodes)]
+        nodes <- c (n1, merges [i, 1], n2)
     }
-    nodes <- as.numeric (nodes [2:length (nodes)])
-    return (nodes)
+    return (as.numeric (nodes))
 }
 
 #' exact_cluster_nodes

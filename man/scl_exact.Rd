@@ -30,3 +30,9 @@ rather than calculating clusters anew.
 \description{
 Exact spatially-constrained clustering.
 }
+\examples{
+n <- 100
+xy <- matrix (runif (2 * n), ncol = 2)
+dmat <- matrix (runif (n ^ 2), ncol = n)
+scl <- scl_exact (xy, dmat, ncl = 4)
+}
