@@ -3,7 +3,8 @@
 #' @name spatialcluster
 #' @docType package
 #' @importFrom alphahull ashape
-#' @importFrom dplyr arrange desc filter left_join mutate rename
+#' @importFrom dplyr arrange bind_rows desc distinct filter
+#' @importFrom dplyr left_join mutate rename
 #' @importFrom ggplot2 aes ggplot geom_point geom_polygon
 #' @importFrom ggthemes solarized_pal
 #' @importFrom graphics plot
