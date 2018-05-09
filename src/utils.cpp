@@ -50,32 +50,26 @@ size_t utils::sets_init (
         vert2index_map.emplace (v, i++);
     }
 
-    indxset_t eset;
     for (int i = 0; i < from.length (); i++)
     {
         size_t fi = vert2index_map.at (from [i]);
-        eset.clear ();
+        indxset_t eset; // only one index for each vert at this stage
         eset.insert (fi);
         cl2index_map.emplace (fi, eset);
     }
-    for (int i = 0; i < to.length (); i++)
+    for (auto v: vert_set)
     {
         // all verts are their own clusters, so cast indx to cli
-        int cli = static_cast <int> (vert2index_map.at (to [i]));
-        if (cl2index_map.find (cli) == cl2index_map.end ())
-            eset.clear ();
-        else
+        int cli = static_cast <int> (vert2index_map.at (v));
+        indxset_t eset;
+        if (cl2index_map.find (cli) != cl2index_map.end ())
             eset = cl2index_map.at (cli);
         eset.emplace (cli);
         cl2index_map.emplace (cli, eset);
+        index2cl_map.emplace (static_cast <size_t> (cli), cli);
     }
     
-    const int n = static_cast <int> (vert_set.size ());
-    // Initially assign all verts to clusters of same number:
-    for (int i = 0; i < n; i++)
-        index2cl_map.emplace (static_cast <size_t> (i), i);
-
-    return static_cast <size_t> (n);
+    return static_cast <size_t> (vert_set.size ());
 }
 
 //' initial contiguity and distance matrices. The contiguity matrix is between
