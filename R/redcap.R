@@ -104,6 +104,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 # Match cluster numbers in edge tree to actual nodes
 tree_nodes <- function (tree)
 {
+    node <- NULL # suppress no visible binding note
     tibble::tibble (node = c (tree$from, tree$to),
                     cl = rep (tree$clnum, 2)) %>%
         dplyr::distinct () %>%

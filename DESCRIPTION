@@ -32,7 +32,7 @@ LinkingTo:
     Rcpp,
     RcppArmadillo
 SystemRequirements:
-    C++11,
+    C++14,
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 URL: https://github.com/mpadge/spatialcluster

@@ -95,6 +95,7 @@ exact_cluster_nodes <- function (edges, merges, ncl)
     for (i in seq (nrow (merge_tree)))
         edges$cl [edges$cl == merge_tree$from [i]] <- merge_tree$to [i]
 
+    node <- cluster <- NULL # rm undefined variable note
     nodes <- tibble::tibble (node = c (edges$from, edges$to),
                              cluster = rep (edges$cl, 2)) %>%
         dplyr::distinct () %>%
