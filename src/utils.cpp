@@ -96,8 +96,8 @@ void utils::mats_init (
     {
         arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
                     ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
-        contig_mat (fi, ti) = 1;
-        d_mat (fi, ti) = d [i];
+        contig_mat (fi, ti) = contig_mat (ti, fi) = 1;
+        d_mat (fi, ti) = d_mat (ti, fi) = d [i];
     }
 }
 
@@ -115,8 +115,9 @@ void utils::dmat_full_init (
 
     for (int i = 0; i < from.length (); i++)
     {
-        d_mat [static_cast <arma::uword> (vert2index_map.at (from [i])),
-              static_cast <arma::uword> (vert2index_map.at (to [i]))] = d [i];
+        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
+                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
+        d_mat (fi, ti) = d_mat (ti, fi) = d [i];
     }
 }
 
@@ -175,8 +176,10 @@ size_t utils::find_shortest_connection (
     size_t shortest = INFINITE_INT;
     for (int i = 0; i < from.length (); i++) // int for Rcpp index
     {
-        if (vert2index_map.at (from [i]) == short_i &&
-                vert2index_map.at (to [i]) == short_j)
+        if ((vert2index_map.at (from [i]) == short_i &&
+                vert2index_map.at (to [i]) == short_j) ||
+            (vert2index_map.at (from [i]) == short_j &&
+                vert2index_map.at (to [i]) == short_i))
         {
             shortest = static_cast <size_t> (i);
             break;
@@ -209,15 +212,13 @@ void utils::merge_clusters (
     {
         if (contig_mat (cfr, i) == 1 )
         {
-            contig_mat (cto, i) = 1;
-            contig_mat (i, cto) = 1;
+            contig_mat (cto, i) = contig_mat (i, cto) = 1;
         }
     }
 
     indxset_t idx_from = cl2index_map.at (cluster_from),
               idx_to = cl2index_map.at (cluster_to);
 
-    // not directonal here, so need both directions:
     for (auto i: idx_from)
         for (auto j: idx_to)
         {
