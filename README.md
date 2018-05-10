@@ -46,20 +46,20 @@ scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "single")
 plot (scl)
 ```
 
-![](README-plot-single-1.png)
+![](/docs/figs/README-plot-single-1.png)
 
 ``` {.r}
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "average")
 plot (scl)
 ```
 
-![](README-plot-average-1.png)
+![](/docs/figs/README-plot-average-1.png)
 
 ``` {.r}
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "complete")
 plot (scl)
 ```
 
-![](README-plot-complete-1.png)
+![](/docs/figs/README-plot-complete-1.png)
 
 This example illustrates the universal danger in all clustering algorithms: they can not fail to produce results, even when the data fed to them are definitely devoid of any information as in this example. Clustering algorithms should only be applied to reflect a very specific hypothesis for why data should be clustered in the first place; spatial clustering algorithms should only be applied to reflect two very specific hypothesis for (i) why data should be clustered at all, and (ii) why those clusters should manifest a spatial pattern.
