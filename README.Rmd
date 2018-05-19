@@ -18,10 +18,10 @@ knitr::opts_chunk$set(
 
 # spatialcluster
 
-Spatially-constrained clustering algorithms, including both an imlementation of
-the the REDCAP collection of efficient yet approximate algorithms described in
-[D. Guo's 2008 paper, "Regionalization with dynamically constrained
-agglomerative clustering and
+An **R** package for spatially-constrained clustering algorithms, including both
+an imlementation of the the REDCAP collection of efficient yet approximate
+algorithms described in [D. Guo's 2008 paper, "Regionalization with dynamically
+constrained agglomerative clustering and
 partitioning."](https://www.tandfonline.com/doi/abs/10.1080/13658810701674970)
 (pdf available
 [here](https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf)),
@@ -67,8 +67,8 @@ dmat <- matrix (runif (n ^ 2), ncol = n)
 ```
 The load the package and call the function:
 ```{r load, echo = FALSE, message = FALSE}
-#devtools::load_all (".", export_all = FALSE)
-library (spatialcluster)
+devtools::load_all (".", export_all = FALSE)
+#library (spatialcluster)
 ```
 ```{r fake-run, eval = FALSE}
 library (spatialcluster)
