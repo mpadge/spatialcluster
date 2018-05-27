@@ -13,6 +13,11 @@ struct EdgeComponent
     int from, to, cluster_num;
 };
 
+struct TreeDat
+{
+    std::vector <EdgeComponent> edges;
+};
+
 struct BestCut
 {
     int pos, n1, n2;
@@ -26,10 +31,10 @@ struct TwoSS // 2 sums-of-squares values
     int n1, n2; // sizes of clusters
 };
 
-void fill_edges (std::vector <EdgeComponent> &edges,
-    const std::vector <std::string> &from,
-    const std::vector <std::string> &to,
-    const Rcpp::NumericVector &d);
+void fill_edges (TreeDat &tree,
+        const std::vector <int> &from,
+        const std::vector <int> &to,
+        Rcpp::NumericVector &d);
 double calc_ss (const std::vector <EdgeComponent> &edges,
         const int cluster_num);
 size_t cluster_size (const std::vector <EdgeComponent> &edges,
@@ -38,8 +43,7 @@ std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges);
 
 TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
         const std::unordered_set <int> &tree);
-BestCut find_min_cut (const std::vector <EdgeComponent> &edges,
-        const int cluster_num);
+BestCut find_min_cut (const TreeDat &tree, const int cluster_num);
 
 } // end namespace cuttree
 

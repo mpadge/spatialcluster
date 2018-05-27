@@ -1,32 +1,33 @@
 #include "common.h"
 #include "cuttree.h"
 
-void cuttree::fill_edges (std::vector <cuttree::EdgeComponent> &edges,
-    const std::vector <std::string> &from,
-    const std::vector <std::string> &to,
-    const Rcpp::NumericVector &d)
+void cuttree::fill_edges (cuttree::TreeDat &tree,
+        const std::vector <int> &from,
+        const std::vector <int> &to,
+        Rcpp::NumericVector &d)
 {
-    std::unordered_map <std::string, int> node_map;
-    int node_num = 0;
-    for (auto f: from)
+    std::unordered_map <int, int> vert2index_map;
+    intset_t vert_set;
+    for (size_t i = 0; i < from.size (); i++)
     {
-        if (node_map.find (f) == node_map.end ())
-            node_map.emplace (f, node_num++);
-    }
-    for (auto t: to)
-    {
-        if (node_map.find (t) == node_map.end ())
-            node_map.emplace (t, node_num++);
+        vert_set.emplace (from [i]);
+        vert_set.emplace (to [i]);
     }
 
-    for (size_t i = 0; i < edges.size (); i++)
+    int vert_num = 0;
+    for (auto v: vert_set)
+    {
+        vert2index_map.emplace (v, vert_num++);
+    }
+
+    for (size_t i = 0; i < tree.edges.size (); i++)
     {
         cuttree::EdgeComponent this_edge;
         this_edge.d = d [static_cast <int> (i)];
         this_edge.cluster_num = 0;
-        this_edge.from = node_map.at (from [i]);
-        this_edge.to = node_map.at (to [i]);
-        edges [i] = this_edge;
+        this_edge.from = vert2index_map.at (from [i]);
+        this_edge.to = vert2index_map.at (to [i]);
+        tree.edges [i] = this_edge;
     }
 }
 
@@ -121,15 +122,15 @@ cuttree::TwoSS cuttree::sum_component_ss (
 // Find the component split of edges in cluster_num which yields the lowest sum
 // of internal variance.
 cuttree::BestCut cuttree::find_min_cut (
-        const std::vector <cuttree::EdgeComponent> &edges,
+        const TreeDat &tree,
         const int cluster_num)
 {
-    size_t n = cuttree::cluster_size (edges, cluster_num);
+    size_t n = cuttree::cluster_size (tree.edges, cluster_num);
 
     // fill component vector
     std::vector <cuttree::EdgeComponent> cluster_edges;
     cluster_edges.reserve (n);
-    for (auto e: edges)
+    for (auto e: tree.edges)
         if (e.cluster_num == cluster_num)
             cluster_edges.push_back (e);
 
@@ -142,7 +143,7 @@ cuttree::BestCut cuttree::find_min_cut (
     the_cut.ss_diff = 0.0; // default, coz search is over max ss_diff
     double ssmin = INFINITE_DOUBLE;
     // TODO: Rewrite this to just erase and re-insert a single edge each time
-    for (int i = 1; i < static_cast <int> (n); i++)
+    for (int i = 0; i < static_cast <int> (n); i++)
     {
         edges_copy.resize (0);
         edges_copy.shrink_to_fit ();
@@ -175,7 +176,7 @@ cuttree::BestCut cuttree::find_min_cut (
     }
 
     if (the_cut.ss1 != INFINITE_DOUBLE)
-        the_cut.ss_diff = cuttree::calc_ss (edges, cluster_num) -
+        the_cut.ss_diff = cuttree::calc_ss (tree.edges, cluster_num) -
             the_cut.ss1 - the_cut.ss2;
 
     return the_cut;
@@ -193,20 +194,18 @@ cuttree::BestCut cuttree::find_min_cut (
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
 {
-    Rcpp::StringVector from_in = tree ["from"];
-    Rcpp::StringVector to_in = tree ["to"];
+    Rcpp::IntegerVector from_in = tree ["from"];
+    Rcpp::IntegerVector to_in = tree ["to"];
     Rcpp::NumericVector dref = tree ["d"];
 
-    std::vector <std::string> from =
-        Rcpp::as <std::vector <std::string> > (from_in); // implicit clone
-    std::vector <std::string> to =
-        Rcpp::as <std::vector <std::string> > (to_in);
+    std::vector <int> from = Rcpp::as <std::vector <int> > (from_in);
+    std::vector <int> to = Rcpp::as <std::vector <int> > (to_in);
 
-    std::vector <cuttree::EdgeComponent> edges (
-            static_cast <size_t> (dref.size ()));
-    cuttree::fill_edges (edges, from, to, dref);
+    cuttree::TreeDat tree_dat;
+    tree_dat.edges.resize (static_cast <size_t> (dref.size ()));
+    cuttree::fill_edges (tree_dat, from, to, dref);
 
-    cuttree::BestCut the_cut = cuttree::find_min_cut (edges, 0);
+    cuttree::BestCut the_cut = cuttree::find_min_cut (tree_dat, 0);
     std::vector <double> ss_diff, ss1, ss2;
     ss_diff.push_back (the_cut.ss_diff); // ss0 - ss1 - ss2
     ss1.push_back (the_cut.ss1);
@@ -235,10 +234,10 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
             break;
         }
         
-        the_cut = cuttree::find_min_cut (edges, clnum);
+        the_cut = cuttree::find_min_cut (tree_dat, clnum);
         // Break old clnum into 2:
         int count = 0;
-        for (auto &e: edges)
+        for (auto &e: tree_dat.edges)
         {
             if (e.cluster_num == clnum)
             {
@@ -246,17 +245,17 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
                     e.cluster_num = INFINITE_INT;
                 else if (the_cut.nodes.find (e.from) == the_cut.nodes.end ())
                     e.cluster_num = num_clusters;
+                count++;
             }
-            count++;
         }
         // find new best cut of now reduced cluster
-        the_cut = cuttree::find_min_cut (edges, clnum);
+        the_cut = cuttree::find_min_cut (tree_dat, clnum);
 
         ss_diff [maxi] = the_cut.ss_diff;
         ss1 [maxi] = the_cut.ss1;
         ss2 [maxi] = the_cut.ss2;
         // and also of new cluster
-        the_cut = cuttree::find_min_cut (edges, num_clusters);
+        the_cut = cuttree::find_min_cut (tree_dat, num_clusters);
 
         ss_diff.push_back (the_cut.ss_diff);
         ss1.push_back (the_cut.ss1);
@@ -267,13 +266,13 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl)
         num_clusters++;
     }
 
-    Rcpp::IntegerVector res (edges.size ());
-    for (int i = 0; i < static_cast <int> (edges.size ()); i++)
+    Rcpp::IntegerVector res (tree_dat.edges.size ());
+    for (int i = 0; i < static_cast <int> (tree_dat.edges.size ()); i++)
     {
-        if (edges [static_cast <size_t> (i)].cluster_num == INFINITE_INT)
+        if (tree_dat.edges [static_cast <size_t> (i)].cluster_num == INFINITE_INT)
             res [i] = NA_INTEGER;
         else
-            res [i] = edges [static_cast <size_t> (i)].cluster_num;
+            res [i] = tree_dat.edges [static_cast <size_t> (i)].cluster_num;
     }
     return res;
 }
