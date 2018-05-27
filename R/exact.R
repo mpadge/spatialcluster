@@ -59,11 +59,13 @@ scl_exact <- function (xy, dmat, ncl, method = "single")
     merges <- tibble::tibble (from = as.integer (merges$from),
                               to = as.integer (merges$to),
                               dist = merges$dist)
+    pars <- list (ncl = ncl,
+                  method = method)
 
     structure (list (merges = merges,
                      ord = order_merges (merges),
                      nodes = exact_cluster_nodes (edges, merges, ncl),
-                     ncl = ncl),
+                     pars = pars),
                class = "scl_exact")
 }
 

@@ -7,9 +7,9 @@ test_that("structure", {
               ncl <- 4
               scl <- scl_exact (xy, dmat, ncl = ncl)
               expect_is (scl, "scl_exact")
-              expect_true (scl$ncl == ncl)
+              expect_true (scl$pars$ncl == ncl)
               expect_true (all (names (scl) %in%
-                                c ("merges", "ord", "nodes", "ncl")))
+                                c ("merges", "ord", "nodes", "pars")))
               expect_true (length (unique (scl$nodes$cluster)) == ncl)
 })
 
