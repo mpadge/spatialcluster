@@ -106,12 +106,12 @@ tree_nodes <- function (tree)
 {
     node <- NULL # suppress no visible binding note
     res <- tibble::tibble (node = c (tree$from, tree$to),
-                    cl = rep (tree$clnum, 2)) %>%
+                           cluster = rep (tree$cluster, 2)) %>%
         dplyr::distinct () %>%
         dplyr::arrange (node) %>%
-        dplyr::filter (!is.na (cl))
+        dplyr::filter (!is.na (cluster))
     # remove clusters with < 3 members:
-    res$cl [res$cl %in% which (table (res$cl) < 3)] <- NA
+    res$cluster [res$cluster %in% which (table (res$cluster) < 3)] <- NA
     return (res)
 }
 
@@ -149,7 +149,7 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
     else
         tree_full %<>% dplyr::arrange (dplyr::desc (d))
 
-    tree_full$clnum <- rcpp_cut_tree (tree_full, ncl) + 1
+    tree_full$cluster <- rcpp_cut_tree (tree_full, ncl) + 1
 
     pars <- scl$pars
     pars$ncl <- ncl

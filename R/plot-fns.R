@@ -10,14 +10,14 @@
 #' @noRd
 scl_hulls <- function (nodes)
 {
-    ncl <- length (unique (nodes$cl [!is.na (nodes$cl)]))
+    ncl <- length (unique (nodes$cluster [!is.na (nodes$cluster)]))
     bdry <- list ()
     for (i in seq (ncl))
     {
-        if (length (which (nodes$cl == i)) > 1)
+        if (length (which (nodes$cluster == i)) > 1)
         {
             xyi <- nodes %>%
-                dplyr::filter (cl == i)
+                dplyr::filter (cluster == i)
             xy2 <- spatstat::ppp (xyi$x, xyi$y,
                                   xrange = range (xyi$x),
                                   yrange = range (xyi$y))
@@ -42,14 +42,14 @@ scl_hulls <- function (nodes)
 #' @noRd
 scl_ahulls <- function (nodes, alpha = 0.1)
 {
-    ncl <- length (unique (nodes$cl [!is.na (nodes$cl)]))
+    ncl <- length (unique (nodes$cluster [!is.na (nodes$cluster)]))
     bdry <- list ()
     for (i in seq (ncl))
     {
-        if (length (which (nodes$cl == i)) > 2)
+        if (length (which (nodes$cluster == i)) > 2)
         {
             xyi <- nodes %>%
-                dplyr::filter (cl == i) %>%
+                dplyr::filter (cluster == i) %>%
                 dplyr::select (x, y)
 
             a <- alphahull::ashape (xyi, alpha = alpha)$edges %>%
@@ -113,18 +113,18 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
     else
         hulls <- scl_ahulls (x$nodes, alpha = hull_alpha)
 
-    nc <- length (unique (x$nodes$cl [!is.na (x$nodes$cl)]))
+    nc <- length (unique (x$nodes$cluster [!is.na (x$nodes$cluster)]))
 
     # clnum in cl_cols is + 1 because xy below increases cluster numbers by 1 to
     # allocate cl_num == 1 to unassigned points
     cl_cols <- rainbow (nc) %>%
         tibble::as.tibble () %>%
-        dplyr::mutate (cl = seq (nc) + 1) %>%
+        dplyr::mutate (cluster = seq (nc) + 1) %>%
         dplyr::rename (col = value)
 
     xy <- x$nodes %>%
-        dplyr::mutate (cl = ifelse (is.na (cl), 1, cl + 1)) %>%
-        dplyr::left_join (cl_cols, by = "cl") %>%
+        dplyr::mutate (cluster = ifelse (is.na (cluster), 1, cluster + 1)) %>%
+        dplyr::left_join (cl_cols, by = "cluster") %>%
         dplyr::mutate (col = ifelse (is.na (col), "#333333FF", col))
 
     y <- id <- NULL # suppress no visible binding warnings
