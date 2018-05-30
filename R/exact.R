@@ -81,7 +81,7 @@ scl_exact <- function (xy, dmat, ncl, method = "single")
 
     structure (list (merges = merges,
                      ord = order_merges (merges),
-                     nodes = nodes,
+                     nodes = dplyr::bind_cols (nodes, xy),
                      pars = pars),
                class = "scl_exact")
 }

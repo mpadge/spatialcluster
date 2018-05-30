@@ -1,6 +1,6 @@
 #' scl_hulls
 #'
-#' Calculate convex hulls around clusters, mostly cribbed from
+#' Calculate convex hulls around redcap clusters, mostly cribbed from
 #' osmplotr/R/add-osm-groups.R
 #'
 #' @param tree Spanning tree obtained from \link{scl_redcap}
@@ -8,25 +8,19 @@
 #' @return tibble of (id, x, y), where the coordinates trace the convex hulls
 #' for each cluster id
 #' @noRd
-scl_hulls <- function (tree, xy)
+scl_hulls <- function (nodes)
 {
-    xy <- as.matrix (xy)
-    ncl <- length (unique (tree$clnum))
+    ncl <- length (unique (nodes$cl [!is.na (nodes$cl)]))
     bdry <- list ()
     for (i in seq (ncl))
     {
-        if (length (which (tree$clnum == i)) > 1)
+        if (length (which (nodes$cl == i)) > 1)
         {
-            xyi <- tree %>%
-                dplyr::filter (clnum == i) %>%
-                dplyr::select (from, to) %>%
-                unlist () %>%
-                unique () %>%
-                sort () %>%
-                xy [., ]
-            xy2 <- spatstat::ppp (xyi [, 1], xyi [, 2],
-                                  xrange = range (xyi [, 1]),
-                                  yrange = range (xyi [, 2]))
+            xyi <- nodes %>%
+                dplyr::filter (cl == i)
+            xy2 <- spatstat::ppp (xyi$x, xyi$y,
+                                  xrange = range (xyi$x),
+                                  yrange = range (xyi$y))
             ch <- spatstat::convexhull (xy2)
             bdry [[i]] <- cbind (i, ch$bdry[[1]]$x, ch$bdry[[1]]$y)
         }
@@ -46,22 +40,17 @@ scl_hulls <- function (tree, xy)
 #' @return tibble of (id, x, y), where the coordinates trace the convex hulls
 #' for each cluster id
 #' @noRd
-scl_ahulls <- function (tree, xy, alpha = 0.1)
+scl_ahulls <- function (nodes, alpha = 0.1)
 {
-    xymat <- as.matrix (xy)
-    ncl <- length (unique (tree$clnum))
+    ncl <- length (unique (nodes$cl [!is.na (nodes$cl)]))
     bdry <- list ()
     for (i in seq (ncl))
     {
-        if (length (which (tree$clnum == i)) > 2)
+        if (length (which (nodes$cl == i)) > 2)
         {
-            xyi <- tree %>%
-                dplyr::filter (clnum == i) %>%
-                dplyr::select (from, to) %>%
-                unlist () %>%
-                unique () %>%
-                sort () %>%
-                xymat [., ]
+            xyi <- nodes %>%
+                dplyr::filter (cl == i) %>%
+                dplyr::select (x, y)
 
             a <- alphahull::ashape (xyi, alpha = alpha)$edges %>%
                 data.frame ()
@@ -114,36 +103,28 @@ scl_ahulls <- function (tree, xy, alpha = 0.1)
 #' scl <- scl_redcap (xy, dmat, ncl = 4)
 #' plot (scl)
 #' # Connect clusters according to highest (\code{shortest = FALSE}) values of
-#' # \coce{dmat}:
+#' # \code{dmat}:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
 plot.scl_redcap <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 {
     if (convex)
-        hulls <- scl_hulls (x$tree, x$xy)
+        hulls <- scl_hulls (x$nodes)
     else
-        hulls <- scl_ahulls (x$tree, x$xy, alpha = hull_alpha)
+        hulls <- scl_ahulls (x$nodes, alpha = hull_alpha)
 
-    nc <- length (unique (x$tree$clnum))
+    nc <- length (unique (x$nodes$cl [!is.na (x$nodes$cl)]))
 
     # clnum in cl_cols is + 1 because xy below increases cluster numbers by 1 to
     # allocate cl_num == 1 to unassigned points
     cl_cols <- rainbow (nc) %>%
         tibble::as.tibble () %>%
-        dplyr::mutate (clnum = seq (nc) + 1) %>%
+        dplyr::mutate (cl = seq (nc) + 1) %>%
         dplyr::rename (col = value)
 
-    edge2vert <- dplyr::bind_rows (dplyr::select (x$tree, c (from, clnum)) %>%
-                                       dplyr::rename (v = from),
-                                   dplyr::select (x$tree, c (to, clnum)) %>%
-                                       dplyr::rename (v = to)) %>%
-                dplyr::arrange (v) %>%
-                unique ()
-    xy <- x$xy
-    xy %<>% dplyr::mutate (v = seq (nrow (xy))) %>%
-        dplyr::left_join (edge2vert, by = "v") %>%
-        dplyr::mutate (clnum = ifelse (is.na (clnum), 1, clnum + 1)) %>%
-        dplyr::left_join (cl_cols, by = "clnum") %>%
+    xy <- x$nodes %>%
+        dplyr::mutate (cl = ifelse (is.na (cl), 1, cl + 1)) %>%
+        dplyr::left_join (cl_cols, by = "cl") %>%
         dplyr::mutate (col = ifelse (is.na (col), "#333333FF", col))
 
     y <- id <- NULL # suppress no visible binding warnings
@@ -162,4 +143,18 @@ plot.scl_redcap <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 
     print (g)
     invisible (g)
+}
+
+#' plot.scl_exact
+#' @method plot scl_exact
+#' @inheritParams plot.scl_redcap
+#' @export
+#' @examples
+#' n <- 100
+#' xy <- matrix (runif (2 * n), ncol = 2)
+#' dmat <- matrix (runif (n ^ 2), ncol = n)
+#' scl <- scl_exact (xy, dmat, ncl = 4)
+#' plot (scl)
+plot.scl_exact <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
+{
 }

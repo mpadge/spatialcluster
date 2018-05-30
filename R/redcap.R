@@ -93,9 +93,8 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
                       cl_order = clo,
                       linkage = linkage)
 
-        structure (list (xy = xy,
-                         tree = tree,
-                         nodes = tree_nodes (tree),
+        structure (list (tree = tree,
+                         nodes = dplyr::bind_cols (tree_nodes (tree), xy),
                          pars = pars),
                    class = "scl_redcap")
     }
@@ -105,10 +104,14 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 tree_nodes <- function (tree)
 {
     node <- NULL # suppress no visible binding note
-    tibble::tibble (node = c (tree$from, tree$to),
+    res <- tibble::tibble (node = c (tree$from, tree$to),
                     cl = rep (tree$clnum, 2)) %>%
         dplyr::distinct () %>%
-        dplyr::arrange (node)
+        dplyr::arrange (node) %>%
+        dplyr::filter (!is.na (cl))
+    # remove clusters with < 3 members:
+    res$cl [res$cl %in% which (table (res$cl) < 3)] <- NA
+    return (res)
 }
 
 #' scl_reccluster
@@ -139,8 +142,7 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
         stop ("scl_recluster can only be applied to 'scl' objects ",
               "returned from scl_redcap")
 
-    tree_full <- scl$tree %>% dplyr::select (from, to, d) %>%
-        dplyr::bind_rows (scl$rest)
+    tree_full <- scl$tree %>% dplyr::select (from, to, d)
     if (shortest)
         tree_full %<>% dplyr::arrange (d)
     else
@@ -151,8 +153,9 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
     pars <- scl$pars
     pars$ncl <- ncl
 
-    structure (list (xy = scl$xy,
-                     tree = tree_full,
+    structure (list (tree = tree_full,
+                     nodes = dplyr::bind_cols (tree_nodes (tree_full),
+                                               scl$nodes [, c ("x", "y")]),
                      pars = pars),
                class = "scl_redcap")
 }
