@@ -9,7 +9,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     Rcpp::IntegerVector from = gr ["from"];
     Rcpp::IntegerVector to = gr ["to"];
     Rcpp::NumericVector d = gr ["d"];
-    Rcpp::IntegerVector clnum = gr ["cl"];
+    Rcpp::IntegerVector clnum = gr ["cluster"];
     Rcpp::IntegerVector clfrom = gr ["cl_from"];
     Rcpp::IntegerVector clto = gr ["cl_to"];
 

@@ -9,7 +9,7 @@ test_that("structure", {
               expect_is (scl, "scl")
               expect_true (scl$pars$ncl == ncl)
               expect_true (all (names (scl) %in%
-                                c ("merges", "ord", "nodes", "pars")))
+                                c ("tree", "merges", "ord", "nodes", "pars")))
               cl <- scl$nodes$cluster [!is.na (scl$nodes$cluster)]
               expect_true (length (unique (cl)) == ncl)
 })
@@ -26,4 +26,16 @@ test_that("methods", {
               expect_equal (length (unique (cl1)), ncl)
               cl2 <- scl2$nodes$cluster [!is.na (scl2$nodes$cluster)]
               expect_equal (length (unique (cl2)), ncl)
+})
+
+test_that("recluster", {
+              n <- 100
+              xy <- matrix (runif (2 * n), ncol = 2)
+              dmat <- matrix (runif (n ^ 2), ncol = n)
+              scl <- scl_exact (xy, dmat, ncl = 4)
+              scl1 <- scl_exact (scl, ncl = 3)
+              scl2 <- scl_recluster (scl, ncl = 3)
+              expect_identical (scl1, scl2)
+              expect_error ( scl3 <- scl_redcap (scl, ncl = 3),
+                              "scl_redcap can pass to scl_recluster only")
 })

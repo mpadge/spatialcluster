@@ -52,9 +52,13 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 
     if (is (xy, "scl"))
     {
+        if (!identical (xy$pars$method, "redcap"))
+            stop ("scl_redcap can pass to scl_recluster only for scl objects",
+                  " previously generated with scl_redcap")
+
         message ("scl_redcap is for initial cluster construction; ",
                  "passing to scl_recluster")
-        scl_recluster (xy, ncl = ncl)
+        scl_recluster_redcap (xy, ncl = ncl, shortest = shortest)
     } else
     {
         xy <- scl_tbl (xy)
@@ -142,7 +146,14 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
     if (!is (scl, "scl"))
         stop ("scl_recluster can only be applied to 'scl' objects ",
               "returned from scl_redcap")
+    else if (identical (scl$pars$method, "redcap"))
+        scl_recluster_redcap (scl = scl, ncl = ncl, shortest = shortest)
+    else if (identical (scl$pars$method, "exact"))
+        scl_recluster_exact (scl = scl, ncl = ncl)
+}
 
+scl_recluster_redcap <- function (scl, ncl, shortest = TRUE)
+{
     tree_full <- scl$tree %>% dplyr::select (from, to, d)
     if (shortest)
         tree_full %<>% dplyr::arrange (d)
