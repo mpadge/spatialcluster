@@ -149,6 +149,7 @@ exact_cluster_nodes <- function (edges, merges, ncl)
 #' @noRd
 scl_recluster_exact <- function (scl, ncl = ncl)
 {
+    xy <- scl$nodes %>% dplyr::select (x, y)
     num_nodes <- 0
     ncl_trial <- ncl
     while (num_nodes < ncl)
@@ -161,6 +162,8 @@ scl_recluster_exact <- function (scl, ncl = ncl)
     }
     n <- which (table (scl$nodes$cluster) == 2)
     scl$nodes$cluster [scl$nodes$cluster %in% n] <- NA
+
+    scl$nodes <- dplyr::bind_cols (scl$nodes, xy)
 
     return (scl)
 }
