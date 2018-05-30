@@ -82,6 +82,20 @@ plot (scl)
 
 ![](docs/figs/README-plot-complete-1.png)
 
+``` r
+scl <- scl_exact (xy, dmat, ncl = 8, linkage = "single")
+plot (scl)
+```
+
+![](README-plot-exsingle-1.png)
+
+``` r
+scl <- scl_exact (xy, dmat, ncl = 8, linkage = "average")
+plot (scl)
+```
+
+![](README-plot-exaverage-1.png)
+
 This example illustrates the universal danger in all clustering
 algorithms: they can not fail to produce results, even when the data fed
 to them are definitely devoid of any information as in this example.

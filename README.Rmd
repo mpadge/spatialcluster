@@ -88,6 +88,16 @@ scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "complete")
 plot (scl)
 ```
 ![](docs/figs/README-plot-complete-1.png)
+```{r plot-exsingle, eval = FALSE}
+scl <- scl_exact (xy, dmat, ncl = 8, linkage = "single")
+plot (scl)
+```
+![](docs/figs/README-plot-exsingle-1.png)
+```{r plot-exaverage, eval = FALSE}
+scl <- scl_exact (xy, dmat, ncl = 8, linkage = "average")
+plot (scl)
+```
+![](docs/figs/README-plot-exaverage-1.png)
 
 This example illustrates the universal danger in all clustering algorithms: they
 can not fail to produce results, even when the data fed to them are definitely
