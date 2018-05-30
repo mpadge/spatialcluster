@@ -62,9 +62,26 @@ scl_exact <- function (xy, dmat, ncl, method = "single")
     pars <- list (ncl = ncl,
                   method = method)
 
+    # exact_cluster_nodes just auto-merges the tree to the specified number, but
+    # some of these may be clusters with only 2 members. These are excluded here
+    # by iterating until the desired number is achieved in which each cluster
+    # has >= 3 members:
+    num_nodes <- 0
+    ncl_trial <- ncl
+    while (num_nodes < ncl)
+    {
+        nodes <- exact_cluster_nodes (edges, merges, ncl_trial)
+        num_nodes <- length (which (table (nodes$cluster) > 2))
+        ncl_trial <- ncl_trial + 1
+        if (ncl_trial >= nrow (nodes))
+            break
+    }
+    n <- which (table (nodes$cluster) == 2)
+    nodes$cluster [nodes$cluster %in% n] <- NA
+
     structure (list (merges = merges,
                      ord = order_merges (merges),
-                     nodes = exact_cluster_nodes (edges, merges, ncl),
+                     nodes = nodes,
                      pars = pars),
                class = "scl_exact")
 }

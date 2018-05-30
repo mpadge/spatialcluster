@@ -10,7 +10,8 @@ test_that("structure", {
               expect_true (scl$pars$ncl == ncl)
               expect_true (all (names (scl) %in%
                                 c ("merges", "ord", "nodes", "pars")))
-              expect_true (length (unique (scl$nodes$cluster)) == ncl)
+              cl <- scl$nodes$cluster [!is.na (scl$nodes$cluster)]
+              expect_true (length (unique (cl)) == ncl)
 })
 
 test_that("methods", {
@@ -21,6 +22,8 @@ test_that("methods", {
               scl1 <- scl_exact (xy, dmat, ncl = ncl, method = "single")
               scl2 <- scl_exact (xy, dmat, ncl = ncl, method = "average")
               expect_true (!identical (scl1, scl2))
-              expect_equal (length (unique (scl1$nodes$cluster)), ncl)
-              expect_equal (length (unique (scl2$nodes$cluster)), ncl)
+              cl1 <- scl1$nodes$cluster [!is.na (scl1$nodes$cluster)]
+              expect_equal (length (unique (cl1)), ncl)
+              cl2 <- scl2$nodes$cluster [!is.na (scl2$nodes$cluster)]
+              expect_equal (length (unique (cl2)), ncl)
 })
