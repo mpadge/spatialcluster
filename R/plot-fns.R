@@ -86,8 +86,8 @@ scl_ahulls <- function (nodes, alpha = 0.1)
     return (bdry)
 }
 
-#' plot.scl_redcap
-#' @method plot scl_redcap
+#' plot.scl
+#' @method plot scl
 #' @param x object to be plotted
 #' @param convex Should hull be convex? If not, the \code{ashape} routine from
 #' the \pkg{alphahull} package is used to generate non-convex hulls, generated
@@ -106,7 +106,7 @@ scl_ahulls <- function (nodes, alpha = 0.1)
 #' # \code{dmat}:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
-plot.scl_redcap <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
+plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 {
     if (convex)
         hulls <- scl_hulls (x$nodes)
@@ -143,18 +143,4 @@ plot.scl_redcap <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 
     print (g)
     invisible (g)
-}
-
-#' plot.scl_exact
-#' @method plot scl_exact
-#' @inheritParams plot.scl_redcap
-#' @export
-#' @examples
-#' n <- 100
-#' xy <- matrix (runif (2 * n), ncol = 2)
-#' dmat <- matrix (runif (n ^ 2), ncol = n)
-#' scl <- scl_exact (xy, dmat, ncl = 4)
-#' plot (scl)
-plot.scl_exact <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
-{
 }

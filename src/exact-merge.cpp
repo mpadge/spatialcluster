@@ -357,22 +357,22 @@ void ex_merge::max (ex_merge::ExMergeDat &cldat)
 // [[Rcpp::export]]
 Rcpp::NumericMatrix rcpp_exact_merge (
         const Rcpp::DataFrame gr,
-        const std::string method)
+        const std::string linkage)
 {
     ex_merge::ExMergeDat clmerge_dat;
     ex_merge::init (gr, clmerge_dat);
 
-    if (utils::strfound (method, "single"))
+    if (utils::strfound (linkage, "single"))
     {
         ex_merge::single (clmerge_dat);
-    } else if (utils::strfound (method, "average"))
+    } else if (utils::strfound (linkage, "average"))
     {
         ex_merge::avg (clmerge_dat);
-    } else if (utils::strfound (method, "max"))
+    } else if (utils::strfound (linkage, "max"))
     {
         ex_merge::max (clmerge_dat);
     } else
-        Rcpp::stop ("method not found for exact_merge");
+        Rcpp::stop ("linkage not found for exact_merge");
 
     const size_t n = clmerge_dat.merges.size ();
     Rcpp::NumericMatrix res (static_cast <int> (n), 3);

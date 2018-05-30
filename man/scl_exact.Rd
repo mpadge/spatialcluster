@@ -4,7 +4,7 @@
 \alias{scl_exact}
 \title{scl_exact}
 \usage{
-scl_exact(xy, dmat, ncl, method = "single")
+scl_exact(xy, dmat, ncl, linkage = "single")
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
@@ -17,7 +17,7 @@ columns.}
 
 \item{ncl}{Desired number of clusters}
 
-\item{method}{One of \code{"single"}, \code{"average"}, or
+\item{linkage}{One of \code{"single"}, \code{"average"}, or
 \code{"complete"}; see \link{scl_redcap} for details.}
 }
 \value{

@@ -53,14 +53,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_exact_merge
-Rcpp::NumericMatrix rcpp_exact_merge(const Rcpp::DataFrame gr, const std::string method);
-RcppExport SEXP _spatialcluster_rcpp_exact_merge(SEXP grSEXP, SEXP methodSEXP) {
+Rcpp::NumericMatrix rcpp_exact_merge(const Rcpp::DataFrame gr, const std::string linkage);
+RcppExport SEXP _spatialcluster_rcpp_exact_merge(SEXP grSEXP, SEXP linkageSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    Rcpp::traits::input_parameter< const std::string >::type method(methodSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_exact_merge(gr, method));
+    Rcpp::traits::input_parameter< const std::string >::type linkage(linkageSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_exact_merge(gr, linkage));
     return rcpp_result_gen;
 END_RCPP
 }

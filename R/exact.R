@@ -9,7 +9,7 @@
 #' has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 #' columns.
 #' @param ncl Desired number of clusters
-#' @param method One of \code{"single"}, \code{"average"}, or
+#' @param linkage One of \code{"single"}, \code{"average"}, or
 #' \code{"complete"}; see \link{scl_redcap} for details.
 #'
 #' @return A object of class \code{scl} with \code{tree} containing the
@@ -24,9 +24,9 @@
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
 #' scl <- scl_exact (xy, dmat, ncl = 4)
-scl_exact <- function (xy, dmat, ncl, method = "single")
+scl_exact <- function (xy, dmat, ncl, linkage = "single")
 {
-    method <- scl_linkage_type (method)
+    linkage <- scl_linkage_type (linkage)
 
     xy <- scl_tbl (xy)
     edges <- scl_edges_nn (xy, dmat, shortest = TRUE)
@@ -53,15 +53,12 @@ scl_exact <- function (xy, dmat, ncl, method = "single")
     edges$cl_from [is.na (edges$cl_from)] <- -1
     edges$cl_to [is.na (edges$cl_to)] <- -1
 
-    merges <- rcpp_exact_merge (edges, method = method) %>%
+    merges <- rcpp_exact_merge (edges, linkage = linkage) %>%
         data.frame ()
 
     merges <- tibble::tibble (from = as.integer (merges$from),
                               to = as.integer (merges$to),
                               dist = merges$dist)
-    pars <- list (ncl = ncl,
-                  method = method)
-
     # exact_cluster_nodes just auto-merges the tree to the specified number, but
     # some of these may be clusters with only 2 members. These are excluded here
     # by iterating until the desired number is achieved in which each cluster
@@ -79,11 +76,16 @@ scl_exact <- function (xy, dmat, ncl, method = "single")
     n <- which (table (nodes$cluster) == 2)
     nodes$cluster [nodes$cluster %in% n] <- NA
 
+    pars <- list (method = "exact",
+                  ncl = ncl,
+                  linkage = linkage)
+
+
     structure (list (merges = merges,
                      ord = order_merges (merges),
                      nodes = dplyr::bind_cols (nodes, xy),
                      pars = pars),
-               class = "scl_exact")
+               class = "scl")
 }
 
 #' order_merges
