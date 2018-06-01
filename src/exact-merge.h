@@ -49,8 +49,8 @@ struct AvgDists
 
 void init (const Rcpp::DataFrame &gr, ExMergeDat &cldat);
 
-OneMerge merge_single (ExMergeDat &cldat, index_t ei);
-void single (ExMergeDat &cldat);
+OneMerge merge_one_single (ExMergeDat &cldat, index_t ei);
+void merge_single (ExMergeDat &cldat);
 
 bool avgdist_sorter (const OneAvgDist &lhs, const OneAvgDist &rhs);
 void fill_avg_dists (ExMergeDat &cldat,

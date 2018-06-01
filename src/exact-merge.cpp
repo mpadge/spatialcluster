@@ -116,7 +116,8 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
 
 // merge cluster clfrom with clto; clfrom remains as it was but is no longer
 // indexed so simply ignored from that point on
-ex_merge::OneMerge ex_merge::merge_single (ex_merge::ExMergeDat &cldat, index_t ei)
+ex_merge::OneMerge ex_merge::merge_one_single (ex_merge::ExMergeDat &cldat,
+        index_t ei)
 {
     const int cl_from_i = cldat.cl_remap.at (cldat.edges [ei].from),
               cl_to_i = cldat.cl_remap.at (cldat.edges [ei].to);
@@ -157,7 +158,7 @@ ex_merge::OneMerge ex_merge::merge_single (ex_merge::ExMergeDat &cldat, index_t 
 // Each merge joins from to to; from remains unchanged but is no longer indexed.
 // Edges nevertheless always refer to original (non-merged) cluster numbers, so
 // need to be re-mapped via the cl_remap
-void ex_merge::single (ex_merge::ExMergeDat &cldat)
+void ex_merge::merge_single (ex_merge::ExMergeDat &cldat)
 {
     index_t edgei = 0;
     while (cldat.clusters.size () > 1)
@@ -166,7 +167,8 @@ void ex_merge::single (ex_merge::ExMergeDat &cldat)
             clto = cldat.cl_remap.at (cldat.edges [edgei].to);
         if (clfr != clto)
         {
-            ex_merge::OneMerge the_merge = merge_single (cldat, edgei);
+            ex_merge::OneMerge the_merge =
+                ex_merge::merge_one_single (cldat, edgei);
             cldat.merges.push_back (the_merge);
         }
         edgei++;
@@ -364,7 +366,7 @@ Rcpp::NumericMatrix rcpp_exact_merge (
 
     if (utils::strfound (linkage, "single"))
     {
-        ex_merge::single (clmerge_dat);
+        ex_merge::merge_single (clmerge_dat);
     } else if (utils::strfound (linkage, "average"))
     {
         ex_merge::avg (clmerge_dat);
