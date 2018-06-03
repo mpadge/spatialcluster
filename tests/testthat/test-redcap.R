@@ -16,8 +16,8 @@ test_that("methods", {
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
-              scl1 <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE)
-              scl2 <- scl_redcap (xy, dmat, ncl = 4, shortest = TRUE)
+              scl1 <- scl_redcap (xy, dmat, ncl = 4, distances = FALSE)
+              scl2 <- scl_redcap (xy, dmat, ncl = 4, distances = TRUE)
               expect_true (!identical (scl1, scl2))
 
               # these are the default pars:

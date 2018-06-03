@@ -14,7 +14,7 @@
 #' relationships only, otherwise build from full-order relationships (see Note).
 #' @param linkage One of \code{"single"}, \code{"average"}, or
 #' \code{"complete"}; see Note.
-#' @param shortest If \code{TRUE}, the \code{dmat} is interpreted as distances
+#' @param distances If \code{TRUE}, the \code{dmat} is interpreted as distances
 #' such that lower values are preferentially selected; if \code{FALSE}, then
 #' higher values of \code{dmat} are interpreted to indicate stronger
 #' relationships, as is the case for example with covariances.
@@ -41,12 +41,12 @@
 #' scl <- scl_redcap (xy, dmat, ncl = 4)
 #' # Those clusters will by default be constructed by connecting edges with the
 #' # lowest (\code{shortest}) values of \code{dmat}, and will differ from
-#' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE)
+#' scl <- scl_redcap (xy, dmat, ncl = 4, distances = FALSE)
 #' # using 'full_order = FALSE' constructs clusters from first-order
 #' # relationships only; not recommended, but possible nevertheless:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, full_order = FALSE)
 scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
-                         shortest = TRUE)
+                         distances = TRUE)
 {
     linkage <- scl_linkage_type (linkage)
 
@@ -58,11 +58,11 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 
         message ("scl_redcap is for initial cluster construction; ",
                  "passing to scl_recluster")
-        scl_recluster_redcap (xy, ncl = ncl, shortest = shortest)
+        scl_recluster_redcap (xy, ncl = ncl, distances = distances)
     } else
     {
         xy <- scl_tbl (xy)
-        edges_nn <- scl_edges_nn (xy, dmat, shortest)
+        edges_nn <- scl_edges_nn (xy, dmat, distances)
         if (!full_order)
         {
             tree_full <- scl_spantree_O1 (edges_nn)
@@ -73,7 +73,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
                 tree_full <- scl_spantree_alk (edges_nn)
             } else
             {
-                edges_all <- scl_edges_all (xy, dmat, shortest)
+                edges_all <- scl_edges_all (xy, dmat, distances)
                 if (linkage == "single")
                 {
                     tree_full <- scl_spantree_slk (edges_all, edges_nn)
@@ -124,11 +124,7 @@ tree_nodes <- function (tree)
 #' Re-cut a spatial cluster tree (\code{scl}) at a different number of clusters.
 #'
 #' @param scl An \code{scl} object returned from \link{scl_redcap}.
-#' @param ncl Number of clusters or components into which tree is to be re-cut
-#' @param shortest If \code{TRUE}, the \code{dmat} is interpreted as distances
-#' such that lower values are preferentially selected; if \code{FALSE}, then
-#' higher values of \code{dmat} are interpreted to indicate stronger
-#' relationships, as is the case for example with covariances.
+#' @inheritParams scl_redcap
 #'
 #' @return Modified \code{scl} object in which \code{tree} is re-cut into
 #' \code{ncl} clusters.
@@ -141,21 +137,21 @@ tree_nodes <- function (tree)
 #' plot (scl)
 #' scl <- scl_recluster (scl, ncl = 5)
 #' plot (scl)
-scl_recluster <- function (scl, ncl, shortest = TRUE)
+scl_recluster <- function (scl, ncl, distances = TRUE)
 {
     if (!is (scl, "scl"))
         stop ("scl_recluster can only be applied to 'scl' objects ",
               "returned from scl_redcap")
     else if (identical (scl$pars$method, "redcap"))
-        scl_recluster_redcap (scl = scl, ncl = ncl, shortest = shortest)
+        scl_recluster_redcap (scl = scl, ncl = ncl, distances = distances)
     else if (identical (scl$pars$method, "exact"))
         scl_recluster_exact (scl = scl, ncl = ncl)
 }
 
-scl_recluster_redcap <- function (scl, ncl, shortest = TRUE)
+scl_recluster_redcap <- function (scl, ncl, distances = TRUE)
 {
     tree_full <- scl$tree %>% dplyr::select (from, to, d)
-    if (shortest)
+    if (distances)
         tree_full %<>% dplyr::arrange (d)
     else
         tree_full %<>% dplyr::arrange (dplyr::desc (d))
