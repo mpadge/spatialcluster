@@ -21,7 +21,7 @@ scl_edges_nn <- function (xy, dmat, distances = TRUE)
     edges$d <- dmat [index]
 
     if (distances)
-        edges %<>% dplyr::arrange (d)
+        edges %<>% dplyr::arrange (d) # lowest-to-highest
     else
         edges %<>% dplyr::arrange (dplyr::desc (d))
 
@@ -43,7 +43,7 @@ scl_edges_all <- function (xy, dmat, distances = TRUE)
         na.omit ()
 
     if (distances)
-        edges %<>% dplyr::arrange (d)
+        edges %<>% dplyr::arrange (d) # lowest-to-highest
     else
         edges %<>% dplyr::arrange (dplyr::desc (d))
 
