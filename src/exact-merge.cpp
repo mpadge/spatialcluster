@@ -182,6 +182,11 @@ bool ex_merge::avgdist_sorter (const OneAvgDist &lhs, const OneAvgDist &rhs)
     return lhs.average < rhs.average;
 }
 
+bool ex_merge::maxdist_sorter (const OneAvgDist &lhs, const OneAvgDist &rhs)
+{
+    return lhs.d < rhs.d;
+}
+
 void ex_merge::fill_avg_dists (ex_merge::ExMergeDat &cldat,
         ex_merge::AvgDists &cl_dists)
 {
@@ -344,11 +349,120 @@ void ex_merge::avg (ex_merge::ExMergeDat &cldat)
     }
 }
 
+void ex_merge::fill_max_dists (ex_merge::ExMergeDat &cldat,
+        ex_merge::AvgDists &cl_dists)
+{
+    cl_dists.avg_dists.resize (cldat.edges.size ());
+    size_t nc = 0;
+    std::unordered_set <std::string> edgenames; // TODO: Remove
+    for (auto ei: cldat.edges)
+    {
+        ex_merge::OneAvgDist onedist;
+        onedist.cli = ei.from;
+        onedist.clj = ei.to;
+        onedist.d = ei.dist;
+
+        cl_dists.avg_dists [nc++] = onedist;
+    }
+
+    std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
+            &ex_merge::maxdist_sorter);
+}
+
 void ex_merge::max (ex_merge::ExMergeDat &cldat)
 {
 }
 
 
+ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
+        ex_merge::AvgDists &cl_dists)
+{
+    ex_merge::OneAvgDist the_dist = cl_dists.avg_dists [0];
+    const double dtot = the_dist.di + the_dist.dj + the_dist.d;
+    const size_t ntot = the_dist.ni + the_dist.nj + 1;
+    const double average = dtot / static_cast <double> (ntot);
+    const int cli = the_dist.cli,
+              clj = the_dist.clj;
+    double dmin = INFINITE_DOUBLE; // shortest connecting distance
+
+    indxset_t cli_indx = cl_dists.cl_map.at (cli),
+              clj_indx = cl_dists.cl_map.at (clj);
+    // update cli_indx & clj_indx entries, and get value of dmin
+    for (auto i: clj_indx)
+    {
+        cl_dists.avg_dists [i].dj = dtot;
+        cl_dists.avg_dists [i].nj = ntot;
+        if (cl_dists.avg_dists [i].cli == cli)
+            cl_dists.avg_dists [i].cli = clj;
+        else if (cl_dists.avg_dists [i].clj == cli)
+            cl_dists.avg_dists [i].clj = clj;
+        if (cl_dists.avg_dists [i].d < dmin)
+            dmin = cl_dists.avg_dists [i].d;
+    }
+    for (auto i: cli_indx)
+    {
+        cl_dists.avg_dists [i].di = dtot;
+        cl_dists.avg_dists [i].ni = ntot;
+        if (cl_dists.avg_dists [i].cli == cli)
+            cl_dists.avg_dists [i].cli = clj;
+        else if (cl_dists.avg_dists [i].clj == cli)
+            cl_dists.avg_dists [i].clj = clj;
+        if (cl_dists.avg_dists [i].d < dmin)
+            dmin = cl_dists.avg_dists [i].d;
+    }
+    // Then update all dmin and average dist values
+    for (auto i: clj_indx)
+    {
+        cl_dists.avg_dists [i].d = dmin;
+        cl_dists.avg_dists [i].average =
+            (cl_dists.avg_dists [i].di + dtot + dmin) /
+            static_cast <double> (cl_dists.avg_dists [i].ni + ntot + 1);
+    }
+    for (auto i: cli_indx)
+    {
+        cl_dists.avg_dists [i].d = dmin;
+        cl_dists.avg_dists [i].average =
+            (cl_dists.avg_dists [i].dj + dtot + dmin) /
+            static_cast <double> (cl_dists.avg_dists [i].nj + ntot + 1);
+    }
+    cl_dists.avg_dists.pop_front ();
+
+    // These can now have reverse-duplicated entries because after merging A->B
+    // entries A->C and C->B will become B->C and C->B. There can also be D->A
+    // and D->B which will both become D->B.
+    std::vector <int> rm;
+    std::unordered_set <std::string> edge_names;
+    for (size_t i = 0; i < cl_dists.avg_dists.size (); i++)
+    {
+        std::string cij = std::to_string (cl_dists.avg_dists [i].cli) + "-" +
+                          std::to_string (cl_dists.avg_dists [i].clj),
+                    cji = std::to_string (cl_dists.avg_dists [i].clj) + "-" +
+                          std::to_string (cl_dists.avg_dists [i].cli);
+        if (edge_names.find (cij) == edge_names.end () &&
+                edge_names.find (cji) == edge_names.end ())
+            edge_names.emplace (cij);
+        else
+            rm.push_back (static_cast <int> (i));
+    std::unordered_set <int> merged;
+    }
+    std::sort (rm.begin (), rm.end (), std::greater <int> ());
+    for (auto i: rm)
+        cl_dists.avg_dists.erase (cl_dists.avg_dists.begin () + i);
+
+    std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
+            &ex_merge::avgdist_sorter);
+
+    // Finally, update the cl_dists.cli_map & clj_map entries
+    fill_cl_indx_maps (cl_dists);
+
+    ex_merge::OneMerge the_merge;
+    the_merge.cli = cli;
+    the_merge.clj = clj;
+    the_merge.merge_dist = average;
+
+
+    return the_merge;
+}
 
 //' rcpp_exact_merge
 //'
