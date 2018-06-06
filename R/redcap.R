@@ -89,7 +89,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 
         }
 
-        tree <- scl_cuttree (tree_full, edges_nn, ncl)
+        tree <- scl_cuttree (tree_full, edges_nn, ncl, distances)
 
         # meta-data:
         clo <- c ("single", "full") [match (full_order, c (FALSE, TRUE))]
@@ -156,7 +156,8 @@ scl_recluster_redcap <- function (scl, ncl, distances = TRUE)
     else
         tree_full %<>% dplyr::arrange (dplyr::desc (d))
 
-    tree_full$cluster <- rcpp_cut_tree (tree_full, ncl) + 1
+    tree_full$cluster <- rcpp_cut_tree (tree_full, ncl,
+                                        distances = distances) + 1
 
     pars <- scl$pars
     pars$ncl <- ncl

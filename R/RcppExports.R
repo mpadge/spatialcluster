@@ -34,8 +34,8 @@ rcpp_clk <- function(gr_full, gr) {
 #'
 #' @return Vector of cluster IDs for each tree edge
 #' @noRd
-rcpp_cut_tree <- function(tree, ncl) {
-    .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl)
+rcpp_cut_tree <- function(tree, ncl, distances) {
+    .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl, distances)
 }
 
 #' step

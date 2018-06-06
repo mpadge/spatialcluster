@@ -96,7 +96,7 @@ scl_spantree_clk <- function (edges_all, edges_nn)
 #' @param edges A set of edges resulting from \link{scl_edges}, but with
 #' additional data specifying edge weights, distances, or desired properties
 #' from which to construct the tree
-#' @param ncl Number of clusters or components into which tree is to be cut
+#' @inheritParams scl_redcap
 #'
 #' @return Modified version of \code{tree}, including an additional column
 #' specifying the cluster number of each edge, with NA for edges that lie
@@ -106,11 +106,12 @@ scl_spantree_clk <- function (edges_all, edges_nn)
 #' \code{constexpr MIN_CLUSTER_SIZE = 3}.
 #'
 #' @noRd
-scl_cuttree <- function (tree, edges, ncl)
+scl_cuttree <- function (tree, edges, ncl, distances)
 {
     tree %<>%
         dplyr::left_join (edges, by = c ("from", "to")) %>%
-        dplyr::mutate (cluster = rcpp_cut_tree (., ncl = ncl) + 1)
+        dplyr::mutate (cluster = rcpp_cut_tree (., ncl = ncl,
+                                                distances = distances) + 1)
 
     return (tree)
 }

@@ -30,14 +30,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_cut_tree
-Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl);
-RcppExport SEXP _spatialcluster_rcpp_cut_tree(SEXP treeSEXP, SEXP nclSEXP) {
+Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl, const bool distances);
+RcppExport SEXP _spatialcluster_rcpp_cut_tree(SEXP treeSEXP, SEXP nclSEXP, SEXP distancesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type tree(treeSEXP);
     Rcpp::traits::input_parameter< const int >::type ncl(nclSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_cut_tree(tree, ncl));
+    Rcpp::traits::input_parameter< const bool >::type distances(distancesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_cut_tree(tree, ncl, distances));
     return rcpp_result_gen;
 END_RCPP
 }

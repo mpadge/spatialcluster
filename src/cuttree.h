@@ -37,14 +37,18 @@ void fill_edges (TreeDat &tree,
         Rcpp::NumericVector &d);
 double calc_ss (const std::vector <EdgeComponent> &edges,
         const int cluster_num);
+double calc_covsum (const std::vector <EdgeComponent> &edges,
+        const int cluster_num);
 size_t cluster_size (const std::vector <EdgeComponent> &edges,
         const int cluster_num);
 std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges);
 
 TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
-        const std::unordered_set <int> &tree);
-BestCut find_min_cut (const TreeDat &tree, const int cluster_num);
+        const std::unordered_set <int> &tree, const bool distances);
+BestCut find_min_cut (const TreeDat &tree, const int cluster_num,
+        const bool distances);
 
 } // end namespace cuttree
 
-Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl);
+Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
+        const bool distances);
