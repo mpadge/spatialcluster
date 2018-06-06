@@ -4,7 +4,7 @@
 \alias{scl_exact}
 \title{scl_exact}
 \usage{
-scl_exact(xy, dmat, ncl, linkage = "single")
+scl_exact(xy, dmat, ncl, linkage = "single", distances = TRUE)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
@@ -18,14 +18,12 @@ columns.}
 \item{ncl}{Desired number of clusters}
 
 \item{linkage}{One of \code{"single"}, \code{"average"}, or
-\code{"complete"}; see \link{scl_redcap} for details.}
-}
-\value{
-A object of class \code{scl} with \code{tree} containing the
-clustering scheme, and \code{xy} the original coordinate data of the
-clustered points. An additional component, \code{tree_rest}, enables the tree
-to be re-cut to a different number of clusters via \link{scl_recluster},
-rather than calculating clusters anew.
+\code{"complete"}; see Note.}
+
+\item{distances}{If \code{TRUE}, the \code{dmat} is interpreted as distances
+such that lower values are preferentially selected; if \code{FALSE}, then
+higher values of \code{dmat} are interpreted to indicate stronger
+relationships, as is the case for example with covariances.}
 }
 \description{
 Exact spatially-constrained clustering.
