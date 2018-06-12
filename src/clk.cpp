@@ -11,6 +11,10 @@ void clk::clk_init (clk::CLKDat &clk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
+    clk_dat.distances = true;
+    if (d_full [0] > d_full [1])
+        clk_dat.distances = false;
+
     size_t n = utils::sets_init (from, to, clk_dat.vert2index_map,
             clk_dat.index2vert_map, clk_dat.index2cl_map,
             clk_dat.cl2index_map);
@@ -79,7 +83,8 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
     const int cl_u = clk_dat.index2cl_map.at (u),
               cl_v = clk_dat.index2cl_map.at (v);
 
-    // Find shortest edge in MST that connects u and v:
+    // Find shortest edge (or longest for covariance) in MST that connects 
+    // u and v:
     size_t mmin = INFINITE_INT, lmin = INFINITE_INT, the_edge = INFINITE_INT;
     double dmin = INFINITE_DOUBLE;
     for (size_t j = 0; j < clk_dat.edges_nn.size (); j++)
@@ -91,7 +96,8 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
                         clk_dat.index2cl_map.at (l) == cl_v) ||
                     (clk_dat.index2cl_map.at (m) == cl_v &&
                      clk_dat.index2cl_map.at (l) == cl_u)) &&
-                ej.dist < dmin)
+                ((clk_dat.distances && ej.dist < dmin) ||
+                 (!clk_dat.distances && ej.dist > dmin)))
         {
             the_edge = j;
             mmin = m;
@@ -119,7 +125,8 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
             const double dl = clk_dat.dmax (clu, lu),
                   dm = clk_dat.dmax (clu, mu);
             double dtemp = dl;
-            if (dm < dl)
+            if ((clk_dat.distances && dm < dl) ||
+                    (!clk_dat.distances && dm > dl))
                 dtemp = dm;
             clk_dat.dmax (clu, lu) = dtemp;
 
@@ -179,7 +186,8 @@ Rcpp::IntegerVector rcpp_clk (
                                     clk_dat.vert2index_map.at (ei.to));
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
                 clk_dat.contig_mat (u, v) == 1 &&
-                ei.dist > clk_dat.dmax (u, v))
+                ((clk_dat.distances && ei.dist > clk_dat.dmax (u, v)) ||
+                 (!clk_dat.distances && ei.dist < clk_dat.dmax (u, v))))
         {
             size_t the_edge = clk_step (clk_dat, i);
             treevec.push_back (the_edge);

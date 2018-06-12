@@ -8,6 +8,7 @@ namespace clk {
 
 struct CLKDat
 {
+    bool distances;
     size_t n;
 
     std::vector <utils::OneEdge> edges_all, edges_nn;

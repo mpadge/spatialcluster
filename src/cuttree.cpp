@@ -186,7 +186,7 @@ cuttree::BestCut cuttree::find_min_cut (
             cuttree::TwoSS ss;
             ss = cuttree::sum_component_ss (edges_copy, tree, distances);
 
-            if ((ss.ss1 + ss.ss2) < ssmin)
+            if ((ss.ss1 + ss.ss2) < ssmin) // applies to both distances & cov
             {
                 ssmin = ss.ss1 + ss.ss2;
                 the_cut.pos = i;
