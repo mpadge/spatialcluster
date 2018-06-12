@@ -142,6 +142,8 @@ void ex_init::fill_cl_edges (ex_init::ExInitDat &clexact_dat,
     // need a (sparse) matrix of all pairwise edge distances:
     arma::uword nu = static_cast <arma::uword> (clexact_dat.n);
     arma::Mat <double> vert_dists (nu, nu);
+    if (!clexact_dat.distances)
+        vert_dists.fill (INFINITE_DOUBLE);
     for (auto ei: clexact_dat.edges)
     {
         arma::uword i = static_cast <arma::uword> (
@@ -157,6 +159,8 @@ void ex_init::fill_cl_edges (ex_init::ExInitDat &clexact_dat,
             intset_t verts_i = vert_sets.at (i),
                      verts_j = vert_sets.at (j);
             double max_d = 0.0;
+            if (!clexact_dat.distances)
+                max_d = INFINITE_DOUBLE; // min covariance
             for (auto vi: verts_i)
                 for (auto vj: verts_j)
                 {
@@ -164,7 +168,10 @@ void ex_init::fill_cl_edges (ex_init::ExInitDat &clexact_dat,
                             clexact_dat.vert2index_map.at (vi)),
                                 vju = static_cast <arma::uword> (
                             clexact_dat.vert2index_map.at (vj));
-                    if (vert_dists (viu, vju) > max_d)
+                    if ((clexact_dat.distances &&
+                                vert_dists (viu, vju) > max_d) ||
+                        (!clexact_dat.distances &&
+                                vert_dists (viu, vju) < max_d))
                         max_d = vert_dists (viu, vju);
                 }
             arma::uword iu = static_cast <arma::uword> (i),
@@ -195,6 +202,9 @@ Rcpp::IntegerVector rcpp_exact_initial (
     to = to - 1;
 
     ex_init::ExInitDat clexact_dat;
+    clexact_dat.distances = true;
+    if (d_ref [0] > d_ref [1])
+        clexact_dat.distances = false;
     ex_init::init (clexact_dat, from, to, d);
 
     ex_init::assign_first_edge (clexact_dat);
