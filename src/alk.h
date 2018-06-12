@@ -25,6 +25,7 @@ namespace alk {
 
 struct ALKDat
 {
+    bool distances;
     size_t n;
 
     std::unordered_map <double,
@@ -52,8 +53,7 @@ size_t alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
-        Rcpp::NumericVector d,
-        bool distances);
+        Rcpp::NumericVector d);
 
 } // end namespace alk
 

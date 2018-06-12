@@ -10,6 +10,10 @@ void alk::alk_init (alk::ALKDat &alk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
+    alk_dat.distances = true;
+    if (d [0] > d [1])
+        alk_dat.distances = false; // covariances, so d passed in descending order
+
     size_t n = utils::sets_init (from, to, alk_dat.vert2index_map,
             alk_dat.index2vert_map, alk_dat.index2cl_map,
             alk_dat.cl2index_map);
@@ -71,7 +75,10 @@ void alk::alk_init (alk::ALKDat &alk_dat,
     //alk_dat.avg_dist.fill (INFINITE_DOUBLE);
     alk_dat.avg_dist.fill (0.0);
     alk_dat.dmat.set_size (nu, nu);
-    alk_dat.dmat.fill (INFINITE_DOUBLE);
+    if (alk_dat.distances)
+        alk_dat.dmat.fill (INFINITE_DOUBLE);
+    else
+        alk_dat.dmat.fill (-INFINITE_DOUBLE);
     for (int i = 0; i < from.length (); i++)
     {
         arma::uword vf = static_cast <arma::uword> (
@@ -141,8 +148,7 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
-        Rcpp::NumericVector d,
-        bool distances)
+        Rcpp::NumericVector d)
 {
     // Step through to find the minimal-distance edge that (i) connects
     // different clusters, (ii) represents contiguous clusters, and (iii) has
@@ -175,7 +181,7 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
     // otherwise !distances finds longest connection (highest covariance).
     size_t ishort = utils::find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
-            alk_dat.cl2index_map, mi, li, distances);
+            alk_dat.cl2index_map, mi, li, alk_dat.distances);
     // ishort is return value; an index into (from, to)
     utils::merge_clusters (alk_dat.contig_mat,
             alk_dat.index2cl_map,
@@ -263,10 +269,6 @@ Rcpp::IntegerVector rcpp_alk (
     from = from - 1;
     to = to - 1;
 
-    bool distances = true;
-    if (d [0] > d [1])
-        distances = false; // covariances, so d passed in descending order
-
     alk::ALKDat alk_dat;
     BinarySearchTree tree;
     alk::alk_init (alk_dat, tree, from, to, d);
@@ -276,8 +278,7 @@ Rcpp::IntegerVector rcpp_alk (
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
-        size_t ishort = alk::alk_step (alk_dat, tree, from, to, d,
-                distances);
+        size_t ishort = alk::alk_step (alk_dat, tree, from, to, d);
         the_tree.insert (ishort);
     }
 
