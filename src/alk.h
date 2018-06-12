@@ -52,7 +52,8 @@ size_t alk_step (ALKDat &alk_dat,
         BinarySearchTree &tree,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
-        Rcpp::NumericVector d);
+        Rcpp::NumericVector d,
+        bool distances);
 
 } // end namespace alk
 

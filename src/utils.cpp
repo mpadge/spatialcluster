@@ -90,7 +90,10 @@ void utils::mats_init (
     contig_mat = arma::zeros <arma::Mat <int> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
     d_mat.resize (n, n);
-    d_mat.fill (INFINITE_DOUBLE);
+    if (d [0] < d [1])
+        d_mat.fill (INFINITE_DOUBLE);
+    else
+        d_mat.fill (-INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
@@ -111,7 +114,10 @@ void utils::dmat_full_init (
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
     const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
     d_mat.resize (n, n);
-    d_mat.fill (INFINITE_DOUBLE);
+    if (d [0] < d [1])
+        d_mat.fill (INFINITE_DOUBLE);
+    else
+        d_mat.fill (-INFINITE_DOUBLE);
 
     for (int i = 0; i < from.length (); i++)
     {
@@ -121,7 +127,7 @@ void utils::dmat_full_init (
     }
 }
 
-//' find shortest connection between two clusters
+//' find shortest (or longest) connection between two clusters
 //' @param from, to, d the columns of the edge graph
 //' @param d_mat distance matrix between all edges (not between clusters!)
 //' @param cl2vert_map map of list of all (from, to, d) edges for each cluster
@@ -138,7 +144,8 @@ size_t utils::find_shortest_connection (
         arma::Mat <double> &d_mat,
         int2indxset_map_t &cl2index_map,
         const int cfrom,
-        const int cto)
+        const int cto,
+        bool shortest)
 {
     if (cl2index_map.find (cfrom) == cl2index_map.end ())
         Rcpp::stop ("cluster index not found");
@@ -148,6 +155,8 @@ size_t utils::find_shortest_connection (
              index_j = cl2index_map.at (cto);
 
     double dmin = INFINITE_DOUBLE;
+    if (!shortest)
+        dmin = -dmin;
     size_t short_i = INFINITE_INT, short_j = INFINITE_INT;
 
     // from and to here are not directional, so need to examine both directions
@@ -156,12 +165,14 @@ size_t utils::find_shortest_connection (
         {
             arma::uword ia = static_cast <arma::uword> (i),
                         ja = static_cast <arma::uword> (j);
-            if (d_mat (ia, ja) < dmin)
+            if ((shortest && d_mat (ia, ja) < dmin) ||
+                    (!shortest && d_mat (ia, ja) > dmin))
             {
                 dmin = d_mat (ia, ja);
                 short_i = i;
                 short_j = j;
-            } else if (d_mat (ja, ia) < dmin)
+            } else if ((shortest && d_mat (ja, ia) < dmin) ||
+                    (!shortest && d_mat (ja, ia) > dmin))
             {
                 dmin = d_mat (ja, ia);
                 short_i = j;
@@ -173,7 +184,7 @@ size_t utils::find_shortest_connection (
 
     // convert short_i and short_j to a single edge 
     // TODO: Make a std::map of vert2dist to avoid this loop
-    size_t shortest = INFINITE_INT;
+    size_t shortest_edge = INFINITE_INT;
     for (int i = 0; i < from.length (); i++) // int for Rcpp index
     {
         if ((vert2index_map.at (from [i]) == short_i &&
@@ -181,14 +192,14 @@ size_t utils::find_shortest_connection (
             (vert2index_map.at (from [i]) == short_j &&
                 vert2index_map.at (to [i]) == short_i))
         {
-            shortest = static_cast <size_t> (i);
+            shortest_edge = static_cast <size_t> (i);
             break;
         }
     }
-    if (shortest == INFINITE_INT)
+    if (shortest_edge == INFINITE_INT)
         Rcpp::stop ("shite");
 
-    return shortest;
+    return shortest_edge;
 }
 
 //' merge two clusters in the contiguity matrix, reducing the size of the matrix
