@@ -144,3 +144,66 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
     print (g)
     invisible (g)
 }
+
+#' plot_merges
+#'
+#' Plot dendrogram of merges for \code{scl} object with \code{method = "exact"}.
+#' @param x Object of class \code{scl} obtained with \code{method = "exact"}.
+#' @param root_tree If \code{TRUE}, tree leaves are connected to bottom of plot,
+#' otherwise floating as determined by \link{plot.hclust}.
+#' @return Nothing (generates plot)
+#' @export
+plot_merges <- function (x, root_tree = FALSE)
+{
+    if (!(is (x, "scl") && x$pars$method == "exact"))
+        stop ("plot_merges can only be applied to scl objects ",
+              "generated with method = exact")
+
+    hc <- structure (class = "hclust", .Data = list ())
+    merges <- convert_merges_to_hclust (x)
+    hc$merge <- merges [, 1:2]
+    hc$height <- merges [, 3]
+    hc$order <- x$ord + 1 # it's 0-indexed
+    hc$labels <- x$ord
+    if (root_tree)
+        plot (as.dendrogram (hc))
+    else
+        plot (hc)
+}
+
+convert_merges_to_hclust <- function (x)
+{
+    mt <- as.matrix (x$merges [, c ("from", "to")]) + 1
+    dists <- as.vector (x$merges$dist)
+    indx <- sort (unique (as.vector (mt)))
+    mt <- apply (mt, 2, function (i) match (i, indx))
+    merged <- d <- NULL
+    map <- rep (NA, max (mt))
+    for (i in seq (nrow (mt)))
+    {
+        m1 <- mt [i, 1]
+        m2 <- mt [i, 2]
+        if (!m1 %in% merged)
+        {
+            merged <- c (merged, m1)
+            mt [i, 1] <- -m1
+        } else
+        {
+            mt [i, 1] <- map [m1]
+            dists [i] <- dists [i] + dists [map [m1]]
+        }
+        map [m1] <- i
+
+        if (!m2 %in% merged)
+        {
+            merged <- c (merged, m2)
+            mt [i, 2] <- -m2
+        } else
+        {
+            mt [i, 2] <- map [m2]
+            dists [i] <- dists [i] + dists [map [m2]]
+        }
+        map [m2] <- i
+    }
+    cbind (mt, dists)
+}

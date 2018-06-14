@@ -2,6 +2,7 @@
 
 S3method(plot,scl)
 export("%>%")
+export(plot_merges)
 export(scl_exact)
 export(scl_recluster)
 export(scl_redcap)
