@@ -14,6 +14,7 @@
     utils::globalVariables ("from")
     utils::globalVariables ("to")
     utils::globalVariables ("clnum")
+    utils::globalVariables ("cluster")
     utils::globalVariables ("comp")
     utils::globalVariables ("value")
     utils::globalVariables ("na.omit")
