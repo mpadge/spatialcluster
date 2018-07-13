@@ -36,4 +36,5 @@ size_t clk_step (CLKDat &clk_dat, size_t i);
 
 Rcpp::IntegerVector rcpp_clk (
         const Rcpp::DataFrame gr_full,
-        const Rcpp::DataFrame gr);
+        const Rcpp::DataFrame gr,
+        bool shortest);

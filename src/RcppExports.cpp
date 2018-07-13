@@ -7,25 +7,27 @@
 using namespace Rcpp;
 
 // rcpp_alk
-Rcpp::IntegerVector rcpp_alk(const Rcpp::DataFrame gr);
-RcppExport SEXP _spatialcluster_rcpp_alk(SEXP grSEXP) {
+Rcpp::IntegerVector rcpp_alk(const Rcpp::DataFrame gr, bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_alk(SEXP grSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_alk(gr));
+    Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_alk(gr, shortest));
     return rcpp_result_gen;
 END_RCPP
 }
 // rcpp_clk
-Rcpp::IntegerVector rcpp_clk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr);
-RcppExport SEXP _spatialcluster_rcpp_clk(SEXP gr_fullSEXP, SEXP grSEXP) {
+Rcpp::IntegerVector rcpp_clk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_clk(SEXP gr_fullSEXP, SEXP grSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr_full(gr_fullSEXP);
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_clk(gr_full, gr));
+    Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_clk(gr_full, gr, shortest));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -43,13 +45,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_exact_initial
-Rcpp::IntegerVector rcpp_exact_initial(const Rcpp::DataFrame gr);
-RcppExport SEXP _spatialcluster_rcpp_exact_initial(SEXP grSEXP) {
+Rcpp::IntegerVector rcpp_exact_initial(const Rcpp::DataFrame gr, bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_exact_initial(SEXP grSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_exact_initial(gr));
+    Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_exact_initial(gr, shortest));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -67,14 +70,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_slk
-Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr);
-RcppExport SEXP _spatialcluster_rcpp_slk(SEXP gr_fullSEXP, SEXP grSEXP) {
+Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_slk(SEXP gr_fullSEXP, SEXP grSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr_full(gr_fullSEXP);
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_slk(gr_full, gr));
+    Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_slk(gr_full, gr, shortest));
     return rcpp_result_gen;
 END_RCPP
 }

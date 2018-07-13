@@ -10,10 +10,6 @@ void alk::alk_init (alk::ALKDat &alk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    alk_dat.shortest = true;
-    if (d [0] > d [1])
-        alk_dat.shortest = false; // covariances, so d passed in descending order
-
     size_t n = utils::sets_init (from, to, alk_dat.vert2index_map,
             alk_dat.index2vert_map, alk_dat.index2cl_map,
             alk_dat.cl2index_map);
@@ -254,7 +250,8 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
 //' @noRd
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_alk (
-        const Rcpp::DataFrame gr)
+        const Rcpp::DataFrame gr,
+        bool shortest)
 {
     Rcpp::IntegerVector from_ref = gr ["from"];
     Rcpp::IntegerVector to_ref = gr ["to"];
@@ -268,6 +265,7 @@ Rcpp::IntegerVector rcpp_alk (
     to = to - 1;
 
     alk::ALKDat alk_dat;
+    alk_dat.shortest = shortest;
     BinarySearchTree tree;
     alk::alk_init (alk_dat, tree, from, to, d);
     const size_t n = alk_dat.n;

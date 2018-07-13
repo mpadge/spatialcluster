@@ -52,9 +52,9 @@ scl_spantree_O1 <- function (edges)
 #'
 #' @return A tree
 #' @noRd
-scl_spantree_slk <- function (edges_all, edges_nn)
+scl_spantree_slk <- function (edges_all, edges_nn, shortest)
 {
-    clusters <- rcpp_slk (edges_all, edges_nn) + 1
+    clusters <- rcpp_slk (edges_all, edges_nn, shortest) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
 }
@@ -66,9 +66,9 @@ scl_spantree_slk <- function (edges_all, edges_nn)
 #'
 #' @inheritParams scl_spantree_slk
 #' @noRd
-scl_spantree_alk <- function (edges)
+scl_spantree_alk <- function (edges, shortest)
 {
-    clusters <- rcpp_alk (edges) + 1
+    clusters <- rcpp_alk (edges, shortest) + 1
     tibble::tibble (from = edges$from [clusters],
                     to = edges$to [clusters])
 }
@@ -80,9 +80,9 @@ scl_spantree_alk <- function (edges)
 #'
 #' @inheritParams scl_spantree_slk
 #' @noRd
-scl_spantree_clk <- function (edges_all, edges_nn)
+scl_spantree_clk <- function (edges_all, edges_nn, shortest)
 {
-    clusters <- rcpp_clk (edges_all, edges_nn) + 1
+    clusters <- rcpp_clk (edges_all, edges_nn, shortest) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
 }

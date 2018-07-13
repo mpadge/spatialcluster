@@ -12,7 +12,8 @@
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_slk (
         const Rcpp::DataFrame gr_full,
-        const Rcpp::DataFrame gr)
+        const Rcpp::DataFrame gr,
+        bool shortest)
 {
     Rcpp::IntegerVector from_full_ref = gr_full ["from"];
     Rcpp::IntegerVector to_full_ref = gr_full ["to"];
@@ -20,10 +21,6 @@ Rcpp::IntegerVector rcpp_slk (
     Rcpp::IntegerVector from_ref = gr ["from"];
     Rcpp::IntegerVector to_ref = gr ["to"];
     Rcpp::NumericVector d = gr ["d"];
-
-    bool shortest = true;
-    if (d [0] > d [1])
-        shortest = false; // covariances, so d passed in descending order
 
     // Rcpp classes are always passed by reference, so cloning is necessary to
     // avoid modifying the original data.frames.

@@ -11,10 +11,6 @@ void clk::clk_init (clk::CLKDat &clk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    clk_dat.shortest = true;
-    if (d_full [0] > d_full [1])
-        clk_dat.shortest = false;
-
     size_t n = utils::sets_init (from, to, clk_dat.vert2index_map,
             clk_dat.index2vert_map, clk_dat.index2cl_map,
             clk_dat.cl2index_map);
@@ -149,7 +145,8 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_clk (
         const Rcpp::DataFrame gr_full,
-        const Rcpp::DataFrame gr)
+        const Rcpp::DataFrame gr,
+        bool shortest)
 {
     Rcpp::IntegerVector from_full_ref = gr_full ["from"];
     Rcpp::IntegerVector to_full_ref = gr_full ["to"];
@@ -174,6 +171,7 @@ Rcpp::IntegerVector rcpp_clk (
     to = to - 1;
 
     clk::CLKDat clk_dat;
+    clk_dat.shortest = shortest;
     clk::clk_init (clk_dat, from_full, to_full, d_full, from, to, d);
 
     std::vector <size_t> treevec;

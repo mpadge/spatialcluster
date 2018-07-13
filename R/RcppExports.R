@@ -6,8 +6,8 @@
 #' Full-order average linkage cluster redcap algorithm
 #'
 #' @noRd
-rcpp_alk <- function(gr) {
-    .Call(`_spatialcluster_rcpp_alk`, gr)
+rcpp_alk <- function(gr, shortest) {
+    .Call(`_spatialcluster_rcpp_alk`, gr, shortest)
 }
 
 #' clk_step
@@ -21,8 +21,8 @@ NULL
 #' Full-order complete linkage cluster redcap algorithm
 #'
 #' @noRd
-rcpp_clk <- function(gr_full, gr) {
-    .Call(`_spatialcluster_rcpp_clk`, gr_full, gr)
+rcpp_clk <- function(gr_full, gr, shortest) {
+    .Call(`_spatialcluster_rcpp_clk`, gr_full, gr, shortest)
 }
 
 #' rcpp_cut_tree
@@ -59,8 +59,8 @@ NULL
 #' Initial allocation for exact clustering
 #'
 #' @noRd
-rcpp_exact_initial <- function(gr) {
-    .Call(`_spatialcluster_rcpp_exact_initial`, gr)
+rcpp_exact_initial <- function(gr, shortest) {
+    .Call(`_spatialcluster_rcpp_exact_initial`, gr, shortest)
 }
 
 #' rcpp_exact_merge
@@ -78,7 +78,7 @@ rcpp_exact_merge <- function(gr, linkage, shortest) {
 #' Full-order single linkage cluster redcap algorithm
 #'
 #' @noRd
-rcpp_slk <- function(gr_full, gr) {
-    .Call(`_spatialcluster_rcpp_slk`, gr_full, gr)
+rcpp_slk <- function(gr_full, gr, shortest) {
+    .Call(`_spatialcluster_rcpp_slk`, gr_full, gr, shortest)
 }
 

@@ -58,4 +58,5 @@ size_t alk_step (ALKDat &alk_dat,
 } // end namespace alk
 
 Rcpp::IntegerVector rcpp_alk (
-        const Rcpp::DataFrame gr);
+        const Rcpp::DataFrame gr,
+        bool shortest);

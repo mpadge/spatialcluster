@@ -41,4 +41,5 @@ void fill_cl_edges (ExInitDat &clexact_dat, arma::Mat <double> &cl_edges,
 } // end namespace ex_init
 
 Rcpp::IntegerVector rcpp_exact_initial (
-        const Rcpp::DataFrame gr);
+        const Rcpp::DataFrame gr,
+        bool shortest);

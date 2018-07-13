@@ -23,7 +23,7 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE)
         xy <- scl_tbl (xy)
         edges <- scl_edges_nn (xy, dmat, shortest = shortest)
         # cluster numbers can be joined with edges through either from or to:
-        cl <- rcpp_exact_initial (edges) + 1
+        cl <- rcpp_exact_initial (edges, shortest) + 1
 
         # make 3 vectors of cluster numbers:
         #   1. cl = cluster number for intra-cluster edges only;

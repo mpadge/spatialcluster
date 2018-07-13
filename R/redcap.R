@@ -70,16 +70,18 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
         {
             if (linkage == "average")
             {
-                tree_full <- scl_spantree_alk (edges_nn)
+                tree_full <- scl_spantree_alk (edges_nn, shortest)
             } else
             {
                 edges_all <- scl_edges_all (xy, dmat, shortest)
                 if (linkage == "single")
                 {
-                    tree_full <- scl_spantree_slk (edges_all, edges_nn)
+                    tree_full <- scl_spantree_slk (edges_all, edges_nn,
+                                                   shortest)
                 } else if (linkage == "complete")
                 {
-                    tree_full <- scl_spantree_clk (edges_all, edges_nn)
+                    tree_full <- scl_spantree_clk (edges_all, edges_nn,
+                                                   shortest)
                 } else
                 {
                     stop ("linkage must be one of ",

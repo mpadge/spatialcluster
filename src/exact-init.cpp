@@ -188,7 +188,8 @@ void ex_init::fill_cl_edges (ex_init::ExInitDat &clexact_dat,
 //' @noRd
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_exact_initial (
-        const Rcpp::DataFrame gr)
+        const Rcpp::DataFrame gr,
+        bool shortest)
 {
     Rcpp::IntegerVector from_ref = gr ["from"];
     Rcpp::IntegerVector to_ref = gr ["to"];
@@ -202,9 +203,7 @@ Rcpp::IntegerVector rcpp_exact_initial (
     to = to - 1;
 
     ex_init::ExInitDat clexact_dat;
-    clexact_dat.shortest = true;
-    if (d_ref [0] > d_ref [1])
-        clexact_dat.shortest = false;
+    clexact_dat.shortest = shortest;
     ex_init::init (clexact_dat, from, to, d);
 
     ex_init::assign_first_edge (clexact_dat);
