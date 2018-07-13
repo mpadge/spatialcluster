@@ -82,7 +82,8 @@ void utils::mats_init (
         const Rcpp::NumericVector &d,
         const int2indx_map_t &vert2index_map,
         arma::Mat <int> &contig_mat,
-        arma::Mat <double> &d_mat)
+        arma::Mat <double> &d_mat,
+        bool shortest)
 {
     // arma::uword = unsigned int
     const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
@@ -90,7 +91,7 @@ void utils::mats_init (
     contig_mat = arma::zeros <arma::Mat <int> > (n, n);
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
     d_mat.resize (n, n);
-    if (d [0] < d [1])
+    if (shortest)
         d_mat.fill (INFINITE_DOUBLE);
     else
         d_mat.fill (-INFINITE_DOUBLE);
@@ -109,12 +110,13 @@ void utils::dmat_full_init (
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
         const int2indx_map_t &vert2index_map,
-        arma::Mat <double> &d_mat) // here: d_mat_full
+        arma::Mat <double> &d_mat,
+        bool shortest) // here: d_mat_full
 {
     //d_mat = arma::zeros <arma::Mat <double> > (n, n);
     const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
     d_mat.resize (n, n);
-    if (d [0] < d [1])
+    if (shortest)
         d_mat.fill (INFINITE_DOUBLE);
     else
         d_mat.fill (-INFINITE_DOUBLE);

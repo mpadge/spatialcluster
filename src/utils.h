@@ -25,14 +25,16 @@ void mats_init (
         const Rcpp::NumericVector &d,
         const int2indx_map_t &vert2index_map,
         arma::Mat <int> &contig_mat,
-        arma::Mat <double> &d_mat);
+        arma::Mat <double> &d_mat,
+        bool shortest);
 
 void dmat_full_init (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
         const Rcpp::NumericVector &d,
         const int2indx_map_t &vert2index_map,
-        arma::Mat <double> &d_mat);
+        arma::Mat <double> &d_mat,
+        bool shortest);
 
 size_t find_shortest_connection (
         Rcpp::IntegerVector &from,

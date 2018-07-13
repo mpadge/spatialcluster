@@ -49,8 +49,10 @@ Rcpp::IntegerVector rcpp_slk (
     size_t n = utils::sets_init (from, to, vert2index_map, index2vert_map,
                           index2cl_map, cl2index_map);
 
-    utils::mats_init (from, to, d, vert2index_map, contig_mat, d_mat);
-    utils::dmat_full_init (from_full, to_full, d_full, vert2index_map, d_mat_full);
+    utils::mats_init (from, to, d, vert2index_map, contig_mat, d_mat,
+            shortest);
+    utils::dmat_full_init (from_full, to_full, d_full, vert2index_map,
+            d_mat_full, shortest);
 
     /* The contiguity matrix retains is shape, so is always indexed by the
      * (from, to) vectors. Merging clusters simply switches additional entries
