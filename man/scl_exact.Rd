@@ -4,7 +4,7 @@
 \alias{scl_exact}
 \title{scl_exact}
 \usage{
-scl_exact(xy, dmat, ncl, linkage = "single", distances = TRUE)
+scl_exact(xy, dmat, ncl, linkage = "single", shortest = TRUE)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
@@ -20,7 +20,7 @@ columns.}
 \item{linkage}{One of \code{"single"}, \code{"average"}, or
 \code{"complete"}; see Note.}
 
-\item{distances}{If \code{TRUE}, the \code{dmat} is interpreted as distances
+\item{shortest}{If \code{TRUE}, the \code{dmat} is interpreted as distances
 such that lower values are preferentially selected; if \code{FALSE}, then
 higher values of \code{dmat} are interpreted to indicate stronger
 relationships, as is the case for example with covariances.}

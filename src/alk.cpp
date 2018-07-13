@@ -10,9 +10,9 @@ void alk::alk_init (alk::ALKDat &alk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    alk_dat.distances = true;
+    alk_dat.shortest = true;
     if (d [0] > d [1])
-        alk_dat.distances = false; // covariances, so d passed in descending order
+        alk_dat.shortest = false; // covariances, so d passed in descending order
 
     size_t n = utils::sets_init (from, to, alk_dat.vert2index_map,
             alk_dat.index2vert_map, alk_dat.index2cl_map,
@@ -75,7 +75,7 @@ void alk::alk_init (alk::ALKDat &alk_dat,
     //alk_dat.avg_dist.fill (INFINITE_DOUBLE);
     alk_dat.avg_dist.fill (0.0);
     alk_dat.dmat.set_size (nu, nu);
-    if (alk_dat.distances)
+    if (alk_dat.shortest)
         alk_dat.dmat.fill (INFINITE_DOUBLE);
     else
         alk_dat.dmat.fill (-INFINITE_DOUBLE);
@@ -177,11 +177,9 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
     }
     int li = static_cast <int> (l), mi = static_cast <int> (m);
     
-    // If distances, then shortest connection should be shortest distance,
-    // otherwise !distances finds longest connection (highest covariance).
     size_t ishort = utils::find_shortest_connection (from, to, d,
             alk_dat.vert2index_map, alk_dat.dmat,
-            alk_dat.cl2index_map, mi, li, alk_dat.distances);
+            alk_dat.cl2index_map, mi, li, alk_dat.shortest);
     // ishort is return value; an index into (from, to)
     utils::merge_clusters (alk_dat.contig_mat,
             alk_dat.index2cl_map,

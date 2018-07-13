@@ -4,7 +4,7 @@
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_nn <- function (xy, dmat, distances = TRUE)
+scl_edges_nn <- function (xy, dmat, shortest = TRUE)
 {
     nbs <- dplyr::select (xy, c (x, y)) %>%
         tripack::tri.mesh () %>%
@@ -20,7 +20,7 @@ scl_edges_nn <- function (xy, dmat, distances = TRUE)
     index <- (edges$to - 1) * nrow (dmat) + edges$from
     edges$d <- dmat [index]
 
-    if (distances)
+    if (shortest)
         edges %<>% dplyr::arrange (d) # lowest-to-highest
     else
         edges %<>% dplyr::arrange (dplyr::desc (d))
@@ -34,7 +34,7 @@ scl_edges_nn <- function (xy, dmat, distances = TRUE)
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_all <- function (xy, dmat, distances = TRUE)
+scl_edges_all <- function (xy, dmat, shortest = TRUE)
 {
     n <- nrow (dmat)
     edges <- cbind (seq (n), rep (seq (n), each = n), as.vector (dmat)) %>%
@@ -42,7 +42,7 @@ scl_edges_all <- function (xy, dmat, distances = TRUE)
         dplyr::rename (from = V1, to = V2, d = V3) %>%
         na.omit ()
 
-    if (distances)
+    if (shortest)
         edges %<>% dplyr::arrange (d) # lowest-to-highest
     else
         edges %<>% dplyr::arrange (dplyr::desc (d))

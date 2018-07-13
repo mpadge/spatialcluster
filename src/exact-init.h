@@ -13,7 +13,7 @@ namespace ex_init {
 
 struct ExInitDat
 {
-    bool distances;
+    bool shortest;
     size_t n;
 
     std::vector <utils::OneEdge> edges; // nearest neighbour edges only

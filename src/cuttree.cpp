@@ -109,7 +109,7 @@ std::unordered_set <int> cuttree::build_one_tree (
 cuttree::TwoSS cuttree::sum_component_ss (
         const std::vector <cuttree::EdgeComponent> &edges,
         const std::unordered_set <int> &tree,
-        const bool distances)
+        const bool shortest)
 {
     double sa = 0.0, sa2 = 0.0, sb = 0.0, sb2 = 0.0, na = 0.0, nb = 0.0;
     for (auto e: edges)
@@ -117,20 +117,20 @@ cuttree::TwoSS cuttree::sum_component_ss (
         if (tree.find (e.from) != tree.end ())
         {
             sa += e.d;
-            if (distances)
+            if (shortest)
                 sa2 += e.d * e.d;
             na += 1.0;
         } else
         {
             sb += e.d;
-            if (distances)
+            if (shortest)
                 sb2 += e.d * e.d;
             nb += 1.0;
         }
     }
     cuttree::TwoSS res;
     // res.ss1 = (sa2 - sa * sa / na) / (na - 1.0); // variance
-    if (distances)
+    if (shortest)
     {
         res.ss1 = (sa2 - sa * sa / na);
         res.ss2 = (sb2 - sb * sb / nb);
@@ -149,7 +149,7 @@ cuttree::TwoSS cuttree::sum_component_ss (
 cuttree::BestCut cuttree::find_min_cut (
         const TreeDat &tree,
         const int cluster_num,
-        const bool distances)
+        const bool shortest)
 {
     size_t n = cuttree::cluster_size (tree.edges, cluster_num);
 
@@ -184,7 +184,7 @@ cuttree::BestCut cuttree::find_min_cut (
                                 cuttree::MIN_CLUSTER_SIZE - 1))
         {
             cuttree::TwoSS ss;
-            ss = cuttree::sum_component_ss (edges_copy, tree, distances);
+            ss = cuttree::sum_component_ss (edges_copy, tree, shortest);
 
             if ((ss.ss1 + ss.ss2) < ssmin) // applies to both distances & cov
             {
@@ -221,7 +221,7 @@ cuttree::BestCut cuttree::find_min_cut (
 //' @noRd
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
-        const bool distances)
+        const bool shortest)
 {
     Rcpp::IntegerVector from_in = tree ["from"];
     Rcpp::IntegerVector to_in = tree ["to"];
@@ -234,7 +234,7 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
     tree_dat.edges.resize (static_cast <size_t> (dref.size ()));
     cuttree::fill_edges (tree_dat, from, to, dref);
 
-    cuttree::BestCut the_cut = cuttree::find_min_cut (tree_dat, 0, distances);
+    cuttree::BestCut the_cut = cuttree::find_min_cut (tree_dat, 0, shortest);
     std::vector <double> ss_diff, ss1, ss2;
     ss_diff.push_back (the_cut.ss_diff); // ss0 - ss1 - ss2
     ss1.push_back (the_cut.ss1);
@@ -263,7 +263,7 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
             break;
         }
         
-        the_cut = cuttree::find_min_cut (tree_dat, clnum, distances);
+        the_cut = cuttree::find_min_cut (tree_dat, clnum, shortest);
         // Break old clnum into 2:
         int count = 0;
         for (auto &e: tree_dat.edges)
@@ -278,13 +278,13 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
             }
         }
         // find new best cut of now reduced cluster
-        the_cut = cuttree::find_min_cut (tree_dat, clnum, distances);
+        the_cut = cuttree::find_min_cut (tree_dat, clnum, shortest);
 
         ss_diff [maxi] = the_cut.ss_diff;
         ss1 [maxi] = the_cut.ss1;
         ss2 [maxi] = the_cut.ss2;
         // and also of new cluster
-        the_cut = cuttree::find_min_cut (tree_dat, num_clusters, distances);
+        the_cut = cuttree::find_min_cut (tree_dat, num_clusters, shortest);
 
         ss_diff.push_back (the_cut.ss_diff);
         ss1.push_back (the_cut.ss1);

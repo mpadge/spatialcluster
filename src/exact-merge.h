@@ -26,7 +26,7 @@ struct OneMerge
 
 struct ExMergeDat
 {
-    bool distances;
+    bool shortest;
     std::unordered_map <int, int> cl_remap;
     std::unordered_map <int, intset_t> cl_members;
     std::unordered_map <int, OneCluster> clusters;
@@ -71,4 +71,4 @@ void max (ExMergeDat &cldat);
 Rcpp::NumericMatrix rcpp_exact_merge (
         const Rcpp::DataFrame gr,
         const std::string method,
-        const bool distances);
+        const bool shortest);

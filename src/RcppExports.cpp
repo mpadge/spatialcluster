@@ -30,15 +30,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_cut_tree
-Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl, const bool distances);
-RcppExport SEXP _spatialcluster_rcpp_cut_tree(SEXP treeSEXP, SEXP nclSEXP, SEXP distancesSEXP) {
+Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl, const bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_cut_tree(SEXP treeSEXP, SEXP nclSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type tree(treeSEXP);
     Rcpp::traits::input_parameter< const int >::type ncl(nclSEXP);
-    Rcpp::traits::input_parameter< const bool >::type distances(distancesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_cut_tree(tree, ncl, distances));
+    Rcpp::traits::input_parameter< const bool >::type shortest(shortestSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_cut_tree(tree, ncl, shortest));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -54,15 +54,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_exact_merge
-Rcpp::NumericMatrix rcpp_exact_merge(const Rcpp::DataFrame gr, const std::string linkage, const bool distances);
-RcppExport SEXP _spatialcluster_rcpp_exact_merge(SEXP grSEXP, SEXP linkageSEXP, SEXP distancesSEXP) {
+Rcpp::NumericMatrix rcpp_exact_merge(const Rcpp::DataFrame gr, const std::string linkage, const bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_exact_merge(SEXP grSEXP, SEXP linkageSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
     Rcpp::traits::input_parameter< const std::string >::type linkage(linkageSEXP);
-    Rcpp::traits::input_parameter< const bool >::type distances(distancesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_exact_merge(gr, linkage, distances));
+    Rcpp::traits::input_parameter< const bool >::type shortest(shortestSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_exact_merge(gr, linkage, shortest));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -21,9 +21,9 @@ Rcpp::IntegerVector rcpp_slk (
     Rcpp::IntegerVector to_ref = gr ["to"];
     Rcpp::NumericVector d = gr ["d"];
 
-    bool distances = true;
+    bool shortest = true;
     if (d [0] > d [1])
-        distances = false; // covariances, so d passed in descending order
+        shortest = false; // covariances, so d passed in descending order
 
     // Rcpp classes are always passed by reference, so cloning is necessary to
     // avoid modifying the original data.frames.
@@ -75,12 +75,9 @@ Rcpp::IntegerVector rcpp_slk (
                     contig_mat (static_cast <arma::uword> (ifrom),
                                 static_cast <arma::uword> (ito)) > 0)
             {
-                // If distances, then shortest connection should be shortest
-                // distance, otherwise !distances finds longest connection
-                // (highest covariance).
                 size_t ishort = utils::find_shortest_connection (from, to, d,
                         vert2index_map, d_mat, cl2index_map, cfrom, cto,
-                        distances);
+                        shortest);
                 the_tree.insert (ishort);
                 utils::merge_clusters (contig_mat, index2cl_map, cl2index_map,
                         cfrom, cto);

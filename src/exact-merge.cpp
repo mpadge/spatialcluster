@@ -71,13 +71,13 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
                 cldat.edges [edge_count++] = edgei;
             } else if (edge_dist_map.find (etf) != edge_dist_map.end ())
             {
-                if ((cldat.distances && d [i] < edge_dist_map.at (etf)) ||
-                        (!cldat.distances && d [i] > edge_dist_map.at (etf)))
+                if ((cldat.shortest && d [i] < edge_dist_map.at (etf)) ||
+                        (!cldat.shortest && d [i] > edge_dist_map.at (etf)))
                     edge_dist_map [etf] = d [i];
             } else
             {
-                if ((cldat.distances && d [i] < edge_dist_map.at (eft)) ||
-                        (!cldat.distances && d [i] > edge_dist_map.at (eft)))
+                if ((cldat.shortest && d [i] < edge_dist_map.at (eft)) ||
+                        (!cldat.shortest && d [i] > edge_dist_map.at (eft)))
                     edge_dist_map [eft] = d [i];
             }
         }
@@ -87,8 +87,8 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     {
         std::string eft = std::to_string (ei.from) + "-" +
                           std::to_string (ei.to);
-        if ((cldat.distances && edge_dist_map.at (eft) < ei.dist) ||
-                (!cldat.distances && edge_dist_map.at (eft) > ei.dist))
+        if ((cldat.shortest && edge_dist_map.at (eft) < ei.dist) ||
+                (!cldat.shortest && edge_dist_map.at (eft) > ei.dist))
             ei.dist = edge_dist_map.at (eft);
     }
 
@@ -102,14 +102,14 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
         cli.n = distset.size ();
         cli.dist_sum = 0.0;
         cli.dist_max = 0.0;
-        if (!cldat.distances)
+        if (!cldat.shortest)
             cli.dist_max = INFINITE_DOUBLE;
         for (auto di: distset)
         {
             cli.dist_sum += di;
-            // TODO: Ensure that this is correct for !distances
-            if ((cldat.distances && di > cli.dist_max) ||
-                    (!cldat.distances && di < cli.dist_max))
+            // TODO: Ensure that this is correct for !shortest
+            if ((cldat.shortest && di > cli.dist_max) ||
+                    (!cldat.shortest && di < cli.dist_max))
                 cli.dist_max = di;
         }
         cldat.clusters.emplace (i.first, cli);
@@ -134,8 +134,8 @@ ex_merge::OneMerge ex_merge::merge_one_single (ex_merge::ExMergeDat &cldat,
     clto.n += clfrom.n;
     clto.dist_sum += clfrom.dist_sum;
     // TODO: Same as TODO in init fn above
-    if ((cldat.distances && clfrom.dist_max > clto.dist_max) ||
-            (!cldat.distances && clfrom.dist_max < clto.dist_max))
+    if ((cldat.shortest && clfrom.dist_max > clto.dist_max) ||
+            (!cldat.shortest && clfrom.dist_max < clto.dist_max))
         clto.dist_max = clfrom.dist_max;
 
     std::vector <utils::OneEdge> edges_from = clfrom.edges,
@@ -233,7 +233,7 @@ void ex_merge::fill_avg_dists (ex_merge::ExMergeDat &cldat,
         cl_dists.avg_dists [nc++] = onedist;
     }
 
-    if (cldat.distances)
+    if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
                 &ex_merge::avgdist_sorter_incr);
     else
@@ -282,7 +282,7 @@ ex_merge::OneMerge ex_merge::merge_avg (ex_merge::ExMergeDat &cldat,
     const int cli = the_dist.cli,
               clj = the_dist.clj;
     double dmin = INFINITE_DOUBLE; // shortest connecting distance
-    if (!cldat.distances)
+    if (!cldat.shortest)
         dmin = -dmin;
 
     indxset_t cli_indx = cl_dists.cl_map.at (cli),
@@ -296,8 +296,8 @@ ex_merge::OneMerge ex_merge::merge_avg (ex_merge::ExMergeDat &cldat,
             cl_dists.avg_dists [i].cli = clj;
         else if (cl_dists.avg_dists [i].clj == cli)
             cl_dists.avg_dists [i].clj = clj;
-        if ((cldat.distances && cl_dists.avg_dists [i].d < dmin) ||
-                (!cldat.distances && cl_dists.avg_dists [i].d > dmin))
+        if ((cldat.shortest && cl_dists.avg_dists [i].d < dmin) ||
+                (!cldat.shortest && cl_dists.avg_dists [i].d > dmin))
             dmin = cl_dists.avg_dists [i].d;
     }
     for (auto i: cli_indx)
@@ -308,8 +308,8 @@ ex_merge::OneMerge ex_merge::merge_avg (ex_merge::ExMergeDat &cldat,
             cl_dists.avg_dists [i].cli = clj;
         else if (cl_dists.avg_dists [i].clj == cli)
             cl_dists.avg_dists [i].clj = clj;
-        if ((cldat.distances && cl_dists.avg_dists [i].d < dmin) ||
-                (!cldat.distances && cl_dists.avg_dists [i].d > dmin))
+        if ((cldat.shortest && cl_dists.avg_dists [i].d < dmin) ||
+                (!cldat.shortest && cl_dists.avg_dists [i].d > dmin))
             dmin = cl_dists.avg_dists [i].d;
     }
     // Then update all dmin and average dist values
@@ -351,7 +351,7 @@ ex_merge::OneMerge ex_merge::merge_avg (ex_merge::ExMergeDat &cldat,
     for (auto i: rm)
         cl_dists.avg_dists.erase (cl_dists.avg_dists.begin () + i);
 
-    if (cldat.distances)
+    if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
                 &ex_merge::avgdist_sorter_incr);
     else
@@ -400,7 +400,7 @@ void ex_merge::fill_max_dists (ex_merge::ExMergeDat &cldat,
         cl_dists.avg_dists [nc++] = onedist;
     }
 
-    if (cldat.distances)
+    if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
                 &ex_merge::maxdist_sorter_incr);
     else
@@ -423,7 +423,7 @@ ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
     const int cli = the_dist.cli,
               clj = the_dist.clj;
     double dmin = INFINITE_DOUBLE; // shortest connecting distance
-    if (!cldat.distances)
+    if (!cldat.shortest)
         dmin = -dmin;
 
     indxset_t cli_indx = cl_dists.cl_map.at (cli),
@@ -437,8 +437,8 @@ ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
             cl_dists.avg_dists [i].cli = clj;
         else if (cl_dists.avg_dists [i].clj == cli)
             cl_dists.avg_dists [i].clj = clj;
-        if ((cldat.distances && cl_dists.avg_dists [i].d < dmin) ||
-                (!cldat.distances && cl_dists.avg_dists [i].d > dmin))
+        if ((cldat.shortest && cl_dists.avg_dists [i].d < dmin) ||
+                (!cldat.shortest && cl_dists.avg_dists [i].d > dmin))
             dmin = cl_dists.avg_dists [i].d;
     }
     for (auto i: cli_indx)
@@ -449,8 +449,8 @@ ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
             cl_dists.avg_dists [i].cli = clj;
         else if (cl_dists.avg_dists [i].clj == cli)
             cl_dists.avg_dists [i].clj = clj;
-        if ((cldat.distances && cl_dists.avg_dists [i].d < dmin) ||
-                (!cldat.distances && cl_dists.avg_dists [i].d > dmin))
+        if ((cldat.shortest && cl_dists.avg_dists [i].d < dmin) ||
+                (!cldat.shortest && cl_dists.avg_dists [i].d > dmin))
             dmin = cl_dists.avg_dists [i].d;
     }
     // Then update all dmin and average dist values
@@ -492,7 +492,7 @@ ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
     for (auto i: rm)
         cl_dists.avg_dists.erase (cl_dists.avg_dists.begin () + i);
 
-    if (cldat.distances)
+    if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
                 &ex_merge::avgdist_sorter_incr);
     else
@@ -521,10 +521,10 @@ ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
 Rcpp::NumericMatrix rcpp_exact_merge (
         const Rcpp::DataFrame gr,
         const std::string linkage,
-        const bool distances)
+        const bool shortest)
 {
     ex_merge::ExMergeDat clmerge_dat;
-    clmerge_dat.distances = distances;
+    clmerge_dat.shortest = shortest;
     ex_merge::init (gr, clmerge_dat);
 
     if (utils::strfound (linkage, "single"))

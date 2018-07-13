@@ -11,9 +11,9 @@ void clk::clk_init (clk::CLKDat &clk_dat,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d)
 {
-    clk_dat.distances = true;
+    clk_dat.shortest = true;
     if (d_full [0] > d_full [1])
-        clk_dat.distances = false;
+        clk_dat.shortest = false;
 
     size_t n = utils::sets_init (from, to, clk_dat.vert2index_map,
             clk_dat.index2vert_map, clk_dat.index2cl_map,
@@ -96,8 +96,8 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
                         clk_dat.index2cl_map.at (l) == cl_v) ||
                     (clk_dat.index2cl_map.at (m) == cl_v &&
                      clk_dat.index2cl_map.at (l) == cl_u)) &&
-                ((clk_dat.distances && ej.dist < dmin) ||
-                 (!clk_dat.distances && ej.dist > dmin)))
+                ((clk_dat.shortest && ej.dist < dmin) ||
+                 (!clk_dat.shortest && ej.dist > dmin)))
         {
             the_edge = j;
             mmin = m;
@@ -125,8 +125,8 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
             const double dl = clk_dat.dmax (clu, lu),
                   dm = clk_dat.dmax (clu, mu);
             double dtemp = dl;
-            if ((clk_dat.distances && dm < dl) ||
-                    (!clk_dat.distances && dm > dl))
+            if ((clk_dat.shortest && dm < dl) ||
+                    (!clk_dat.shortest && dm > dl))
                 dtemp = dm;
             clk_dat.dmax (clu, lu) = dtemp;
 
@@ -186,8 +186,8 @@ Rcpp::IntegerVector rcpp_clk (
                                     clk_dat.vert2index_map.at (ei.to));
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
                 clk_dat.contig_mat (u, v) == 1 &&
-                ((clk_dat.distances && ei.dist > clk_dat.dmax (u, v)) ||
-                 (!clk_dat.distances && ei.dist < clk_dat.dmax (u, v))))
+                ((clk_dat.shortest && ei.dist > clk_dat.dmax (u, v)) ||
+                 (!clk_dat.shortest && ei.dist < clk_dat.dmax (u, v))))
         {
             size_t the_edge = clk_step (clk_dat, i);
             treevec.push_back (the_edge);

@@ -25,7 +25,7 @@ namespace alk {
 
 struct ALKDat
 {
-    bool distances;
+    bool shortest;
     size_t n;
 
     std::unordered_map <double,

@@ -44,11 +44,11 @@ size_t cluster_size (const std::vector <EdgeComponent> &edges,
 std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges);
 
 TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
-        const std::unordered_set <int> &tree, const bool distances);
+        const std::unordered_set <int> &tree, const bool shortest);
 BestCut find_min_cut (const TreeDat &tree, const int cluster_num,
-        const bool distances);
+        const bool shortest);
 
 } // end namespace cuttree
 
 Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
-        const bool distances);
+        const bool shortest);

@@ -34,8 +34,8 @@ rcpp_clk <- function(gr_full, gr) {
 #'
 #' @return Vector of cluster IDs for each tree edge
 #' @noRd
-rcpp_cut_tree <- function(tree, ncl, distances) {
-    .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl, distances)
+rcpp_cut_tree <- function(tree, ncl, shortest) {
+    .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl, shortest)
 }
 
 #' step
@@ -69,8 +69,8 @@ rcpp_exact_initial <- function(gr) {
 #' possible merges.
 #'
 #' @noRd
-rcpp_exact_merge <- function(gr, linkage, distances) {
-    .Call(`_spatialcluster_rcpp_exact_merge`, gr, linkage, distances)
+rcpp_exact_merge <- function(gr, linkage, shortest) {
+    .Call(`_spatialcluster_rcpp_exact_merge`, gr, linkage, shortest)
 }
 
 #' rcpp_slk

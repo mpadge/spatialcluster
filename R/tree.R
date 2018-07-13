@@ -106,12 +106,12 @@ scl_spantree_clk <- function (edges_all, edges_nn)
 #' \code{constexpr MIN_CLUSTER_SIZE = 3}.
 #'
 #' @noRd
-scl_cuttree <- function (tree, edges, ncl, distances)
+scl_cuttree <- function (tree, edges, ncl, shortest)
 {
     tree %<>%
         dplyr::left_join (edges, by = c ("from", "to")) %>%
         dplyr::mutate (cluster = rcpp_cut_tree (., ncl = ncl,
-                                                distances = distances) + 1)
+                                                shortest = shortest) + 1)
 
     return (tree)
 }
