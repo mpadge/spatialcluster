@@ -12,7 +12,7 @@
 #' @importFrom magrittr %>% %<>%
 #' @importFrom methods is
 #' @importFrom spatstat convexhull ppp
-#' @importFrom stats as.dendrogram na.omit t.test
+#' @importFrom stats as.dendrogram dist na.omit t.test
 #' @importFrom tibble tibble as.tibble
 #' @importFrom tripack neighbours tri.mesh
 #' @importFrom utils tail

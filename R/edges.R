@@ -1,4 +1,4 @@
-#' scl_edges_nn
+#' scl_edges_tri
 #'
 #' Generate triangulated nearest-neighbour edges between a set of input points
 #'
@@ -17,6 +17,29 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE)
             tibble::as.tibble () %>%
             dplyr::rename (from = i, to = V1)
 
+    append_dist_to_edges (edges, dmat, shortest)
+}
+
+#' scl_edges_nn
+#'
+#' Generate distance-based nearest-neighbour edges between a set of input points
+#' @param n Number of nearest neighbours
+#'
+#' @inheritParams scl_redcap
+#' @noRd
+scl_edges_nn <- function (xy, dmat, n, shortest = TRUE)
+{
+    d <- apply (as.matrix (dist (xy)), 2, function (i)
+                order (i, decreasing = !shortest) [1:n])
+    edges <- tibble::tibble (from = rep (as.integer (colnames (d)),
+                                         each = n),
+                             to = as.vector (d))
+
+    append_dist_to_edges (edges, dmat, shortest)
+}
+
+append_dist_to_edges <- function (edges, dmat, shortest)
+{
     index <- (edges$to - 1) * nrow (dmat) + edges$from
     edges$d <- dmat [index]
 
