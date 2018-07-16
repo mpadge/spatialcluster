@@ -10,7 +10,8 @@
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
 #' scl <- scl_exact (xy, dmat, ncl = 4)
-scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE)
+scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
+                       nnbs = 3)
 {
     linkage <- scl_linkage_type (linkage)
     if (is (xy, "scl"))
@@ -21,7 +22,10 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE)
     } else
     {
         xy <- scl_tbl (xy)
-        edges <- scl_edges_tri (xy, dmat, shortest = shortest)
+        if (nnbs <= 0)
+            edges <- scl_edges_tri (xy, dmat, shortest = shortest)
+        else
+            edges <- scl_edges_nn (xy, dmat, shortest = shortest)
         # cluster numbers can be joined with edges through either from or to:
         cl <- rcpp_exact_initial (edges, shortest) + 1
 

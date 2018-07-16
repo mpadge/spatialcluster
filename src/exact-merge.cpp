@@ -19,7 +19,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     int2intset_map_t cl2edge_map; // TODO: Delete that!
     std::unordered_map <int, std::unordered_set <double> > cl2dist_map;
     std::unordered_map <std::string, double> edge_dist_map;
-    for (int i = 1; i < static_cast <int> (n); i++)
+    for (int i = 0; i < static_cast <int> (n); i++)
     {
         if (clnum [i] >= 0) // edge in a cluster
         {
@@ -50,7 +50,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     cldat.edges.resize (edge_dist_map.size ());
     edge_dist_map.clear ();
     size_t edge_count = 0;
-    for (int i = 1; i < static_cast <int> (n); i++)
+    for (int i = 0; i < static_cast <int> (n); i++)
     {
         if (clnum [i] < 0) // edge not in a cluster
         {

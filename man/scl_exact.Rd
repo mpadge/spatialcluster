@@ -4,7 +4,8 @@
 \alias{scl_exact}
 \title{scl_exact}
 \usage{
-scl_exact(xy, dmat, ncl, linkage = "single", shortest = TRUE)
+scl_exact(xy, dmat, ncl, linkage = "single", shortest = TRUE,
+  nnbs = 3)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
@@ -24,6 +25,9 @@ columns.}
 such that lower values are preferentially selected; if \code{FALSE}, then
 higher values of \code{dmat} are interpreted to indicate stronger
 relationships, as is the case for example with covariances.}
+
+\item{nnbs}{Number of nearest neighbours to be used in calculating clustering
+trees. Triangulation will be used if \code{nnbs <= 0}.}
 }
 \description{
 Exact spatially-constrained clustering.

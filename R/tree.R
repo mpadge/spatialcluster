@@ -48,7 +48,7 @@ scl_spantree_O1 <- function (edges)
 #' @param edges_all A set of ALL edges resulting from \link{scl_edges_all},
 #' which are sorted in ascending order according to user-specified data.
 #' @param edges_nn A equivalent set of nearest neighbour edges only, resulting
-#' from \link{scl_edges_tri}.
+#' from \link{scl_edges_tri} or \link{scl_edges_nn}.
 #'
 #' @return A tree
 #' @noRd

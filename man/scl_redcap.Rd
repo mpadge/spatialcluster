@@ -5,7 +5,7 @@
 \title{scl_redcap}
 \usage{
 scl_redcap(xy, dmat, ncl, full_order = TRUE, linkage = "single",
-  shortest = TRUE)
+  shortest = TRUE, nnbs = 3)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
@@ -28,6 +28,9 @@ relationships only, otherwise build from full-order relationships (see Note).}
 such that lower values are preferentially selected; if \code{FALSE}, then
 higher values of \code{dmat} are interpreted to indicate stronger
 relationships, as is the case for example with covariances.}
+
+\item{nnbs}{Number of nearest neighbours to be used in calculating clustering
+trees. Triangulation will be used if \code{nnbs <= 0}.}
 }
 \value{
 A object of class \code{scl} with \code{tree} containing the

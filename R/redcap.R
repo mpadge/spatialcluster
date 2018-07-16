@@ -18,6 +18,8 @@
 #' such that lower values are preferentially selected; if \code{FALSE}, then
 #' higher values of \code{dmat} are interpreted to indicate stronger
 #' relationships, as is the case for example with covariances.
+#' @param nnbs Number of nearest neighbours to be used in calculating clustering
+#' trees. Triangulation will be used if \code{nnbs <= 0}.
 #'
 #' @return A object of class \code{scl} with \code{tree} containing the
 #' clustering scheme, and \code{xy} the original coordinate data of the
@@ -46,7 +48,7 @@
 #' # relationships only; not recommended, but possible nevertheless:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, full_order = FALSE)
 scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
-                         shortest = TRUE)
+                         shortest = TRUE, nnbs = 3)
 {
     linkage <- scl_linkage_type (linkage)
 
@@ -62,7 +64,10 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
     } else
     {
         xy <- scl_tbl (xy)
-        edges_nn <- scl_edges_tri (xy, dmat, shortest)
+        if (nnbs <= 0)
+            edges_nn <- scl_edges_tri (xy, dmat, shortest)
+        else
+            edges_nn <- scl_edges_nn (xy, dmat, shortest)
         if (!full_order)
         {
             tree_full <- scl_spantree_O1 (edges_nn)
