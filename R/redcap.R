@@ -62,7 +62,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
     } else
     {
         xy <- scl_tbl (xy)
-        edges_nn <- scl_edges_nn (xy, dmat, shortest)
+        edges_nn <- scl_edges_tri (xy, dmat, shortest)
         if (!full_order)
         {
             tree_full <- scl_spantree_O1 (edges_nn)

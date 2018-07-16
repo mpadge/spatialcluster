@@ -4,7 +4,7 @@
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_nn <- function (xy, dmat, shortest = TRUE)
+scl_edges_tri <- function (xy, dmat, shortest = TRUE)
 {
     nbs <- dplyr::select (xy, c (x, y)) %>%
         tripack::tri.mesh () %>%
