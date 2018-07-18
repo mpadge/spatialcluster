@@ -5,7 +5,7 @@
 \title{scl_redcap}
 \usage{
 scl_redcap(xy, dmat, ncl, full_order = TRUE, linkage = "single",
-  shortest = TRUE, nnbs = 3)
+  shortest = TRUE, nnbs = 6)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing

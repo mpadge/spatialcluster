@@ -23,16 +23,16 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE)
 #' scl_edges_nn
 #'
 #' Generate distance-based nearest-neighbour edges between a set of input points
-#' @param n Number of nearest neighbours
+#' @param nnbs Number of nearest neighbours
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_nn <- function (xy, dmat, n, shortest = TRUE)
+scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE)
 {
     d <- apply (as.matrix (dist (xy)), 2, function (i)
-                order (i, decreasing = !shortest) [1:n])
+                order (i, decreasing = !shortest) [1:nnbs])
     edges <- tibble::tibble (from = rep (as.integer (colnames (d)),
-                                         each = n),
+                                         each = nnbs),
                              to = as.vector (d))
 
     append_dist_to_edges (edges, dmat, shortest)

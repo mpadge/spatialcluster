@@ -48,7 +48,7 @@
 #' # relationships only; not recommended, but possible nevertheless:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, full_order = FALSE)
 scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
-                         shortest = TRUE, nnbs = 3)
+                         shortest = TRUE, nnbs = 6)
 {
     linkage <- scl_linkage_type (linkage)
 
@@ -67,7 +67,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
         if (nnbs <= 0)
             edges_nn <- scl_edges_tri (xy, dmat, shortest)
         else
-            edges_nn <- scl_edges_nn (xy, dmat, shortest)
+            edges_nn <- scl_edges_nn (xy, dmat, nnbs, shortest)
         if (!full_order)
         {
             tree_full <- scl_spantree_O1 (edges_nn)

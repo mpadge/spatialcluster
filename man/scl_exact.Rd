@@ -5,7 +5,7 @@
 \title{scl_exact}
 \usage{
 scl_exact(xy, dmat, ncl, linkage = "single", shortest = TRUE,
-  nnbs = 3)
+  nnbs = 6)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing

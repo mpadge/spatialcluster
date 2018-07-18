@@ -16,7 +16,6 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     const size_t n = static_cast <size_t> (d.size ());
     
     cldat.edges.resize (n);
-    int2intset_map_t cl2edge_map; // TODO: Delete that!
     std::unordered_map <int, std::unordered_set <double> > cl2dist_map;
     std::unordered_map <std::string, double> edge_dist_map;
     for (int i = 0; i < static_cast <int> (n); i++)
@@ -24,26 +23,24 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
         if (clnum [i] >= 0) // edge in a cluster
         {
             int clnum_i = clnum [i];
-            intset_t edgeset;
+
             std::unordered_set <double> distset;
-            if (cl2edge_map.find (clnum_i) != cl2edge_map.end ())
-            {
-                edgeset = cl2edge_map.at (clnum_i);
+            if (cl2dist_map.find (clnum_i) != cl2dist_map.end ())
                 distset = cl2dist_map.at (clnum_i);
-            }
-            edgeset.emplace (i);
             distset.emplace (d [i]);
-            cl2edge_map [clnum_i] = edgeset;
+
             cl2dist_map [clnum_i] = distset;
         } else 
-        { // make set of unordered edge names
+        {
+            // make set of unordered edge names; the actual edge_dist_map is a
+            // dummy here, and serves just to get number of edges
             std::string eft = std::to_string (clfrom [i]) + "-" +
                               std::to_string (clto [i]),
                         etf = std::to_string (clto [i]) + "-" +
                               std::to_string (clfrom [i]);
             if (edge_dist_map.find (eft) == edge_dist_map.end () &&
                     edge_dist_map.find (etf) == edge_dist_map.end ())
-                edge_dist_map.emplace (eft, d [i]); // d[i] not used here
+                edge_dist_map.emplace (eft, d [i]);
         }
     }
 
@@ -55,7 +52,7 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
         if (clnum [i] < 0) // edge not in a cluster
         {
             utils::OneEdge edgei;
-            // from and to hold cluster numbers, NOT vertex numbers
+            // clfrom and clto hold cluster numbers, NOT vertex numbers
             edgei.from = clfrom [i];
             edgei.to = clto [i];
             edgei.dist = d [i];
@@ -95,7 +92,6 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
     // Fill intra-cluster data:
     for (auto i: cl2dist_map)
     {
-        //intset_t edgeset = i.second;
         std::unordered_set <double> distset = i.second;
         OneCluster cli;
         cli.id = i.first;
@@ -107,7 +103,6 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
         for (auto di: distset)
         {
             cli.dist_sum += di;
-            // TODO: Ensure that this is correct for !shortest
             if ((cldat.shortest && di > cli.dist_max) ||
                     (!cldat.shortest && di < cli.dist_max))
                 cli.dist_max = di;
