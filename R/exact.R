@@ -27,7 +27,7 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
         else
             edges <- scl_edges_nn (xy, dmat, nnbs, shortest = shortest)
         # cluster numbers can be joined with edges through either from or to:
-        cl <- rcpp_exact_initial (edges, shortest) + 1
+        cl <- as.integer (rcpp_exact_initial (edges, shortest) + 1)
 
         # make 3 vectors of cluster numbers:
         #   1. cl = cluster number for intra-cluster edges only;
@@ -42,12 +42,12 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
         cl_join_from [indx] <- from_cl [indx]
         cl_join_to [indx] <- to_cl [indx]
 
-        edges$cluster <- cl_in - 1 # convert back to C++ 0-indexed values
-        edges$cl_from <- cl_join_from - 1
-        edges$cl_to <- cl_join_to - 1
-        edges$cluster [is.na (edges$cluster)] <- -1
-        edges$cl_from [is.na (edges$cl_from)] <- -1
-        edges$cl_to [is.na (edges$cl_to)] <- -1
+        edges$cluster <- cl_in - 1L # convert back to C++ 0-indexed values
+        edges$cl_from <- cl_join_from - 1L
+        edges$cl_to <- cl_join_to - 1L
+        edges$cluster [is.na (edges$cluster)] <- -1L
+        edges$cl_from [is.na (edges$cl_from)] <- -1L
+        edges$cl_to [is.na (edges$cl_to)] <- -1L
 
         merges <- rcpp_exact_merge (edges, linkage = linkage,
                                     shortest = shortest) %>%
