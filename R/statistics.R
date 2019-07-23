@@ -26,7 +26,8 @@ scl_statistics <- function (scl)
                          res <- c (tt$statistic, tt$parameter, tt$p.value)
                          names (res) <- c ("statistic", "parameter", "p.value")
                          return (res)
-                     }, numeric (3)) %>%
+                     }
+                     , numeric (3)) %>%
         t ()
 
     scl$statistics <- list (tt_global = tt_global, tt_clusters = tt_cl)
