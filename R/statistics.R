@@ -1,6 +1,6 @@
 #' scl_statistics
 #'
-#' @param scl Output of either \link{scl_redcap} or \link{scl_exact}.
+#' @param scl Output of either \link{scl_redcap} or \link{scl_full}.
 #'
 #' @return A modified version of the input object with statistics appended.
 #'

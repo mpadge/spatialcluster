@@ -44,28 +44,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_exact_initial
-Rcpp::IntegerVector rcpp_exact_initial(const Rcpp::DataFrame gr, bool shortest);
-RcppExport SEXP _spatialcluster_rcpp_exact_initial(SEXP grSEXP, SEXP shortestSEXP) {
+// rcpp_full_initial
+Rcpp::IntegerVector rcpp_full_initial(const Rcpp::DataFrame gr, bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_full_initial(SEXP grSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
     Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_exact_initial(gr, shortest));
+    rcpp_result_gen = Rcpp::wrap(rcpp_full_initial(gr, shortest));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_exact_merge
-Rcpp::NumericMatrix rcpp_exact_merge(const Rcpp::DataFrame gr, const std::string linkage, const bool shortest);
-RcppExport SEXP _spatialcluster_rcpp_exact_merge(SEXP grSEXP, SEXP linkageSEXP, SEXP shortestSEXP) {
+// rcpp_full_merge
+Rcpp::NumericMatrix rcpp_full_merge(const Rcpp::DataFrame gr, const std::string linkage, const bool shortest);
+RcppExport SEXP _spatialcluster_rcpp_full_merge(SEXP grSEXP, SEXP linkageSEXP, SEXP shortestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
     Rcpp::traits::input_parameter< const std::string >::type linkage(linkageSEXP);
     Rcpp::traits::input_parameter< const bool >::type shortest(shortestSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_exact_merge(gr, linkage, shortest));
+    rcpp_result_gen = Rcpp::wrap(rcpp_full_merge(gr, linkage, shortest));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -2,16 +2,16 @@
 
 #include "utils.h"
 
-// --------- EXACT CLUSTER ----------------
+// --------- FULL CLUSTER ----------------
 
 /* All `index2cl` values are initally set to -1, and there are no `cl2index`
  * values.  There is also a single binary vector of `index_in_cluster`, initialy
  * set to `false`.
  */
 
-namespace ex_init {
+namespace full_init {
 
-struct ExInitDat
+struct FullInitDat
 {
     bool shortest;
     size_t n;
@@ -25,21 +25,21 @@ struct ExInitDat
     int2intset_map_t cl2index_map;
 };
 
-void init (ExInitDat &clexact_dat,
+void init (FullInitDat &clfull_dat,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
         Rcpp::NumericVector d);
 
-void assign_first_edge (ExInitDat &clexact_dat);
+void assign_first_edge (FullInitDat &clfull_dat);
 
-int step (ExInitDat &clexact_dat, const index_t ei,
+int step (FullInitDat &clfull_dat, const index_t ei,
         const int clnum);
 
-void fill_cl_edges (ExInitDat &clexact_dat, arma::Mat <double> &cl_edges,
+void fill_cl_edges (FullInitDat &clfull_dat, arma::Mat <double> &cl_edges,
         int num_clusters);
 
 } // end namespace ex_init
 
-Rcpp::IntegerVector rcpp_exact_initial (
+Rcpp::IntegerVector rcpp_full_initial (
         const Rcpp::DataFrame gr,
         bool shortest);

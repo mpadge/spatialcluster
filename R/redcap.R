@@ -151,8 +151,8 @@ scl_recluster <- function (scl, ncl, shortest = TRUE)
               "returned from scl_redcap")
     else if (identical (scl$pars$method, "redcap"))
         scl_recluster_redcap (scl = scl, ncl = ncl, shortest = shortest)
-    else if (identical (scl$pars$method, "exact"))
-        scl_recluster_exact (scl = scl, ncl = ncl)
+    else if (identical (scl$pars$method, "full"))
+        scl_recluster_full (scl = scl, ncl = ncl)
 }
 
 scl_recluster_redcap <- function (scl, ncl, shortest = TRUE)

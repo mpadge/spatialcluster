@@ -11,6 +11,7 @@
 #' @importFrom grDevices rainbow
 #' @importFrom magrittr %>% %<>%
 #' @importFrom methods is
+#' @importFrom Rcpp evalCpp
 #' @importFrom spatstat convexhull ppp
 #' @importFrom stats as.dendrogram dist na.omit t.test
 #' @importFrom tibble tibble as.tibble

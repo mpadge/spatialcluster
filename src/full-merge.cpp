@@ -1,10 +1,10 @@
 #include "common.h"
-#include "exact-merge.h"
+#include "full-merge.h"
 
-// load data from rcpp_exact_initial into the ExMergeDat struct. The gr data are
-// pre-sorted by increasing d.
-void ex_merge::init (const Rcpp::DataFrame &gr,
-        ex_merge::ExMergeDat &cldat)
+// load data from rcpp_full_initial into the FullMergeDat struct. The gr data
+// are pre-sorted by increasing d.
+void full_merge::init (const Rcpp::DataFrame &gr,
+        full_merge::FullMergeDat &cldat)
 {
     Rcpp::IntegerVector from = gr ["from"];
     Rcpp::IntegerVector to = gr ["to"];
@@ -118,13 +118,13 @@ void ex_merge::init (const Rcpp::DataFrame &gr,
 
 // merge cluster clfrom with clto; clfrom remains as it was but is no longer
 // indexed so simply ignored from that point on
-ex_merge::OneMerge ex_merge::merge_one_single (ex_merge::ExMergeDat &cldat,
+full_merge::OneMerge full_merge::merge_one_single (full_merge::FullMergeDat &cldat,
         index_t ei)
 {
     const int cl_from_i = cldat.cl_remap.at (cldat.edges [ei].from),
               cl_to_i = cldat.cl_remap.at (cldat.edges [ei].to);
 
-    ex_merge::OneCluster clfrom = cldat.clusters.at (cl_from_i),
+    full_merge::OneCluster clfrom = cldat.clusters.at (cl_from_i),
                          clto = cldat.clusters.at (cl_to_i);
     clto.n += clfrom.n;
     clto.dist_sum += clfrom.dist_sum;
@@ -151,7 +151,7 @@ ex_merge::OneMerge ex_merge::merge_one_single (ex_merge::ExMergeDat &cldat,
     for (auto m: members_t)
         cldat.cl_remap [m] = cldat.cl_remap [cl_to_i];
 
-    ex_merge::OneMerge the_merge;
+    full_merge::OneMerge the_merge;
     the_merge.cli = cl_from_i;
     the_merge.clj = cl_to_i;
     the_merge.merge_dist = cldat.edges [ei].dist;
@@ -162,7 +162,7 @@ ex_merge::OneMerge ex_merge::merge_one_single (ex_merge::ExMergeDat &cldat,
 // Each merge joins from to to; from remains unchanged but is no longer indexed.
 // Edges nevertheless always refer to original (non-merged) cluster numbers, so
 // need to be re-mapped via the cl_remap
-void ex_merge::merge_single (ex_merge::ExMergeDat &cldat)
+void full_merge::merge_single (full_merge::FullMergeDat &cldat)
 {
     index_t edgei = 0;
     while (cldat.clusters.size () > 1)
@@ -171,8 +171,8 @@ void ex_merge::merge_single (ex_merge::ExMergeDat &cldat)
             clto = cldat.cl_remap.at (cldat.edges [edgei].to);
         if (clfr != clto)
         {
-            ex_merge::OneMerge the_merge =
-                ex_merge::merge_one_single (cldat, edgei);
+            full_merge::OneMerge the_merge =
+                full_merge::merge_one_single (cldat, edgei);
             cldat.merges.push_back (the_merge);
         }
         edgei++;
@@ -181,39 +181,39 @@ void ex_merge::merge_single (ex_merge::ExMergeDat &cldat)
     }
 }
 
-bool ex_merge::avgdist_sorter_incr (const OneAvgDist &lhs,
+bool full_merge::avgdist_sorter_incr (const OneAvgDist &lhs,
         const OneAvgDist &rhs)
 {
     return lhs.average < rhs.average;
 }
 
-bool ex_merge::avgdist_sorter_decr (const OneAvgDist &lhs,
+bool full_merge::avgdist_sorter_decr (const OneAvgDist &lhs,
         const OneAvgDist &rhs)
 {
     return lhs.average > rhs.average;
 }
 
-bool ex_merge::maxdist_sorter_incr (const OneAvgDist &lhs,
+bool full_merge::maxdist_sorter_incr (const OneAvgDist &lhs,
         const OneAvgDist &rhs)
 {
     return lhs.d < rhs.d;
 }
 
-bool ex_merge::maxdist_sorter_decr (const OneAvgDist &lhs,
+bool full_merge::maxdist_sorter_decr (const OneAvgDist &lhs,
         const OneAvgDist &rhs)
 {
     return lhs.d > rhs.d;
 }
 
-void ex_merge::fill_avg_dists (ex_merge::ExMergeDat &cldat,
-        ex_merge::AvgDists &cl_dists)
+void full_merge::fill_avg_dists (full_merge::FullMergeDat &cldat,
+        full_merge::AvgDists &cl_dists)
 {
     cl_dists.avg_dists.resize (cldat.edges.size ());
     size_t nc = 0;
     std::unordered_set <std::string> edgenames; // TODO: Remove
     for (auto ei: cldat.edges)
     {
-        ex_merge::OneAvgDist onedist;
+        full_merge::OneAvgDist onedist;
         onedist.cli = ei.from;
         onedist.clj = ei.to;
         onedist.d = ei.dist;
@@ -230,15 +230,15 @@ void ex_merge::fill_avg_dists (ex_merge::ExMergeDat &cldat,
 
     if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::avgdist_sorter_incr);
+                &full_merge::avgdist_sorter_incr);
     else
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::avgdist_sorter_decr);
+                &full_merge::avgdist_sorter_decr);
 }
 
 // Fill the cli_map and clj_map entries which map cluster numbers onto sets of
 // indices in cl_dists.avg_dists
-void ex_merge::fill_cl_indx_maps (ex_merge::AvgDists &cl_dists)
+void full_merge::fill_cl_indx_maps (full_merge::AvgDists &cl_dists)
 {
     cl_dists.cl_map.clear ();
     for (size_t i = 0; i < cl_dists.avg_dists.size (); i++)
@@ -267,10 +267,10 @@ void ex_merge::fill_cl_indx_maps (ex_merge::AvgDists &cl_dists)
 // AvgDists.avg_dists are kept in AvgDists.cli_map and .clj_map. The values of
 // the latter are updated to reflect merges, as are the entries of the new cli
 // in AvgDists.avg_dists.
-ex_merge::OneMerge ex_merge::merge_avg (ex_merge::ExMergeDat &cldat,
-        ex_merge::AvgDists &cl_dists)
+full_merge::OneMerge full_merge::merge_avg (full_merge::FullMergeDat &cldat,
+        full_merge::AvgDists &cl_dists)
 {
-    ex_merge::OneAvgDist the_dist = cl_dists.avg_dists [0];
+    full_merge::OneAvgDist the_dist = cl_dists.avg_dists [0];
     const double dtot = the_dist.di + the_dist.dj + the_dist.d;
     const size_t ntot = the_dist.ni + the_dist.nj + 1;
     const double average = dtot / static_cast <double> (ntot);
@@ -348,15 +348,15 @@ ex_merge::OneMerge ex_merge::merge_avg (ex_merge::ExMergeDat &cldat,
 
     if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::avgdist_sorter_incr);
+                &full_merge::avgdist_sorter_incr);
     else
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::avgdist_sorter_decr);
+                &full_merge::avgdist_sorter_decr);
 
     // Finally, update the cl_dists.cli_map & clj_map entries
     fill_cl_indx_maps (cl_dists);
 
-    ex_merge::OneMerge the_merge;
+    full_merge::OneMerge the_merge;
     the_merge.cli = cli;
     the_merge.clj = clj;
     the_merge.merge_dist = average;
@@ -366,28 +366,28 @@ ex_merge::OneMerge ex_merge::merge_avg (ex_merge::ExMergeDat &cldat,
 
 // Successively merge pairs of clusters which yield the lower average
 // intra-cluster edge distance
-void ex_merge::avg (ex_merge::ExMergeDat &cldat)
+void full_merge::avg (full_merge::FullMergeDat &cldat)
 {
     AvgDists cl_dists;
-    ex_merge::fill_avg_dists (cldat, cl_dists);
-    ex_merge::fill_cl_indx_maps (cl_dists);
+    full_merge::fill_avg_dists (cldat, cl_dists);
+    full_merge::fill_cl_indx_maps (cl_dists);
 
     while (cl_dists.avg_dists.size () > 1)
     {
-        ex_merge::OneMerge the_merge = ex_merge::merge_avg (cldat, cl_dists);
+        full_merge::OneMerge the_merge = full_merge::merge_avg (cldat, cl_dists);
         cldat.merges.push_back (the_merge);
     }
 }
 
-void ex_merge::fill_max_dists (ex_merge::ExMergeDat &cldat,
-        ex_merge::AvgDists &cl_dists)
+void full_merge::fill_max_dists (full_merge::FullMergeDat &cldat,
+        full_merge::AvgDists &cl_dists)
 {
     cl_dists.avg_dists.resize (cldat.edges.size ());
     size_t nc = 0;
     std::unordered_set <std::string> edgenames; // TODO: Remove
     for (auto ei: cldat.edges)
     {
-        ex_merge::OneAvgDist onedist;
+        full_merge::OneAvgDist onedist;
         onedist.cli = ei.from;
         onedist.clj = ei.to;
         onedist.d = ei.dist;
@@ -397,21 +397,21 @@ void ex_merge::fill_max_dists (ex_merge::ExMergeDat &cldat,
 
     if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::maxdist_sorter_incr);
+                &full_merge::maxdist_sorter_incr);
     else
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::maxdist_sorter_decr);
+                &full_merge::maxdist_sorter_decr);
 }
 
-void ex_merge::max (ex_merge::ExMergeDat &cldat)
+void full_merge::max (full_merge::FullMergeDat &cldat)
 {
 }
 
 
-ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
-        ex_merge::AvgDists &cl_dists)
+full_merge::OneMerge full_merge::merge_max (full_merge::FullMergeDat &cldat,
+        full_merge::AvgDists &cl_dists)
 {
-    ex_merge::OneAvgDist the_dist = cl_dists.avg_dists [0];
+    full_merge::OneAvgDist the_dist = cl_dists.avg_dists [0];
     const double dtot = the_dist.di + the_dist.dj + the_dist.d;
     const size_t ntot = the_dist.ni + the_dist.nj + 1;
     const double average = dtot / static_cast <double> (ntot);
@@ -489,15 +489,15 @@ ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
 
     if (cldat.shortest)
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::avgdist_sorter_incr);
+                &full_merge::avgdist_sorter_incr);
     else
         std::sort (cl_dists.avg_dists.begin (), cl_dists.avg_dists.end (),
-                &ex_merge::avgdist_sorter_decr);
+                &full_merge::avgdist_sorter_decr);
 
     // Finally, update the cl_dists.cli_map & clj_map entries
     fill_cl_indx_maps (cl_dists);
 
-    ex_merge::OneMerge the_merge;
+    full_merge::OneMerge the_merge;
     the_merge.cli = cli;
     the_merge.clj = clj;
     the_merge.merge_dist = average;
@@ -506,33 +506,33 @@ ex_merge::OneMerge ex_merge::merge_max (ex_merge::ExMergeDat &cldat,
     return the_merge;
 }
 
-//' rcpp_exact_merge
+//' rcpp_full_merge
 //'
-//' Merge clusters generated by rcpp_exact_initial to full hierarchy of all
+//' Merge clusters generated by rcpp_full_initial to full hierarchy of all
 //' possible merges.
 //'
 //' @noRd
 // [[Rcpp::export]]
-Rcpp::NumericMatrix rcpp_exact_merge (
+Rcpp::NumericMatrix rcpp_full_merge (
         const Rcpp::DataFrame gr,
         const std::string linkage,
         const bool shortest)
 {
-    ex_merge::ExMergeDat clmerge_dat;
+    full_merge::FullMergeDat clmerge_dat;
     clmerge_dat.shortest = shortest;
-    ex_merge::init (gr, clmerge_dat);
+    full_merge::init (gr, clmerge_dat);
 
     if (utils::strfound (linkage, "single"))
     {
-        ex_merge::merge_single (clmerge_dat);
+        full_merge::merge_single (clmerge_dat);
     } else if (utils::strfound (linkage, "average"))
     {
-        ex_merge::avg (clmerge_dat);
+        full_merge::avg (clmerge_dat);
     } else if (utils::strfound (linkage, "max"))
     {
-        ex_merge::max (clmerge_dat);
+        full_merge::max (clmerge_dat);
     } else
-        Rcpp::stop ("linkage not found for exact_merge");
+        Rcpp::stop ("linkage not found for full_merge");
 
     const size_t n = clmerge_dat.merges.size ();
     Rcpp::NumericMatrix res (static_cast <int> (n), 3);

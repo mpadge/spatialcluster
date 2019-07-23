@@ -7,7 +7,7 @@
 plot_merges(x, root_tree = FALSE)
 }
 \arguments{
-\item{x}{Object of class \code{scl} obtained with \code{method = "exact"}.}
+\item{x}{Object of class \code{scl} obtained with \code{method = "full"}.}
 
 \item{root_tree}{If \code{TRUE}, tree leaves are connected to bottom of plot,
 otherwise floating as determined by \link{plot.hclust}.}
@@ -16,5 +16,5 @@ otherwise floating as determined by \link{plot.hclust}.}
 Nothing (generates plot)
 }
 \description{
-Plot dendrogram of merges for \code{scl} object with \code{method = "exact"}.
+Plot dendrogram of merges for \code{scl} object with \code{method = "full"}.
 }

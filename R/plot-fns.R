@@ -147,17 +147,17 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 
 #' plot_merges
 #'
-#' Plot dendrogram of merges for \code{scl} object with \code{method = "exact"}.
-#' @param x Object of class \code{scl} obtained with \code{method = "exact"}.
+#' Plot dendrogram of merges for \code{scl} object with \code{method = "full"}.
+#' @param x Object of class \code{scl} obtained with \code{method = "full"}.
 #' @param root_tree If \code{TRUE}, tree leaves are connected to bottom of plot,
 #' otherwise floating as determined by \link{plot.hclust}.
 #' @return Nothing (generates plot)
 #' @export
 plot_merges <- function (x, root_tree = FALSE)
 {
-    if (!(is (x, "scl") && x$pars$method == "exact"))
+    if (!(is (x, "scl") && x$pars$method == "full"))
         stop ("plot_merges can only be applied to scl objects ",
-              "generated with method = exact")
+              "generated with method = full")
 
     hc <- structure (class = "hclust", .Data = list ())
     merges <- convert_merges_to_hclust (x)

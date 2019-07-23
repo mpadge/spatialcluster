@@ -40,10 +40,10 @@ scl_tbl <- function (xy)
 #' @noRd
 scl_linkage_type <- function (linkage)
 {
-    linkages <- c ("single", "average", "complete", "exact")
+    linkages <- c ("single", "average", "complete", "full")
     i <- grep (linkage, linkages, ignore.case = TRUE)
     if (length (i) == 0)
-        stop ("linkage must be one of (single, average, complete, exact)")
+        stop ("linkage must be one of (single, average, complete, full)")
 
     return (linkages [i])
 }

@@ -1,6 +1,6 @@
-#' scl_exact
+#' scl_full
 #'
-#' Exact spatially-constrained clustering.
+#' Full spatially-constrained clustering.
 #'
 #' @inheritParams scl_redcap
 #'
@@ -9,16 +9,16 @@
 #' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
-#' scl <- scl_exact (xy, dmat, ncl = 4)
-scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
+#' scl <- scl_full (xy, dmat, ncl = 4)
+scl_full <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
                        nnbs = 6)
 {
     linkage <- scl_linkage_type (linkage)
     if (is (xy, "scl"))
     {
-        message ("scl_exact is for initial cluster construction; ",
+        message ("scl_full is for initial cluster construction; ",
                  "passing to scl_recluster")
-        scl_recluster_exact (xy, ncl = ncl)
+        scl_recluster_full (xy, ncl = ncl)
     } else
     {
         xy <- scl_tbl (xy)
@@ -27,7 +27,7 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
         else
             edges <- scl_edges_nn (xy, dmat, nnbs, shortest = shortest)
         # cluster numbers can be joined with edges through either from or to:
-        cl <- as.integer (rcpp_exact_initial (edges, shortest) + 1)
+        cl <- as.integer (rcpp_full_initial (edges, shortest) + 1)
 
         # make 3 vectors of cluster numbers:
         #   1. cl = cluster number for intra-cluster edges only;
@@ -49,14 +49,14 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
         edges$cl_from [is.na (edges$cl_from)] <- -1L
         edges$cl_to [is.na (edges$cl_to)] <- -1L
 
-        merges <- rcpp_exact_merge (edges, linkage = linkage,
+        merges <- rcpp_full_merge (edges, linkage = linkage,
                                     shortest = shortest) %>%
             data.frame ()
 
         merges <- tibble::tibble (from = as.integer (merges$from),
                                   to = as.integer (merges$to),
                                   dist = merges$dist)
-        # exact_cluster_nodes just auto-merges the tree to the specified number,
+        # full_cluster_nodes just auto-merges the tree to the specified number,
         # but some of these may be clusters with only 2 members. These are
         # excluded here by iterating until the desired number is achieved in
         # which each cluster has >= 3 members:
@@ -64,7 +64,7 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
         ncl_trial <- ncl
         while (num_nodes < ncl)
         {
-            nodes <- exact_cluster_nodes (edges, merges, ncl_trial)
+            nodes <- full_cluster_nodes (edges, merges, ncl_trial)
             num_nodes <- length (which (table (nodes$cluster) > 2))
             ncl_trial <- ncl_trial + 1
             if (ncl_trial >= nrow (nodes))
@@ -73,7 +73,7 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
         n <- which (table (nodes$cluster) == 2)
         nodes$cluster [nodes$cluster %in% n] <- NA
 
-        pars <- list (method = "exact",
+        pars <- list (method = "full",
                       ncl = ncl,
                       linkage = linkage)
 
@@ -89,7 +89,7 @@ scl_exact <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
 #' order_merges
 #'
 #' Order merges so they can be plotted as dendrogram
-#' @param merges output from rccp_exact_merge
+#' @param merges output from rccp_full_merge
 #' @noRd
 order_merges <- function (merges)
 {
@@ -108,15 +108,15 @@ order_merges <- function (merges)
     return (as.numeric (nodes))
 }
 
-#' exact_cluster_nodes
+#' full_cluster_nodes
 #'
 #' Transform edge and merge data into rectangle of nodes and cluster IDs
 #' @noRd
-exact_cluster_nodes <- function (edges, merges, ncl)
+full_cluster_nodes <- function (edges, merges, ncl)
 {
     edges$cluster [edges$cluster < 0] <- NA
-    ncl_exact <- length (unique (edges$cluster))
-    merge_tree <- merges [1:(ncl_exact - ncl - 1), ]
+    ncl_full <- length (unique (edges$cluster))
+    merge_tree <- merges [1:(ncl_full - ncl - 1), ]
     for (i in seq (nrow (merge_tree)))
         edges$cluster [edges$cluster == merge_tree$from [i]] <-
             merge_tree$to [i]
@@ -135,17 +135,17 @@ exact_cluster_nodes <- function (edges, merges, ncl)
     return (nodes)
 }
 
-#' scl_recluster_exact
+#' scl_recluster_full
 #'
 #' @noRd
-scl_recluster_exact <- function (scl, ncl = ncl)
+scl_recluster_full <- function (scl, ncl = ncl)
 {
     xy <- scl$nodes %>% dplyr::select (x, y)
     num_nodes <- 0
     ncl_trial <- ncl
     while (num_nodes < ncl)
     {
-        scl$nodes <- exact_cluster_nodes (scl$tree, scl$merges, ncl_trial)
+        scl$nodes <- full_cluster_nodes (scl$tree, scl$merges, ncl_trial)
         num_nodes <- length (which (table (scl$nodes$cluster) > 2))
         ncl_trial <- ncl_trial + 1
         if (ncl_trial >= nrow (scl$nodes))
