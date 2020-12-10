@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.005</span>
       </span>
     </div>
 
@@ -76,76 +76,6 @@
 
     
     
-<pre><code>## Exports from /Users/runner/work/spatialcluster/spatialcluster/src/alk.cpp:
-##    Rcpp::IntegerVector rcpp_alk(const Rcpp::DataFrame gr, bool shortest)
-## 
-## Exports from /Users/runner/work/spatialcluster/spatialcluster/src/clk.cpp:
-##    Rcpp::IntegerVector rcpp_clk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, bool shortest)
-## 
-## Exports from /Users/runner/work/spatialcluster/spatialcluster/src/common.h:
-## 
-## Exports from /Users/runner/work/spatialcluster/spatialcluster/src/cuttree.cpp:
-##    Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl, const bool shortest)
-## 
-## Exports from /Users/runner/work/spatialcluster/spatialcluster/src/full-init.cpp:
-##    Rcpp::IntegerVector rcpp_full_initial(const Rcpp::DataFrame gr, bool shortest)
-## 
-## Exports from /Users/runner/work/spatialcluster/spatialcluster/src/full-merge.cpp:
-##    Rcpp::NumericMatrix rcpp_full_merge(const Rcpp::DataFrame gr, const std::string linkage, const bool shortest)
-## 
-## Exports from /Users/runner/work/spatialcluster/spatialcluster/src/slk.cpp:
-##    Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, bool shortest)
-## 
-## /Users/runner/work/spatialcluster/spatialcluster/src/RcppExports.cpp updated.
-## /Users/runner/work/spatialcluster/spatialcluster/R/RcppExports.R updated.
-##   
-─  installing *source* package ‘spatialcluster’ ... (1.3s)
-## 
-  
-   ** using staged installation
-## 
-  
-   ** libs
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c RcppExports.cpp -o RcppExports.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c alk.cpp -o alk.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c clk.cpp -o clk.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c cuttree.cpp -o cuttree.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c full-init.cpp -o full-init.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c full-merge.cpp -o full-merge.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c slk.cpp -o slk.o
-## 
-  
-   clang -mmacosx-version-min=10.13 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c spatialcluster_init.c -o spatialcluster_init.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Users/runner/work/_temp/Library/Rcpp/include' -I'/Users/runner/work/_temp/Library/RcppArmadillo/include' -I/usr/local/include   -fPIC  -Wall -g -O2  -UNDEBUG -Wall -pedantic -g -O0 -c utils.cpp -o utils.o
-## 
-  
-   clang++ -mmacosx-version-min=10.13 -std=gnu++11 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o spatialcluster.so RcppExports.o alk.o clk.o cuttree.o full-init.o full-merge.o slk.o spatialcluster_init.o utils.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
-## 
-  
-   installing to /private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpd9Alq5/devtools_install_aa57e3a3089/00LOCK-spatialcluster/00new/spatialcluster/libs
-## 
-  
-   ** checking absolute paths in shared objects and dynamic libraries
-## 
-  
-─  DONE (spatialcluster)
-## </code></pre>
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
@@ -193,11 +123,11 @@ Figure 1: (A) Illustration of typical spatial clustering application for which i
 </p>
 </div>
 <p>For example, the following code illustrates the use of the <code>DBSCAN</code> algorithm (<strong>D</strong>ensity <strong>B</strong>ased <strong>S</strong>patial <strong>C</strong>lustering of <strong>A</strong>pplications with <strong>N</strong>oise) from the <strong>R</strong> package <a href="https://cran.r-project.org/package=dbscan"><code>dbscan</code></a>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">d_nospace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span> <span class="op">(</span><span class="va">dat_nospace</span><span class="op">)</span> <span class="co"># matrix of non-spatial data</span>
 <span class="va">d_space</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span> <span class="op">(</span><span class="va">dat_space</span><span class="op">)</span> <span class="co"># 2-column matrix of spatial data</span>
 <span class="va">d</span> <span class="op">&lt;-</span> <span class="va">dat_nospace</span> <span class="op">+</span> <span class="va">d_space</span> <span class="co"># simple linear addition</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span> <span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/dbscan">dbscan</a></span><span class="op">)</span>
 <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">dbscan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dbscan/man/dbscan.html">dbscan</a></span> <span class="op">(</span><span class="va">d</span>, eps <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="co"># more on the eps parameter below</span>
 <span class="va">db</span></code></pre></div>
@@ -257,17 +187,17 @@ Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corres
 <p>As described above, the REDCAP algorithms provide different ways of constructing minimal spanning trees for a given data set, with resultant clusters based on bisecting these spanning trees. They effectively represent the relationships within a data set by the “best” minimal set (according to the chosen algorithm). Here, we develop a simple algorithm for deriving a clustering scheme that uses the full set of nearest-neighbour relationships in a given data set.</p>
 <p>Each point or object within a typical planar (effectively two-dimensional) data set may have on average just under three nearest neighbours if these are calculated with a triangulation, or potentially up to <span class="math inline">\(k\)</span> for some <span class="math inline">\(k\)</span>-nearest neighbours scheme. Each point in a minimal-spanning tree generally has an average of between two and three neighbours (one for terminal nodes; two for non-branching nodes; three for branching nodes). It may accordingly be presumed that reducing a full set of neighbours to an MST reduces average numbers of edges per node from <span class="math inline">\(\gtrapprox 3\)</span> to <span class="math inline">\(\sim 2.5\)</span>. The loss in computational complexity produced through using all neighbouring nodes instead of an MST is thus likely to be only around 20%. Moreover, if a clustering algorithm scales sub-linearly with <span class="math inline">\(N\)</span>, as many do, this loss is likely to be even less pronounced with increasing <span class="math inline">\(N\)</span>.</p>
 <p>The exact clustering algorithm proceeds through the following steps, looping until all data objects have been allocated to a cluster, and beginning with both <code>i = 0</code> and <code>clnum = 0</code>. The primary data is an array of edges (<code>edge</code>) sorted by increasing distance.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fl">1.</span>  Select edge [i] connecting nodes a and b.</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="fl">2.</span>  i<span class="op">++</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="fl">3.</span>  <span class="cf">if</span> both a and b are already <span class="cf">in</span> clusters<span class="op">:</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="st">        </span>continue to <span class="cf">next</span> iteration</span>
-<span id="cb5-5"><a href="#cb5-5"></a>    <span class="cf">else</span> <span class="cf">if</span> neither node is <span class="cf">in</span> a cluster<span class="op">:</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="st">        </span><span class="kw">cluster</span> (clnum) =<span class="st"> </span><span class="kw">create_new_cluster</span> (<span class="kw">c</span> (a, b))</span>
-<span id="cb5-7"><a href="#cb5-7"></a>        clnum<span class="op">++</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="st">    </span><span class="cf">else</span> <span class="cf">if</span> only a is <span class="cf">in</span> a cluster<span class="op">:</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="st">        </span><span class="kw">set_cluster_number</span> (a, <span class="kw">get_cluster_number</span> (b))</span>
-<span id="cb5-10"><a href="#cb5-10"></a>    <span class="cf">else</span> <span class="cf">if</span> only b is <span class="cf">in</span> a cluster<span class="op">:</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a><span class="st">        </span><span class="kw">set_cluster_number</span> (b, <span class="kw">get_cluster_number</span> (a))</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fl">1.</span>  Select edge [i] connecting nodes a and b.</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fl">2.</span>  i<span class="op">++</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="fl">3.</span>  <span class="cf">if</span> both a and b are already <span class="cf">in</span> clusters<span class="op">:</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="st">        </span>continue to <span class="cf">next</span> iteration</span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="cf">else</span> <span class="cf">if</span> neither node is <span class="cf">in</span> a cluster<span class="op">:</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="st">        </span><span class="kw">cluster</span> (clnum) =<span class="st"> </span><span class="kw">create_new_cluster</span> (<span class="kw">c</span> (a, b))</span>
+<span id="cb4-7"><a href="#cb4-7"></a>        clnum<span class="op">++</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="st">    </span><span class="cf">else</span> <span class="cf">if</span> only a is <span class="cf">in</span> a cluster<span class="op">:</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="st">        </span><span class="kw">set_cluster_number</span> (a, <span class="kw">get_cluster_number</span> (b))</span>
+<span id="cb4-10"><a href="#cb4-10"></a>    <span class="cf">else</span> <span class="cf">if</span> only b is <span class="cf">in</span> a cluster<span class="op">:</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="st">        </span><span class="kw">set_cluster_number</span> (b, <span class="kw">get_cluster_number</span> (a))</span></code></pre></div>
 <p>This procedure allocates all nodes (data objects) to clusters. The number of resultant clusters can not be known in advance, and many clusters may be very small, comprising for example only a single edge connecting two nodes. This initial clustering may then be used as the basis of a further hierarchical clustering, through sequentially merging clusters having the minimal distance according to some specified metric. This merging involves linking previously distinct clusters according to some specified criteria, for which the same three criteria used in the REDCAP algorithms can be directly applied here. Note, however, that average and maximal distances in the REDCAP algorithms simply represent the respective average and maximal individual edge distances, and not the corresponding distances traversed within a cluster through the MST.</p>
 <p>It is possible within the present exact clustering approach to select edges based on actual average or maximal traversal distances from a potential connecting edge to all other edges in two clusters. Doing so, however, simply merges the two smallest clusters, all other things being equal, because these must by definition have the shortest average and maximal distance. Edge selection is therefore implemented here in the same way as the REDCAP algorithms, by selecting edges based on average and maximal single edge distances. Clusters are hierarchically connected by selecting edges according to on of the following three schemes:</p>
 <ol style="list-style-type: decimal">
