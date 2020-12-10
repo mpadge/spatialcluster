@@ -66,13 +66,13 @@ scl_ahulls <- function (nodes, alpha = 0.1)
             inds <- inds [-1, ]
             while (nrow (inds) > 0)
             {
-                j <- which (inds$ind1 == tail (ind_seq, n = 1))
+                j <- which (inds$ind1 == utils::tail (ind_seq, n = 1))
                 if (length (j) > 0)
                 {
                     ind_seq <- c (ind_seq, inds [j, 2])
                 } else
                 {
-                    j <- which (inds$ind2 == tail (ind_seq, n = 1))
+                    j <- which (inds$ind2 == utils::tail (ind_seq, n = 1))
                     ind_seq <- c (ind_seq, inds [j, 1])
                 }
                 inds <- inds [-j, , drop = FALSE] #nolint
@@ -117,7 +117,7 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 
     # clnum in cl_cols is + 1 because xy below increases cluster numbers by 1 to
     # allocate cl_num == 1 to unassigned points
-    cl_cols <- rainbow (nc) %>%
+    cl_cols <- grDevices::rainbow (nc) %>%
         tibble::as_tibble () %>%
         dplyr::mutate (cluster = seq (nc) + 1) %>%
         dplyr::rename (col = value)
@@ -155,7 +155,7 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 #' @export
 plot_merges <- function (x, root_tree = FALSE)
 {
-    if (!(is (x, "scl") && x$pars$method == "full"))
+    if (!(methods::is (x, "scl") && x$pars$method == "full"))
         stop ("plot_merges can only be applied to scl objects ",
               "generated with method = full")
 
@@ -166,7 +166,7 @@ plot_merges <- function (x, root_tree = FALSE)
     hc$order <- x$ord + 1 # it's 0-indexed
     hc$labels <- x$ord
     if (root_tree)
-        plot (as.dendrogram (hc))
+        plot (stats::as.dendrogram (hc))
     else
         plot (hc)
 }

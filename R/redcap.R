@@ -52,7 +52,7 @@ scl_redcap <- function (xy, dmat, ncl, full_order = TRUE, linkage = "single",
 {
     linkage <- scl_linkage_type (linkage)
 
-    if (is (xy, "scl"))
+    if (methods::is (xy, "scl"))
     {
         if (!identical (xy$pars$method, "redcap"))
             stop ("scl_redcap can pass to scl_recluster only for scl objects",
@@ -146,7 +146,7 @@ tree_nodes <- function (tree)
 #' plot (scl)
 scl_recluster <- function (scl, ncl, shortest = TRUE)
 {
-    if (!is (scl, "scl"))
+    if (!methods::is (scl, "scl"))
         stop ("scl_recluster can only be applied to 'scl' objects ",
               "returned from scl_redcap")
     else if (identical (scl$pars$method, "redcap"))

@@ -13,16 +13,16 @@ scl_statistics <- function (scl)
         dplyr::mutate (tf = paste0 (to, "-", from))
     tree <- tree [which (!tree$tf %in% edges_in$tf), ]
     #t.test (edges_in$d, tree$d, alternative = "greater", var.equal = TRUE)
-    tt_global <- t.test (edges_in$d, tree$d,
-                         alternative = "less", var.equal = TRUE)
+    tt_global <- stats::t.test (edges_in$d, tree$d,
+                                alternative = "less", var.equal = TRUE)
     tt_global <- c (tt_global$statistic, tt_global$parameter, tt_global$p.value)
     names (tt_global) <- c ("statistic", "parameter", "p.value")
 
     tt_cl <- vapply (sort (unique (scl$tree$cluster)),
                      function (i) {
                          index <- which (edges_in$cluster == i)
-                         tt <- t.test (edges_in$d [index], tree$d,
-                                       alternative = "less", var.equal = TRUE)
+                         tt <- stats::t.test (edges_in$d [index], tree$d,
+                                              alternative = "less", var.equal = TRUE)
                          res <- c (tt$statistic, tt$parameter, tt$p.value)
                          names (res) <- c ("statistic", "parameter", "p.value")
                          return (res)

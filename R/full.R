@@ -14,7 +14,7 @@ scl_full <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
                        nnbs = 6)
 {
     linkage <- scl_linkage_type (linkage)
-    if (is (xy, "scl"))
+    if (methods::is (xy, "scl"))
     {
         message ("scl_full is for initial cluster construction; ",
                  "passing to scl_recluster")

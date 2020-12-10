@@ -29,7 +29,7 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE)
 #' @noRd
 scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE)
 {
-    d <- apply (as.matrix (dist (xy)), 2, function (i)
+    d <- apply (as.matrix (stats::dist (xy)), 2, function (i)
                 order (i, decreasing = !shortest) [1:nnbs])
     edges <- tibble::tibble (from = rep (as.integer (colnames (d)),
                                          each = nnbs),
