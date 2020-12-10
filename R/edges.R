@@ -60,10 +60,10 @@ append_dist_to_edges <- function (edges, dmat, shortest)
 scl_edges_all <- function (xy, dmat, shortest = TRUE)
 {
     n <- nrow (dmat)
-    edges <- cbind (seq (n), rep (seq (n), each = n), as.vector (dmat)) %>%
-        tibble::as_tibble () %>%
-        dplyr::rename (from = V1, to = V2, d = V3) %>%
-        na.omit ()
+    edges <- tibble::tibble (from = rep (seq (n), times = n),
+                             to = rep (seq (n), each = n),
+                             d = as.vector (dmat))
+    edges <- na.omit (edges)
 
     if (shortest)
         edges %<>% dplyr::arrange (d) # lowest-to-highest
