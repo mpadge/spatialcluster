@@ -17,7 +17,7 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom spatstat convexhull ppp
 #' @importFrom stats as.dendrogram dist na.omit t.test
-#' @importFrom tibble tibble as.tibble
+#' @importFrom tibble tibble as_tibble
 #' @importFrom tripack neighbours tri.mesh
 #' @importFrom utils tail
 #' @useDynLib spatialcluster, .registration = TRUE

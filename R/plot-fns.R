@@ -118,7 +118,7 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
     # clnum in cl_cols is + 1 because xy below increases cluster numbers by 1 to
     # allocate cl_num == 1 to unassigned points
     cl_cols <- rainbow (nc) %>%
-        tibble::as.tibble () %>%
+        tibble::as_tibble () %>%
         dplyr::mutate (cluster = seq (nc) + 1) %>%
         dplyr::rename (col = value)
 

@@ -14,7 +14,7 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE)
     edges <- lapply (seq (n), function (i)
                      cbind (i, nbs [[i]])) %>%
             do.call (rbind, .) %>%
-            tibble::as.tibble () %>%
+            tibble::as_tibble () %>%
             dplyr::rename (from = i, to = V1)
 
     append_dist_to_edges (edges, dmat, shortest)
@@ -61,7 +61,7 @@ scl_edges_all <- function (xy, dmat, shortest = TRUE)
 {
     n <- nrow (dmat)
     edges <- cbind (seq (n), rep (seq (n), each = n), as.vector (dmat)) %>%
-        tibble::as.tibble () %>%
+        tibble::as_tibble () %>%
         dplyr::rename (from = V1, to = V2, d = V3) %>%
         na.omit ()
 

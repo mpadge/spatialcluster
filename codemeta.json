@@ -10,7 +10,7 @@
   "codeRepository": "https://github.com/mpadge/spatialcluster",
   "issueTracker": "https://github.com/mpadge/spatialcluster/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.2.2",
+  "version": "0.0.2.003",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -250,7 +250,10 @@
   ],
   "readme": "https://github.com/mpadge/spatialcluster/blob/master/README.md",
   "fileSize": "8251.543KB",
-  "contIntegration": ["https://travis-ci.org/mpadge/spatialcluster", "https://codecov.io/gh/mpadge/spatialcluster"],
+  "contIntegration": [
+    "https://travis-ci.org/mpadge/spatialcluster",
+    "https://codecov.io/gh/mpadge/spatialcluster"
+  ],
   "developmentStatus": "http://www.repostatus.org/#wip",
   "keywords": [
     "clustering-algorithm",

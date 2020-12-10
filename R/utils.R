@@ -24,12 +24,12 @@ scl_tbl <- function (xy)
         names (xy) [yi] <- "y"
     } else if (ncol (xy) == 2)
     {
-        names (xy) <- c ("x", "y")
+        colnames (xy) <- c ("x", "y")
     } else
     {
         stop ("Cannot determine unambiguous coordinate columns")
     }
-    tibble::as.tibble (xy)
+    tibble::as_tibble (xy)
 }
 
 #' scl_linkage_type
