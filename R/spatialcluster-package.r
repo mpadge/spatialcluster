@@ -1,5 +1,8 @@
 #' spatialcluster.
 #'
+#' R port of redcap (Regionalization with dynamically constrained agglomerative
+#' clustering and partitioning).
+#'
 #' @name spatialcluster
 #' @docType package
 #' @importFrom alphahull ashape

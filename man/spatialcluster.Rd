@@ -4,3 +4,7 @@
 \name{spatialcluster}
 \alias{spatialcluster}
 \title{spatialcluster.}
+\description{
+R port of redcap (Regionalization with dynamically constrained agglomerative
+clustering and partitioning).
+}
