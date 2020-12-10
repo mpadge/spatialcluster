@@ -12,14 +12,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![Build Status](https://travis-ci.org/mpadge/spatialcluster.svg)](https://travis-ci.org/mpadge/spatialcluster) 
+[![R build status](https://github.com/mpadge/spatialcluster/workflows/R-CMD-check/badge.svg)](https://github.com/mpadge/spatialcluster/actions?query=workflow%3AR-CMD-check)
 [![Project Status: WIP](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![codecov](https://codecov.io/gh/mpadge/spatialcluster/branch/master/graph/badge.svg)](https://codecov.io/gh/mpadge/spatialcluster)
 
 # spatialcluster
 
 An **R** package for spatially-constrained clustering using either distance or
-covariance matrices. The package includes both an imlementation of the the
+covariance matrices. The package includes both an implementation of the
 REDCAP collection of efficient yet approximate algorithms described in [D. Guo's
 2008 paper, "Regionalization with dynamically constrained agglomerative
 clustering and

@@ -1,6 +1,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Build
-Status](https://travis-ci.org/mpadge/spatialcluster.svg)](https://travis-ci.org/mpadge/spatialcluster)
+
+[![R build
+status](https://github.com/mpadge/spatialcluster/workflows/R-CMD-check/badge.svg)](https://github.com/mpadge/spatialcluster/actions?query=workflow%3AR-CMD-check)
 [![Project Status:
 WIP](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![codecov](https://codecov.io/gh/mpadge/spatialcluster/branch/master/graph/badge.svg)](https://codecov.io/gh/mpadge/spatialcluster)
@@ -10,7 +11,7 @@ spatialcluster
 
 An **R** package for spatially-constrained clustering using either
 distance or covariance matrices. The package includes both an
-imlementation of the the REDCAP collection of efficient yet approximate
+implementation of the REDCAP collection of efficient yet approximate
 algorithms described in [D. Guo’s 2008 paper, “Regionalization with
 dynamically constrained agglomerative clustering and
 partitioning.”](https://www.tandfonline.com/doi/abs/10.1080/13658810701674970)
@@ -87,14 +88,14 @@ scl <- scl_exact (xy, dmat, ncl = 8, linkage = "single")
 plot (scl)
 ```
 
-![](README-plot-exsingle-1.png)
+![](docs/figs/README-plot-exsingle-1.png)
 
 ``` r
 scl <- scl_exact (xy, dmat, ncl = 8, linkage = "average")
 plot (scl)
 ```
 
-![](README-plot-exaverage-1.png)
+![](docs/figs/README-plot-exaverage-1.png)
 
 This example illustrates the universal danger in all clustering
 algorithms: they can not fail to produce results, even when the data fed
