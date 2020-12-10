@@ -8,3 +8,5 @@
 ^\.Rproj\.user$
 ^vignettes/makefile$
 docs/
+^\.pre-commit-config\.yaml$
+^codemeta\.json$

@@ -1,14 +1,18 @@
 Package: spatialcluster
 Title: R port of redcap
-Version: 0.0.2
-Authors@R: person("Mark", "Padgham", email = "mark.padgham@email.com", role = c("aut", "cre"))
-Description: R port of redcap (Regionalization with dynamically constrained
-    agglomerative clustering and partitioning).
-Depends: R (>= 3.3.0)
+Version: 0.0.2.001
+Authors@R: 
+    person(given = "Mark",
+           family = "Padgham",
+           role = c("aut", "cre"),
+           email = "mark.padgham@email.com")
+Description: R port of redcap (Regionalization with dynamically
+    constrained agglomerative clustering and partitioning).
 License: GPL-3
-Encoding: UTF-8
-NeedsCompilation: yes
-LazyData: true
+URL: https://github.com/mpadge/spatialcluster
+BugReports: https://github.com/mpadge/spatialcluster/issues
+Depends: 
+    R (>= 3.3.0)
 Imports:
     alphahull,
     dplyr,
@@ -31,9 +35,10 @@ Suggests:
 LinkingTo:
     Rcpp,
     RcppArmadillo
-SystemRequirements:
-    C++11,
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
+NeedsCompilation: yes
 RoxygenNote: 7.1.1
-URL: https://github.com/mpadge/spatialcluster
-BugReports: https://github.com/mpadge/spatialcluster/issues
+SystemRequirements: C++11,
