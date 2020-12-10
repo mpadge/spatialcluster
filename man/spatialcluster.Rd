@@ -3,8 +3,4 @@
 \docType{package}
 \name{spatialcluster}
 \alias{spatialcluster}
-\alias{spatialcluster-package}
 \title{spatialcluster.}
-\description{
-spatialcluster.
-}

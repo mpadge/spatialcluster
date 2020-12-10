@@ -4,8 +4,7 @@
 \alias{scl_full}
 \title{scl_full}
 \usage{
-scl_full(xy, dmat, ncl, linkage = "single", shortest = TRUE,
-  nnbs = 6)
+scl_full(xy, dmat, ncl, linkage = "single", shortest = TRUE, nnbs = 6)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing

@@ -4,8 +4,15 @@
 \alias{scl_redcap}
 \title{scl_redcap}
 \usage{
-scl_redcap(xy, dmat, ncl, full_order = TRUE, linkage = "single",
-  shortest = TRUE, nnbs = 6)
+scl_redcap(
+  xy,
+  dmat,
+  ncl,
+  full_order = TRUE,
+  linkage = "single",
+  shortest = TRUE,
+  nnbs = 6
+)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
@@ -58,7 +65,7 @@ xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
 scl <- scl_redcap (xy, dmat, ncl = 4)
 # Those clusters will by default be constructed by connecting edges with the
-# lowest (\\code{shortest}) values of \\code{dmat}, and will differ from
+# lowest (\code{shortest}) values of \code{dmat}, and will differ from
 scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE)
 # using 'full_order = FALSE' constructs clusters from first-order
 # relationships only; not recommended, but possible nevertheless:
