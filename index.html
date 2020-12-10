@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.008</span>
       </span>
     </div>
 
@@ -69,7 +69,7 @@
 <div id="spatialcluster" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#spatialcluster" class="anchor"></a>spatialcluster</h1></div>
-<p>An <strong>R</strong> package for spatially-constrained clustering using either distance or covariance matrices. The package includes both an imlementation of the the REDCAP collection of efficient yet approximate algorithms described in <a href="https://www.tandfonline.com/doi/abs/10.1080/13658810701674970">D. Guo’s 2008 paper, “Regionalization with dynamically constrained agglomerative clustering and partitioning.”</a> (pdf available <a href="https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf">here</a>), with extension to covariance matrices, and a new technique for computing clusters using complete data sets. The package is also designed to analyse matrices of spatial interactions (counts, densities) between sets of origin and destination points. The spatial structure of interaction matrices is able to be statistically analysed to yield both global statistics for the overall spatial structure, and local statistics for individual clusters. ‘’Spatially-constrained’’ means that the data from which clusters are to be formed also map on to spatial reference points, and the constraint is that clusters must be spatially contiguous.</p>
+<p>An <strong>R</strong> package for spatially-constrained clustering using either distance or covariance matrices. The package includes both an implementation of the REDCAP collection of efficient yet approximate algorithms described in <a href="https://www.tandfonline.com/doi/abs/10.1080/13658810701674970">D. Guo’s 2008 paper, “Regionalization with dynamically constrained agglomerative clustering and partitioning.”</a> (pdf available <a href="https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf">here</a>), with extension to covariance matrices, and a new technique for computing clusters using complete data sets. The package is also designed to analyse matrices of spatial interactions (counts, densities) between sets of origin and destination points. The spatial structure of interaction matrices is able to be statistically analysed to yield both global statistics for the overall spatial structure, and local statistics for individual clusters. ‘’Spatially-constrained’’ means that the data from which clusters are to be formed also map on to spatial reference points, and the constraint is that clusters must be spatially contiguous.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -109,11 +109,11 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu">scl_exact</span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
-<p><img src="README-plot-exsingle-1.png"></p>
+<p><img src="docs/figs/README-plot-exsingle-1.png"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu">scl_exact</span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
-<p><img src="README-plot-exaverage-1.png"></p>
+<p><img src="docs/figs/README-plot-exaverage-1.png"></p>
 <p>This example illustrates the universal danger in all clustering algorithms: they can not fail to produce results, even when the data fed to them are definitely devoid of any information as in this example. Clustering algorithms should only be applied to reflect a very specific hypothesis for why data should be clustered in the first place; spatial clustering algorithms should only be applied to reflect two very specific hypothesis for (i) why data should be clustered at all, and</p>
 <p>(ii) why those clusters should manifest a spatial pattern.</p>
 </div>
@@ -147,7 +147,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/mpadge/spatialcluster"><img src="https://travis-ci.org/mpadge/spatialcluster.svg" alt="Build Status"></a></li>
+<li><a href="https://github.com/mpadge/spatialcluster/actions?query=workflow%3AR-CMD-check"><img src="https://github.com/mpadge/spatialcluster/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="http://www.repostatus.org/#wip"><img src="http://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP"></a></li>
 <li><a href="https://codecov.io/gh/mpadge/spatialcluster"><img src="https://codecov.io/gh/mpadge/spatialcluster/branch/master/graph/badge.svg" alt="codecov"></a></li>
 </ul>
