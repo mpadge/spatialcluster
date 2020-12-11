@@ -156,9 +156,9 @@ size_t utils::find_shortest_connection (
     indxset_t index_i = cl2index_map.at (cfrom),
              index_j = cl2index_map.at (cto);
 
-    double dmin = INFINITE_DOUBLE;
+    double dlim = INFINITE_DOUBLE;
     if (!shortest)
-        dmin = -dmin;
+        dlim = -dlim;
     size_t short_i = INFINITE_INT, short_j = INFINITE_INT;
 
     // from and to here are not directional, so need to examine both directions
@@ -167,21 +167,21 @@ size_t utils::find_shortest_connection (
         {
             arma::uword ia = static_cast <arma::uword> (i),
                         ja = static_cast <arma::uword> (j);
-            if ((shortest && d_mat (ia, ja) < dmin) ||
-                    (!shortest && d_mat (ia, ja) > dmin))
+            if ((shortest && d_mat (ia, ja) < dlim) ||
+                    (!shortest && d_mat (ia, ja) > dlim))
             {
-                dmin = d_mat (ia, ja);
+                dlim = d_mat (ia, ja);
                 short_i = i;
                 short_j = j;
-            } else if ((shortest && d_mat (ja, ia) < dmin) ||
-                    (!shortest && d_mat (ja, ia) > dmin))
+            } else if ((shortest && d_mat (ja, ia) < dlim) ||
+                    (!shortest && d_mat (ja, ia) > dlim))
             {
-                dmin = d_mat (ja, ia);
+                dlim = d_mat (ja, ia);
                 short_i = j;
                 short_j = i;
             }
         }
-    if (dmin == INFINITE_DOUBLE)
+    if (dlim == INFINITE_DOUBLE)
         Rcpp::stop ("no minimal distance; this should not happen");
 
     // convert short_i and short_j to a single edge 
