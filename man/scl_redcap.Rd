@@ -56,8 +56,8 @@ dynamically constrained agglomerative clustering and partitioning (REDCAP)',
 by D. Guo (2008), Int.J.Geo.Inf.Sci 22:801-823) for details of the
 \code{full_order} and \code{linkage} parameters. This paper clearly
 demonstrates the general inferiority of spanning trees constructed from
-first-order relationships. It is therefore strongly recommended that the default
-\code{full_order = TRUE} be used at all times.
+first-order relationships. It is therefore strongly recommended that the
+default \code{full_order = TRUE} be used at all times.
 }
 \examples{
 n <- 100

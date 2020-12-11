@@ -8,14 +8,11 @@
 #' @return tibble of (id, x, y), where the coordinates trace the convex hulls
 #' for each cluster id
 #' @noRd
-scl_hulls <- function (nodes)
-{
+scl_hulls <- function (nodes) {
     ncl <- length (unique (nodes$cluster [!is.na (nodes$cluster)]))
     bdry <- list ()
-    for (i in seq (ncl))
-    {
-        if (length (which (nodes$cluster == i)) > 1)
-        {
+    for (i in seq (ncl)) {
+        if (length (which (nodes$cluster == i)) > 1) {
             xyi <- nodes %>%
                 dplyr::filter (cluster == i)
             xy2 <- spatstat::ppp (xyi$x, xyi$y,
@@ -40,14 +37,11 @@ scl_hulls <- function (nodes)
 #' @return tibble of (id, x, y), where the coordinates trace the convex hulls
 #' for each cluster id
 #' @noRd
-scl_ahulls <- function (nodes, alpha = 0.1)
-{
+scl_ahulls <- function (nodes, alpha = 0.1) {
     ncl <- length (unique (nodes$cluster [!is.na (nodes$cluster)]))
     bdry <- list ()
-    for (i in seq (ncl))
-    {
-        if (length (which (nodes$cluster == i)) > 2)
-        {
+    for (i in seq (ncl)) {
+        if (length (which (nodes$cluster == i)) > 2) {
             xyi <- nodes %>%
                 dplyr::filter (cluster == i) %>%
                 dplyr::select (x, y)
@@ -64,14 +58,11 @@ scl_ahulls <- function (nodes, alpha = 0.1)
             # TODO: Find a better way to do this!
             ind_seq <- as.numeric (inds [1, ])
             inds <- inds [-1, ]
-            while (nrow (inds) > 0)
-            {
+            while (nrow (inds) > 0) {
                 j <- which (inds$ind1 == utils::tail (ind_seq, n = 1))
-                if (length (j) > 0)
-                {
+                if (length (j) > 0) {
                     ind_seq <- c (ind_seq, inds [j, 2])
-                } else
-                {
+                } else {
                     j <- which (inds$ind2 == utils::tail (ind_seq, n = 1))
                     ind_seq <- c (ind_seq, inds [j, 1])
                 }
@@ -106,8 +97,7 @@ scl_ahulls <- function (nodes, alpha = 0.1)
 #' # \code{dmat}:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
-plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
-{
+plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1) {
     if (convex)
         hulls <- scl_hulls (x$nodes)
     else
@@ -153,8 +143,7 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1)
 #' otherwise floating as determined by \link{plot.hclust}.
 #' @return Nothing (generates plot)
 #' @export
-plot_merges <- function (x, root_tree = FALSE)
-{
+plot_merges <- function (x, root_tree = FALSE) {
     if (!(methods::is (x, "scl") && x$pars$method == "full"))
         stop ("plot_merges can only be applied to scl objects ",
               "generated with method = full")
@@ -171,35 +160,29 @@ plot_merges <- function (x, root_tree = FALSE)
         plot (hc)
 }
 
-convert_merges_to_hclust <- function (x)
-{
+convert_merges_to_hclust <- function (x) {
     mt <- as.matrix (x$merges [, c ("from", "to")]) + 1
     dists <- as.vector (x$merges$dist)
     indx <- sort (unique (as.vector (mt)))
     mt <- apply (mt, 2, function (i) match (i, indx))
     merged <- d <- NULL
     map <- rep (NA, max (mt))
-    for (i in seq (nrow (mt)))
-    {
+    for (i in seq (nrow (mt))) {
         m1 <- mt [i, 1]
         m2 <- mt [i, 2]
-        if (!m1 %in% merged)
-        {
+        if (!m1 %in% merged) {
             merged <- c (merged, m1)
             mt [i, 1] <- -m1
-        } else
-        {
+        } else {
             mt [i, 1] <- map [m1]
             dists [i] <- dists [i] + dists [map [m1]]
         }
         map [m1] <- i
 
-        if (!m2 %in% merged)
-        {
+        if (!m2 %in% merged) {
             merged <- c (merged, m2)
             mt [i, 2] <- -m2
-        } else
-        {
+        } else {
             mt [i, 2] <- map [m2]
             dists [i] <- dists [i] + dists [map [m2]]
         }

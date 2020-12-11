@@ -38,6 +38,6 @@ test_that("recluster", {
               scl1 <- scl_full (scl, ncl = 3)
               scl2 <- scl_recluster (scl, ncl = 3)
               expect_identical (scl1, scl2)
-              expect_error ( scl3 <- scl_redcap (scl, ncl = 3),
-                              "scl_redcap can pass to scl_recluster only")
+              expect_error (scl3 <- scl_redcap (scl, ncl = 3),
+                            "scl_redcap can pass to scl_recluster only")
 })

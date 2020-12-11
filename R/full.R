@@ -10,17 +10,18 @@
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
 #' scl <- scl_full (xy, dmat, ncl = 4)
-scl_full <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
-                       nnbs = 6)
-{
+scl_full <- function (xy,
+                      dmat,
+                      ncl,
+                      linkage = "single",
+                      shortest = TRUE,
+                      nnbs = 6) {
     linkage <- scl_linkage_type (linkage)
-    if (methods::is (xy, "scl"))
-    {
+    if (methods::is (xy, "scl")) {
         message ("scl_full is for initial cluster construction; ",
                  "passing to scl_recluster")
         scl_recluster_full (xy, ncl = ncl)
-    } else
-    {
+    } else {
         xy <- scl_tbl (xy)
         if (nnbs <= 0)
             edges <- scl_edges_tri (xy, dmat, shortest = shortest)
@@ -62,8 +63,7 @@ scl_full <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
         # which each cluster has >= 3 members:
         num_nodes <- 0
         ncl_trial <- ncl
-        while (num_nodes < ncl)
-        {
+        while (num_nodes < ncl) {
             nodes <- full_cluster_nodes (edges, merges, ncl_trial)
             num_nodes <- length (which (table (nodes$cluster) > 2))
             ncl_trial <- ncl_trial + 1
@@ -91,12 +91,10 @@ scl_full <- function (xy, dmat, ncl, linkage = "single", shortest = TRUE,
 #' Order merges so they can be plotted as dendrogram
 #' @param merges output from rccp_full_merge
 #' @noRd
-order_merges <- function (merges)
-{
+order_merges <- function (merges) {
     merges <- as.matrix (merges)
     nodes <- merges [nrow (merges), c ("from", "to")]
-    for (i in rev (seq (nrow (merges))) [-1])
-    {
+    for (i in rev (seq (nrow (merges))) [-1]) {
         ii <- which (nodes == merges [i, 2])
         n1 <- n2 <- NULL
         if (ii > 1)
@@ -112,8 +110,7 @@ order_merges <- function (merges)
 #'
 #' Transform edge and merge data into rectangle of nodes and cluster IDs
 #' @noRd
-full_cluster_nodes <- function (edges, merges, ncl)
-{
+full_cluster_nodes <- function (edges, merges, ncl) {
     edges$cluster [edges$cluster < 0] <- NA
     ncl_full <- length (unique (edges$cluster))
     merge_tree <- merges [1:(ncl_full - ncl - 1), ]
@@ -138,13 +135,11 @@ full_cluster_nodes <- function (edges, merges, ncl)
 #' scl_recluster_full
 #'
 #' @noRd
-scl_recluster_full <- function (scl, ncl = ncl)
-{
+scl_recluster_full <- function (scl, ncl = ncl) {
     xy <- scl$nodes %>% dplyr::select (x, y)
     num_nodes <- 0
     ncl_trial <- ncl
-    while (num_nodes < ncl)
-    {
+    while (num_nodes < ncl) {
         scl$nodes <- full_cluster_nodes (scl$tree, scl$merges, ncl_trial)
         num_nodes <- length (which (table (scl$nodes$cluster) > 2))
         ncl_trial <- ncl_trial + 1

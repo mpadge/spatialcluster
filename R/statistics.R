@@ -5,8 +5,7 @@
 #' @return A modified version of the input object with statistics appended.
 #'
 #' @noRd
-scl_statistics <- function (scl)
-{
+scl_statistics <- function (scl) {
     tree <- scl$tree %>%
         dplyr::mutate (tf = paste0 (to, "-", from))
     edges_in <- scl$tree [which (scl$tree$cluster >= 0), ] %>%
@@ -22,7 +21,8 @@ scl_statistics <- function (scl)
                      function (i) {
                          index <- which (edges_in$cluster == i)
                          tt <- stats::t.test (edges_in$d [index], tree$d,
-                                              alternative = "less", var.equal = TRUE)
+                                              alternative = "less",
+                                              var.equal = TRUE)
                          res <- c (tt$statistic, tt$parameter, tt$p.value)
                          names (res) <- c ("statistic", "parameter", "p.value")
                          return (res)

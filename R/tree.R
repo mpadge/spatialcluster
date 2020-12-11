@@ -1,4 +1,4 @@
-#' scl_spantree_O1
+#' scl_spantree_ord1
 #'
 #' Generate a spanning tree from first-order relationships expressed via a set
 #' of edges
@@ -10,8 +10,7 @@
 #'
 #' @return A tree
 #' @noRd
-scl_spantree_O1 <- function (edges)
-{
+scl_spantree_ord1 <- function (edges) {
     n <- edges %>%
         dplyr::select (from, to) %>%
         unlist () %>%
@@ -20,12 +19,10 @@ scl_spantree_O1 <- function (edges)
     clusters <- tibble::tibble (id = seq (n), cluster = seq (n))
 
     # make the minimal tree:
-    for (e in seq (nrow (edges)))
-    {
+    for (e in seq (nrow (edges))) {
         clf <- clusters$cluster [edges$from [e]]
         clt <- clusters$cluster [edges$to [e]]
-        if (clf != clt)
-        {
+        if (clf != clt) {
             cli <- min (c (clf, clt))
             clj <- max (c (clf, clt))
             clusters %<>% dplyr::mutate (cluster = replace (cluster,
@@ -52,8 +49,7 @@ scl_spantree_O1 <- function (edges)
 #'
 #' @return A tree
 #' @noRd
-scl_spantree_slk <- function (edges_all, edges_nn, shortest)
-{
+scl_spantree_slk <- function (edges_all, edges_nn, shortest) {
     clusters <- rcpp_slk (edges_all, edges_nn, shortest) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
@@ -66,8 +62,7 @@ scl_spantree_slk <- function (edges_all, edges_nn, shortest)
 #'
 #' @inheritParams scl_spantree_slk
 #' @noRd
-scl_spantree_alk <- function (edges, shortest)
-{
+scl_spantree_alk <- function (edges, shortest) {
     clusters <- rcpp_alk (edges, shortest) + 1
     tibble::tibble (from = edges$from [clusters],
                     to = edges$to [clusters])
@@ -80,8 +75,7 @@ scl_spantree_alk <- function (edges, shortest)
 #'
 #' @inheritParams scl_spantree_slk
 #' @noRd
-scl_spantree_clk <- function (edges_all, edges_nn, shortest)
-{
+scl_spantree_clk <- function (edges_all, edges_nn, shortest) {
     clusters <- rcpp_clk (edges_all, edges_nn, shortest) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
@@ -106,8 +100,7 @@ scl_spantree_clk <- function (edges_all, edges_nn, shortest)
 #' \code{constexpr MIN_CLUSTER_SIZE = 3}.
 #'
 #' @noRd
-scl_cuttree <- function (tree, edges, ncl, shortest)
-{
+scl_cuttree <- function (tree, edges, ncl, shortest) {
     tree %<>%
         dplyr::left_join (edges, by = c ("from", "to")) %>%
         dplyr::mutate (cluster = rcpp_cut_tree (., ncl = ncl,

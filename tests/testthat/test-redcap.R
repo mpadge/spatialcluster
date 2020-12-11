@@ -46,7 +46,7 @@ test_that("recluster", {
               dmat <- matrix (runif (n ^ 2), ncol = n)
               scl <- scl_redcap (xy, dmat, ncl = 4)
               scl2 <- scl_recluster (scl, ncl = 3)
-              expect_message ( scl3 <- scl_redcap (scl, ncl = 3),
+              expect_message (scl3 <- scl_redcap (scl, ncl = 3),
                               "scl_redcap is for initial cluster")
               expect_identical (scl2, scl3)
               expect_true (!identical (scl, scl2))

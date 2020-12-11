@@ -4,8 +4,7 @@
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_tri <- function (xy, dmat, shortest = TRUE)
-{
+scl_edges_tri <- function (xy, dmat, shortest = TRUE) {
     nbs <- dplyr::select (xy, c (x, y)) %>%
         tripack::tri.mesh () %>%
         tripack::neighbours ()
@@ -13,7 +12,7 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE)
     n <- length (nbs)
     edges <- lapply (seq (n), function (i)
                      cbind (i, nbs [[i]])) %>%
-            do.call (rbind, .) 
+            do.call (rbind, .)
     edges <- tibble::tibble (from = edges [, 1],
                              to = edges [, 2])
 
@@ -27,8 +26,7 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE)
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE)
-{
+scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE) {
     d <- apply (as.matrix (stats::dist (xy)), 2, function (i)
                 order (i, decreasing = !shortest) [1:nnbs])
     edges <- tibble::tibble (from = rep (as.integer (colnames (d)),
@@ -38,8 +36,7 @@ scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE)
     append_dist_to_edges (edges, dmat, shortest)
 }
 
-append_dist_to_edges <- function (edges, dmat, shortest)
-{
+append_dist_to_edges <- function (edges, dmat, shortest) {
     index <- (edges$to - 1) * nrow (dmat) + edges$from
     edges$d <- dmat [index]
 
@@ -57,8 +54,7 @@ append_dist_to_edges <- function (edges, dmat, shortest)
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_all <- function (xy, dmat, shortest = TRUE)
-{
+scl_edges_all <- function (xy, dmat, shortest = TRUE) {
     n <- nrow (dmat)
     edges <- tibble::tibble (from = rep (seq (n), times = n),
                              to = rep (seq (n), each = n),
