@@ -1,6 +1,7 @@
 context("redcap ")
 
 test_that("structure", {
+              set.seed (1)
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
@@ -13,6 +14,7 @@ test_that("structure", {
 })
 
 test_that("methods", {
+              set.seed (1)
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
@@ -41,6 +43,7 @@ test_that("methods", {
 })
 
 test_that("recluster", {
+              set.seed (1)
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)

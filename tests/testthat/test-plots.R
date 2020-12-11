@@ -1,6 +1,7 @@
 context("plot")
 
 test_that("redcap plot", {
+              set.seed (1)
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
@@ -15,6 +16,7 @@ test_that("redcap plot", {
 })
 
 test_that("full plot", {
+              set.seed (1)
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
@@ -29,6 +31,7 @@ test_that("full plot", {
 })
 
 test_that("plot_merges", {
+              set.seed (1)
               n <- 100
               xy <- matrix (runif (2 * n), ncol = 2)
               dmat <- matrix (runif (n ^ 2), ncol = n)
