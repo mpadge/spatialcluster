@@ -54,7 +54,7 @@ void clk::clk_init (clk::CLKDat &clk_dat,
 
     arma::uword nu = static_cast <arma::uword> (n);
     clk_dat.contig_mat = arma::zeros <arma::Mat <int> > (nu, nu);
-    clk_dat.dmax.zeros (nu, nu);
+    clk_dat.dmat.zeros (nu, nu);
     for (int i = 0; i < from.length (); i++)
     {
         arma::uword vf = static_cast <arma::uword> (
@@ -62,7 +62,7 @@ void clk::clk_init (clk::CLKDat &clk_dat,
                     vt = static_cast <arma::uword> (
                                         clk_dat.vert2index_map.at (to [i]));
         clk_dat.contig_mat (vf, vt) = 1;
-        //clk_dat.dmax (vf, vt) = d [i]; // NOPE - all dmax = 0 at start!
+        //clk_dat.dmat (vf, vt) = d [i]; // NOPE - all dmat = 0 at start!
     }
 }
 
@@ -118,13 +118,13 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
             arma::uword clu = static_cast <arma::uword> (cl.first),
                         lu = static_cast <arma::uword> (lmin),
                         mu = static_cast <arma::uword> (mmin);
-            const double dl = clk_dat.dmax (clu, lu),
-                  dm = clk_dat.dmax (clu, mu);
+            const double dl = clk_dat.dmat (clu, lu),
+                  dm = clk_dat.dmat (clu, mu);
             double dtemp = dl;
             if ((clk_dat.shortest && dm < dl) ||
                     (!clk_dat.shortest && dm > dl))
                 dtemp = dm;
-            clk_dat.dmax (clu, lu) = dtemp;
+            clk_dat.dmat (clu, lu) = dtemp;
 
             if (clk_dat.contig_mat (clu, lu) == 1 ||
                     clk_dat.contig_mat (clu, mu) == 1)
@@ -173,6 +173,10 @@ Rcpp::IntegerVector rcpp_clk (
     clk::CLKDat clk_dat;
     clk_dat.shortest = shortest;
     clk::clk_init (clk_dat, from_full, to_full, d_full, from, to, d);
+    if (clk_dat.shortest)
+        clk_dat.dmat.fill (INFINITE_DOUBLE);
+    else
+        clk_dat.dmat.fill (-INFINITE_DOUBLE);
 
     std::vector <size_t> treevec;
     for (size_t i = 0; i < clk_dat.edges_all.size (); i++)
@@ -182,10 +186,11 @@ Rcpp::IntegerVector rcpp_clk (
                                     clk_dat.vert2index_map.at (ei.from)),
                     v = static_cast <arma::uword> (
                                     clk_dat.vert2index_map.at (ei.to));
+
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
                 clk_dat.contig_mat (u, v) == 1 &&
-                ((clk_dat.shortest && ei.dist > clk_dat.dmax (u, v)) ||
-                 (!clk_dat.shortest && ei.dist < clk_dat.dmax (u, v))))
+                ((clk_dat.shortest && ei.dist < clk_dat.dmat (u, v)) ||
+                 (!clk_dat.shortest && ei.dist > clk_dat.dmat (u, v))))
         {
             size_t the_edge = clk_step (clk_dat, i);
             treevec.push_back (the_edge);

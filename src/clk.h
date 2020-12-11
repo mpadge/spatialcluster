@@ -14,7 +14,7 @@ struct CLKDat
     std::vector <utils::OneEdge> edges_all, edges_nn;
 
     arma::Mat <int> contig_mat;
-    arma::Mat <double> dmax;
+    arma::Mat <double> dmat;
 
     int2indxset_map_t cl2index_map;
 
