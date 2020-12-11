@@ -19,8 +19,7 @@ vignette: >
 ---
 
 ```{r pkg-load, echo = FALSE, message = FALSE}
-devtools::load_all (".", export_all = FALSE)
-#library (spatialcluster)
+library (spatialcluster)
 ```
 
 # Introduction
@@ -572,5 +571,3 @@ Plus extra refs:
 http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da
 
 https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov
-
-

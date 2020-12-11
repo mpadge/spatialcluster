@@ -42,8 +42,8 @@ clusters must be spatially contiguous.
 You can install spatialcluster from github with:
 
 ```{r gh-installation, eval = FALSE}
-# install.packages("devtools")
-devtools::install_github("mpadge/spatialcluster")
+# install.packages("remotes")
+remotes::install_github("mpadge/spatialcluster")
 ```
 
 ## Usage
@@ -65,8 +65,7 @@ dmat <- matrix (runif (n ^ 2), ncol = n)
 ```
 The load the package and call the function:
 ```{r load, echo = FALSE, message = FALSE}
-devtools::load_all (".", export_all = FALSE)
-#library (spatialcluster)
+library (spatialcluster)
 ```
 ```{r fake-run, eval = FALSE}
 library (spatialcluster)

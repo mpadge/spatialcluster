@@ -10,7 +10,7 @@
   "codeRepository": "https://github.com/mpadge/spatialcluster",
   "issueTracker": "https://github.com/mpadge/spatialcluster/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.2.010",
+  "version": "0.0.2.11",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -48,18 +48,6 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=dbscan"
-    },
-    {
-      "@type": "SoftwareApplication",
-      "identifier": "devtools",
-      "name": "devtools",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=devtools"
     },
     {
       "@type": "SoftwareApplication",
@@ -249,7 +237,7 @@
     }
   ],
   "readme": "https://github.com/mpadge/spatialcluster/blob/master/README.md",
-  "fileSize": "8251.03KB",
+  "fileSize": "8250.458KB",
   "contIntegration": "https://codecov.io/gh/mpadge/spatialcluster",
   "developmentStatus": "http://www.repostatus.org/#wip",
   "keywords": [

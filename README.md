@@ -34,8 +34,8 @@ Installation
 You can install spatialcluster from github with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("mpadge/spatialcluster")
+# install.packages("remotes")
+remotes::install_github("mpadge/spatialcluster")
 ```
 
 Usage
