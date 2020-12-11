@@ -70,14 +70,21 @@ scl_full <- function (xy,
             if (ncl_trial >= nrow (nodes))
                 break
         }
-        n <- which (table (nodes$cluster) == 2)
+        n <- which (table (nodes$cluster) <= 2)
         nodes$cluster [nodes$cluster %in% n] <- NA
+
+        # tree at that point has initial cluster numbers which must be
+        # re-aligned with clusters from the nodal merges:
+        tree <- edges %>% dplyr::select (from, to, d, cluster)
+        tree$cluster <- tree$cl_fr <- nodes$cluster [match (tree$from, nodes$node)]
+        tree$cl_to <- nodes$cluster [match (tree$to, nodes$node)]
+        tree$cluster [tree$cl_fr != tree$cl_to] <- NA
 
         pars <- list (method = "full",
                       ncl = ncl,
                       linkage = linkage)
 
-        structure (list (tree = edges %>% dplyr::select (from, to, d, cluster),
+        structure (list (tree = dplyr::select (tree, c (from, to, d, cluster)),
                          merges = merges,
                          ord = order_merges (merges),
                          nodes = dplyr::bind_cols (nodes, xy),
