@@ -4,6 +4,7 @@
 #'
 #' @inheritParams scl_redcap
 #'
+#' @family clustering_fns
 #' @export
 #' @examples
 #' n <- 100

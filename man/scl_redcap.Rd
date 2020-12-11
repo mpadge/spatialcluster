@@ -71,3 +71,9 @@ scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE)
 # relationships only; not recommended, but possible nevertheless:
 scl <- scl_redcap (xy, dmat, ncl = 4, full_order = FALSE)
 }
+\seealso{
+Other clustering_fns: 
+\code{\link{scl_full}()},
+\code{\link{scl_recluster}()}
+}
+\concept{clustering_fns}

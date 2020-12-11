@@ -18,3 +18,8 @@ Nothing (generates plot)
 \description{
 Plot dendrogram of merges for \code{scl} object with \code{method = "full"}.
 }
+\seealso{
+Other plot_fns: 
+\code{\link{plot.scl}()}
+}
+\concept{plot_fns}

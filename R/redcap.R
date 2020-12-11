@@ -35,6 +35,7 @@
 #' first-order relationships. It is therefore strongly recommended that the
 #' default \code{full_order = TRUE} be used at all times.
 #'
+#' @family clustering_fns
 #' @export
 #' @examples
 #' n <- 100
@@ -146,6 +147,7 @@ tree_nodes <- function (tree) {
 #'
 #' @return Modified \code{scl} object in which \code{tree} is re-cut into
 #' \code{ncl} clusters.
+#' @family clustering_fns
 #' @export
 #' @examples
 #' n <- 100

@@ -32,3 +32,8 @@ plot (scl)
 scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 plot (scl)
 }
+\seealso{
+Other plot_fns: 
+\code{\link{plot_merges}()}
+}
+\concept{plot_fns}

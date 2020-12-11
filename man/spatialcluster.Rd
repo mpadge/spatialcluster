@@ -8,3 +8,4 @@
 R port of redcap (Regionalization with dynamically constrained agglomerative
 clustering and partitioning).
 }
+\concept{package}

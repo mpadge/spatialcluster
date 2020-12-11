@@ -37,3 +37,9 @@ xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
 scl <- scl_full (xy, dmat, ncl = 4)
 }
+\seealso{
+Other clustering_fns: 
+\code{\link{scl_recluster}()},
+\code{\link{scl_redcap}()}
+}
+\concept{clustering_fns}

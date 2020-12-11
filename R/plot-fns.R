@@ -86,6 +86,7 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' @param hull_alpha alpha value of non-convex hulls (see ?alphashape::ashape
 #' for details).
 #' @param ... ignored here
+#' @family plot_fns
 #' @export
 #' @examples
 #' n <- 100
@@ -142,6 +143,7 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1) {
 #' @param root_tree If \code{TRUE}, tree leaves are connected to bottom of plot,
 #' otherwise floating as determined by \link{plot.hclust}.
 #' @return Nothing (generates plot)
+#' @family plot_fns
 #' @export
 plot_merges <- function (x, root_tree = FALSE) {
     if (!(methods::is (x, "scl") && x$pars$method == "full"))

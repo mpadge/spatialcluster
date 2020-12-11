@@ -4,6 +4,7 @@
 #' clustering and partitioning).
 #'
 #' @name spatialcluster
+#' @family package
 #' @docType package
 #' @importFrom magrittr %>% %<>%
 #' @importFrom Rcpp evalCpp

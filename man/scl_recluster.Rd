@@ -32,3 +32,9 @@ plot (scl)
 scl <- scl_recluster (scl, ncl = 5)
 plot (scl)
 }
+\seealso{
+Other clustering_fns: 
+\code{\link{scl_full}()},
+\code{\link{scl_redcap}()}
+}
+\concept{clustering_fns}
