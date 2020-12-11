@@ -22,6 +22,7 @@ repos:
           (.*/|)appveyor.yml|
           (.*/|)\.Rbuildignore|
           (.*/|)\.pre-commit-.*|
+          .*\.png|
           .*\.[rR]|
           .*\.Rproj|
           .*\.py|
