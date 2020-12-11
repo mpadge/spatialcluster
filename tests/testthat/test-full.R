@@ -11,8 +11,7 @@ test_that("structure", {
               expect_true (all (names (scl) %in%
                                 c ("tree", "merges", "ord", "nodes", "pars")))
               cl <- scl$nodes$cluster [!is.na (scl$nodes$cluster)]
-              # TODO: Next test should work, but is broken:
-              #expect_true (length (unique (cl)) == ncl)
+              expect_true (length (unique (cl)) == ncl)
 })
 
 test_that("methods", {
@@ -24,10 +23,9 @@ test_that("methods", {
               scl2 <- scl_full (xy, dmat, ncl = ncl, linkage = "average")
               expect_true (!identical (scl1, scl2))
               cl1 <- scl1$nodes$cluster [!is.na (scl1$nodes$cluster)]
-              # TODO: Next 2 tests should work, but are broken:
-              #expect_equal (length (unique (cl1)), ncl)
+              expect_equal (length (unique (cl1)), ncl)
               cl2 <- scl2$nodes$cluster [!is.na (scl2$nodes$cluster)]
-              #expect_equal (length (unique (cl2)), ncl)
+              expect_equal (length (unique (cl2)), ncl)
 })
 
 test_that("recluster", {
