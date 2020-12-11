@@ -67,35 +67,45 @@ scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "single")
 plot (scl)
 ```
 
-![](docs/figs/README-plot-single-1.png)
+<!-- ![](man/figures/README-plot-single-1.png) -->
+
+<img src="man/figures/README-plot-single-1.png" width = "80%"/>
 
 ``` r
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "average")
 plot (scl)
 ```
 
-![](docs/figs/README-plot-average-1.png)
+<!-- ![](man/figures/README-plot-average-1.png) -->
+
+<img src="man/figures/README-plot-average-1.png" width = "80%"/>
 
 ``` r
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "complete")
 plot (scl)
 ```
 
-![](docs/figs/README-plot-complete-1.png)
+<!-- ![](man/figures/README-plot-complete-1.png) -->
+
+<img src="man/figures/README-plot-complete-1.png" width = "80%"/>
 
 ``` r
-scl <- scl_exact (xy, dmat, ncl = 8, linkage = "single")
+scl <- scl_full (xy, dmat, ncl = 8, linkage = "single")
 plot (scl)
 ```
 
-![](docs/figs/README-plot-exsingle-1.png)
+<!-- ![](man/figures/README-plot-fullsingle-1.png) -->
+
+<img src="man/figures/README-plot-fullsingle-1.png" width = "80%"/>
 
 ``` r
-scl <- scl_exact (xy, dmat, ncl = 8, linkage = "average")
+scl <- scl_full (xy, dmat, ncl = 8, linkage = "average")
 plot (scl)
 ```
 
-![](docs/figs/README-plot-exaverage-1.png)
+<!-- ![](man/figures/README-plot-fullaverage-1.png) -->
+
+<img src="man/figures/README-plot-fullaverage-1.png" width = "80%"/>
 
 This example illustrates the universal danger in all clustering
 algorithms: they can not fail to produce results, even when the data fed
