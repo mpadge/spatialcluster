@@ -82,7 +82,10 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
     // Find shortest edge (or longest for covariance) in MST that connects 
     // u and v:
     size_t mmin = INFINITE_INT, lmin = INFINITE_INT, the_edge = INFINITE_INT;
-    double dmin = INFINITE_DOUBLE;
+    double dlim = INFINITE_DOUBLE;
+    if (!clk_dat.shortest)
+        dlim = -dlim;
+
     for (size_t j = 0; j < clk_dat.edges_nn.size (); j++)
     {
         utils::OneEdge ej = clk_dat.edges_nn [j];
@@ -92,16 +95,16 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
                         clk_dat.index2cl_map.at (l) == cl_v) ||
                     (clk_dat.index2cl_map.at (m) == cl_v &&
                      clk_dat.index2cl_map.at (l) == cl_u)) &&
-                ((clk_dat.shortest && ej.dist < dmin) ||
-                 (!clk_dat.shortest && ej.dist > dmin)))
+                ((clk_dat.shortest && ej.dist < dlim) ||
+                 (!clk_dat.shortest && ej.dist > dlim)))
         {
             the_edge = j;
             mmin = m;
             lmin = l;
-            dmin = ej.dist;
+            dlim = ej.dist;
         }
     }
-    if (dmin == INFINITE_DOUBLE)
+    if (fabs (dlim) == INFINITE_DOUBLE)
         Rcpp::stop ("minimal distance not able to be found");
 
     utils::merge_clusters (clk_dat.contig_mat,
