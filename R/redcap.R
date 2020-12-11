@@ -57,26 +57,39 @@ scl_redcap <- function (xy,
     linkage <- scl_linkage_type (linkage)
 
     if (methods::is (xy, "scl")) {
+
         if (!identical (xy$pars$method, "redcap"))
             stop ("scl_redcap can pass to scl_recluster only for scl objects",
                   " previously generated with scl_redcap")
 
         message ("scl_redcap is for initial cluster construction; ",
                  "passing to scl_recluster")
+
         scl_recluster_redcap (xy, ncl = ncl, shortest = shortest)
+
     } else {
+
         xy <- scl_tbl (xy)
+
         if (nnbs <= 0)
             edges_nn <- scl_edges_tri (xy, dmat, shortest)
         else
             edges_nn <- scl_edges_nn (xy, dmat, nnbs, shortest)
+
         if (!full_order) {
+
             tree_full <- scl_spantree_ord1 (edges_nn)
+
         } else {
+
             if (linkage == "average") {
+
                 tree_full <- scl_spantree_alk (edges_nn, shortest)
+
             } else {
+
                 edges_all <- scl_edges_all (xy, dmat, shortest)
+
                 if (linkage == "single") {
                     tree_full <- scl_spantree_slk (edges_all, edges_nn,
                                                    shortest)
@@ -109,14 +122,18 @@ scl_redcap <- function (xy,
 
 # Match cluster numbers in edge tree to actual nodes
 tree_nodes <- function (tree) {
+
     node <- NULL # suppress no visible binding note
+
     res <- tibble::tibble (node = c (tree$from, tree$to),
                            cluster = rep (tree$cluster, 2)) %>%
         dplyr::distinct () %>%
         dplyr::arrange (node) %>%
         dplyr::filter (!is.na (cluster))
+
     # remove clusters with < 3 members:
     res$cluster [res$cluster %in% which (table (res$cluster) < 3)] <- NA
+
     return (res)
 }
 
@@ -139,6 +156,7 @@ tree_nodes <- function (tree) {
 #' scl <- scl_recluster (scl, ncl = 5)
 #' plot (scl)
 scl_recluster <- function (scl, ncl, shortest = TRUE) {
+
     if (!methods::is (scl, "scl"))
         stop ("scl_recluster can only be applied to 'scl' objects ",
               "returned from scl_redcap")
@@ -149,8 +167,11 @@ scl_recluster <- function (scl, ncl, shortest = TRUE) {
 }
 
 scl_recluster_redcap <- function (scl, ncl, shortest = TRUE) {
+
     from <- to <- d <- NULL # no visible binding messages
+
     tree_full <- scl$tree %>% dplyr::select (from, to, d)
+
     if (shortest)
         tree_full %<>% dplyr::arrange (d)
     else
