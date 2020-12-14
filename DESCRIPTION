@@ -1,6 +1,6 @@
 Package: spatialcluster
 Title: R port of redcap
-Version: 0.0.2.023
+Version: 0.0.2.024
 Authors@R: 
     person(given = "Mark",
            family = "Padgham",
