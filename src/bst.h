@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <cstdlib>
-using namespace std;
 
 // Templating with recursive pointers is much harder than simply changing the
 // typedef, and makes the code much less readable
