@@ -25,9 +25,9 @@ void alk::alk_init (alk::ALKDat &alk_dat,
         tree.insert (d [i]);
     }
     // Construct vert2index_map to map each unique vertex to an index
-    index_t i = 0;
+    index_t idx = 0;
     for (auto v: vert_set)
-        alk_dat.vert2index_map.emplace (v, i++);
+        alk_dat.vert2index_map.emplace (v, idx++);
 
     // Construct idx2edgewt_map and edgewt2idx_pair_map
     for (int i = 0; i < from.size (); i++)
