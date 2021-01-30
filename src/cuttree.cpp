@@ -203,7 +203,7 @@ cuttree::BestCut cuttree::find_min_cut (
         }
     }
 
-    if (the_cut.ss1 != INFINITE_DOUBLE)
+    if (the_cut.ss1 < INFINITE_DOUBLE)
         the_cut.ss_diff = cuttree::calc_ss (tree.edges, cluster_num) -
             the_cut.ss1 - the_cut.ss2;
 
