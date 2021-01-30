@@ -77,7 +77,8 @@ scl_full <- function (xy,
         # tree at that point has initial cluster numbers which must be
         # re-aligned with clusters from the nodal merges:
         tree <- edges %>% dplyr::select (from, to, d, cluster)
-        tree$cluster <- tree$cl_fr <- nodes$cluster [match (tree$from, nodes$node)]
+        tree$cluster <- tree$cl_fr <-
+                nodes$cluster [match (tree$from, nodes$node)]
         tree$cl_to <- nodes$cluster [match (tree$to, nodes$node)]
         tree$cluster [tree$cl_fr != tree$cl_to] <- NA
 
