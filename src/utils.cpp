@@ -43,11 +43,11 @@ size_t utils::sets_init (
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
     }
-    int i = 0;
+    int idx = 0;
     for (auto v: vert_set)
     {
-        index2vert_map.emplace (i, v);
-        vert2index_map.emplace (v, i++);
+        index2vert_map.emplace (idx, v);
+        vert2index_map.emplace (v, idx++);
     }
 
     for (int i = 0; i < from.length (); i++)
