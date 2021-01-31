@@ -10,7 +10,7 @@
   "codeRepository": "https://github.com/mpadge/spatialcluster",
   "issueTracker": "https://github.com/mpadge/spatialcluster/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.2.032",
+  "version": "0.0.2.33",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -237,7 +237,7 @@
     }
   ],
   "readme": "https://github.com/mpadge/spatialcluster/blob/master/README.md",
-  "fileSize": "8553.186KB",
+  "fileSize": "8553.256KB",
   "contIntegration": "https://codecov.io/gh/mpadge/spatialcluster",
   "developmentStatus": "http://www.repostatus.org/#wip",
   "keywords": [

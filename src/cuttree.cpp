@@ -108,13 +108,13 @@ std::unordered_set <int> cuttree::build_one_tree (
 
 cuttree::TwoSS cuttree::sum_component_ss (
         const std::vector <cuttree::EdgeComponent> &edges,
-        const std::unordered_set <int> &tree,
+        const std::unordered_set <int> &tree_edges,
         const bool shortest)
 {
     double sa = 0.0, sa2 = 0.0, sb = 0.0, sb2 = 0.0, na = 0.0, nb = 0.0;
     for (auto e: edges)
     {
-        if (tree.find (e.from) != tree.end ())
+        if (tree_edges.find (e.from) != tree_edges.end ())
         {
             sa += e.d;
             if (shortest)
@@ -128,6 +128,7 @@ cuttree::TwoSS cuttree::sum_component_ss (
             nb += 1.0;
         }
     }
+
     cuttree::TwoSS res;
     // res.ss1 = (sa2 - sa * sa / na) / (na - 1.0); // variance
     if (shortest)
@@ -177,14 +178,14 @@ cuttree::BestCut cuttree::find_min_cut (
         std::copy (cluster_edges.begin (), cluster_edges.end (),
                 edges_copy.begin ());
         edges_copy.erase (edges_copy.begin () + i);
-        std::unordered_set <int> tree = cuttree::build_one_tree (edges_copy);
+        std::unordered_set <int> tree_edges = cuttree::build_one_tree (edges_copy);
         // only include groups with >= MIN_CLUSTER_SIZE members
-        if (tree.size () >= cuttree::MIN_CLUSTER_SIZE &&
-                tree.size () < (edges_copy.size () -
+        if (tree_edges.size () >= cuttree::MIN_CLUSTER_SIZE &&
+                tree_edges.size () < (edges_copy.size () -
                                 cuttree::MIN_CLUSTER_SIZE - 1))
         {
             cuttree::TwoSS ss;
-            ss = cuttree::sum_component_ss (edges_copy, tree, shortest);
+            ss = cuttree::sum_component_ss (edges_copy, tree_edges, shortest);
 
             if ((ss.ss1 + ss.ss2) < ssmin) // applies to both distances & cov
             {
@@ -197,8 +198,8 @@ cuttree::BestCut cuttree::find_min_cut (
                 the_cut.n2 = ss.n2;
 
                 the_cut.nodes.clear ();
-                for (auto t: tree)
-                    the_cut.nodes.emplace (t);
+                for (auto te: tree_edges)
+                    the_cut.nodes.emplace (te);
             }
         }
     }

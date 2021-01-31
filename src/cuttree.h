@@ -44,7 +44,7 @@ size_t cluster_size (const std::vector <EdgeComponent> &edges,
 std::unordered_set <int> build_one_tree (std::vector <EdgeComponent> &edges);
 
 TwoSS sum_component_ss (const std::vector <EdgeComponent> &edges,
-        const std::unordered_set <int> &tree, const bool shortest);
+        const std::unordered_set <int> &tree_edges, const bool shortest);
 BestCut find_min_cut (const TreeDat &tree, const int cluster_num,
         const bool shortest);
 
