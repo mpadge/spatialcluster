@@ -17,12 +17,12 @@ void full_init::init (full_init::FullInitDat &clfull_dat,
     }
     clfull_dat.n = vert_set.size ();
 
-    index_t i = 0;
+    index_t idx = 0;
     for (auto v: vert_set)
     {
-        clfull_dat.index2vert_map.emplace (i, v);
-        clfull_dat.vert2index_map.emplace (v, i);
-        clfull_dat.index2cl_map.emplace (i++, -1);
+        clfull_dat.index2vert_map.emplace (idx, v);
+        clfull_dat.vert2index_map.emplace (v, idx);
+        clfull_dat.index2cl_map.emplace (idx++, -1);
     }
 
     clfull_dat.edges.clear ();
