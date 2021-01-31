@@ -48,9 +48,9 @@ void clk::clk_init (clk::CLKDat &clk_dat,
         vert_set.emplace (to [i]);
     }
     // Construct vert2index_map to map each unique vertex to an index
-    index_t i = 0;
+    index_t idx = 0;
     for (auto v: vert_set)
-        clk_dat.vert2index_map.emplace (v, i++);
+        clk_dat.vert2index_map.emplace (v, idx++);
 
     arma::uword nu = static_cast <arma::uword> (n);
     clk_dat.contig_mat = arma::zeros <arma::Mat <int> > (nu, nu);
