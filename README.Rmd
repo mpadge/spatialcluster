@@ -115,5 +115,5 @@ devoid of any information as in this example. Clustering algorithms should only
 be applied to reflect a very specific hypothesis for why data should be
 clustered in the first place; spatial clustering algorithms should only be
 applied to reflect two very specific hypothesis for (i) why data should be
-clustered at all, and  (ii) why those clusters should manifest a spatial
+clustered at all, and (ii) why those clusters should manifest a spatial
 pattern.

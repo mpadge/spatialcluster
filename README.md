@@ -6,8 +6,7 @@ status](https://github.com/mpadge/spatialcluster/workflows/R-CMD-check/badge.svg
 WIP](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![codecov](https://codecov.io/gh/mpadge/spatialcluster/branch/master/graph/badge.svg)](https://codecov.io/gh/mpadge/spatialcluster)
 
-spatialcluster
-==============
+# spatialcluster
 
 An **R** package for spatially-constrained clustering using either
 distance or covariance matrices. The package includes both an
@@ -28,8 +27,7 @@ the data from which clusters are to be formed also map on to spatial
 reference points, and the constraint is that clusters must be spatially
 contiguous.
 
-Installation
-------------
+## Installation
 
 You can install spatialcluster from github with:
 
@@ -38,8 +36,7 @@ You can install spatialcluster from github with:
 remotes::install_github("mpadge/spatialcluster")
 ```
 
-Usage
------
+## Usage
 
 There are two main functions, `scl_redcap()` and `scl_exact()`, where
 the latter generates a clustering scheme using all available data. Both
