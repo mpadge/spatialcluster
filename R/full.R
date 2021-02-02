@@ -134,6 +134,11 @@ full_cluster_nodes <- function (edges, merges, ncl) {
         dplyr::arrange (node) %>%
         dplyr::filter (!is.na (cluster))
 
+    # nodes can still be in multiple clusters, so these are set to NA
+    dup_nodes <- unique (nodes$node [which (duplicated (nodes$node))])
+    nodes$cluster [nodes$node %in% dup_nodes] <- NA_integer_
+    nodes <- nodes [which (!duplicated (nodes)), ]
+
     # re-order cluster numbers by frequencies
     nt <- sort (table (nodes$cluster), decreasing = TRUE)
     nodes$cluster <- match (nodes$cluster, names (nt))
