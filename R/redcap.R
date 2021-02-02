@@ -114,10 +114,14 @@ scl_redcap <- function (xy,
                       cl_order = clo,
                       linkage = linkage)
 
-        structure (list (tree = tree,
-                         nodes = dplyr::bind_cols (tree_nodes (tree), xy),
-                         pars = pars),
-                   class = "scl")
+        res <- structure (list (tree = tree,
+                                nodes = dplyr::bind_cols (tree_nodes (tree), xy),
+                                pars = pars),
+                          class = "scl")
+
+        res <- scl_statistics (res)
+
+        return (res)
     }
 }
 

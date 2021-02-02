@@ -86,12 +86,16 @@ scl_full <- function (xy,
                       ncl = ncl,
                       linkage = linkage)
 
-        structure (list (tree = dplyr::select (tree, c (from, to, d, cluster)),
-                         merges = merges,
-                         ord = order_merges (merges),
-                         nodes = dplyr::bind_cols (nodes, xy),
-                         pars = pars),
-                   class = "scl")
+        res <- structure (list (tree = dplyr::select (tree, c (from, to, d, cluster)),
+                                merges = merges,
+                                ord = order_merges (merges),
+                                nodes = dplyr::bind_cols (nodes, xy),
+                                pars = pars),
+                          class = "scl")
+
+        res <- scl_statistics (res)
+
+        return (res)
     }
 }
 
