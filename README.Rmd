@@ -39,10 +39,13 @@ clusters must be spatially contiguous.
 
 ## Installation
 
-You can install spatialcluster from github with:
+You can install `spatialcluster` using any of the following options:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("remotes")
+remotes::install_git("https://git.sr.ht/~mpadge/spatialcluster")
+remotes::install_bitbucket("mpadge/spatialcluster")
+remotes::install_gitlab("mpadge/spatialcluster")
 remotes::install_github("mpadge/spatialcluster")
 ```
 

@@ -29,10 +29,13 @@ contiguous.
 
 ## Installation
 
-You can install spatialcluster from github with:
+You can install `spatialcluster` using any of the following options:
 
 ``` r
 # install.packages("remotes")
+remotes::install_git("https://git.sr.ht/~mpadge/spatialcluster")
+remotes::install_bitbucket("mpadge/spatialcluster")
+remotes::install_gitlab("mpadge/spatialcluster")
 remotes::install_github("mpadge/spatialcluster")
 ```
 
