@@ -58,9 +58,15 @@
 
 
 
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -74,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.037</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.048</span>
       </span>
     </div>
 
@@ -117,7 +123,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for scl</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span>, convex <span class='op'>=</span> <span class='cn'>TRUE</span>, hull_alpha <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span></pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span>, hull_alpha <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,15 +137,10 @@
       <td><p>ignored here</p></td>
     </tr>
     <tr>
-      <th>convex</th>
-      <td><p>Should hull be convex? If not, the <code>ashape</code> routine from
-the <span class="pkg">alphahull</span> package is used to generate non-convex hulls, generated
-with the <code>hull_alpha</code> parameter</p></td>
-    </tr>
-    <tr>
       <th>hull_alpha</th>
-      <td><p>alpha value of non-convex hulls (see ?alphashape::ashape
-for details).</p></td>
+      <td><p>alpha value of (non-)convex hulls, with default generating
+a convex hull, and smaller values generating concave hulls. (See
+?alphashape::ashape for details).</p></td>
     </tr>
     </table>
 
@@ -170,11 +171,11 @@ for details).</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Mark Padgham.</p>
+  <p><p>Developed by Mark Padgham.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p></p>
 </div>
 
       </footer>
@@ -182,6 +183,8 @@ for details).</p></td>
 
   
 
+
+  
 
   </body>
 </html>

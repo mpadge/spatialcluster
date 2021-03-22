@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.037</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.048</span>
       </span>
     </div>
 
@@ -46,7 +48,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mpadge/spatialcluster/">
+  <a href="https://github.com/mpadge/spatialcluster/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -65,11 +67,11 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>spatialcluster</h1>
-                        <h4 class="author">Mark Padgham</h4>
+                        <h4 data-toc-skip class="author">Mark Padgham</h4>
             
-            <h4 class="date">2021-02-02</h4>
+            <h4 data-toc-skip class="date">2021-03-22</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mpadge/spatialcluster/blob/master/vignettes/spatialcluster.Rmd"><code>vignettes/spatialcluster.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mpadge/spatialcluster/blob/master/vignettes/spatialcluster.Rmd" class="external-link"><code>vignettes/spatialcluster.Rmd</code></a></small>
       <div class="hidden name"><code>spatialcluster.Rmd</code></div>
 
     </div>
@@ -116,20 +118,20 @@
 <div id="spatial-clustering" class="section level2">
 <h2 class="hasAnchor">
 <a href="#spatial-clustering" class="anchor"></a>Spatial clustering</h2>
-<p>Spatial clustering is a very well-studied field <span class="citation">(see reviews in Han, Kamber, and Tung 2001; Duque, Ramos, and Suriñach 2007; Lu 2009)</span>, with many methods implemented in the <strong>R</strong> language (see the CRAN Task View on <a href="https://cran.r-project.org/web/views/Spatial.html">Analysis of Spatial Data</a>). Spatial clustering algorithms take as input a set of spatial distances between objects, and seek to cluster those objects based on these exclusively spatial distances alone (Fig. 1A). Other non-spatial data may be included, but must be somehow reconciled with the spatial component. This is often achieved through weighted addition to attain approximately “spatialized” data. Figure 1B-C illustrate two related non-spatial (B) and spatial (C) datasets. The primary data of interest depicted in B can be “spatialized” through additively combining the associated distance matrices of non-spatial and spatial data, and submitting the resultant distance matrix to a clustering routine of choice.</p>
+<p>Spatial clustering is a very well-studied field <span class="citation">(see reviews in Han, Kamber, and Tung 2001; Duque, Ramos, and Suriñach 2007; Lu 2009)</span>, with many methods implemented in the <strong>R</strong> language (see the CRAN Task View on <a href="https://cran.r-project.org/web/views/Spatial.html" class="external-link">Analysis of Spatial Data</a>). Spatial clustering algorithms take as input a set of spatial distances between objects, and seek to cluster those objects based on these exclusively spatial distances alone (Fig. 1A). Other non-spatial data may be included, but must be somehow reconciled with the spatial component. This is often achieved through weighted addition to attain approximately “spatialized” data. Figure 1B-C illustrate two related non-spatial (B) and spatial (C) datasets. The primary data of interest depicted in B can be “spatialized” through additively combining the associated distance matrices of non-spatial and spatial data, and submitting the resultant distance matrix to a clustering routine of choice.</p>
 <div class="figure">
 <img src="spatialcluster_files/figure-html/unnamed-chunk-1-1.png" alt="Figure 1: (A) Illustration of typical spatial clustering application for which input data are explicit spatial distances between points; (B) Illustration of clustering in some other, non-spatial dimensions, D1 and D2, for which associated spatial data in (C) do not manifest clear spatial clusters." width="1152"><p class="caption">
 Figure 1: (A) Illustration of typical spatial clustering application for which input data are explicit spatial distances between points; (B) Illustration of clustering in some other, non-spatial dimensions, D1 and D2, for which associated spatial data in (C) do not manifest clear spatial clusters.
 </p>
 </div>
-<p>For example, the following code illustrates the use of the <code>DBSCAN</code> algorithm (<strong>D</strong>ensity <strong>B</strong>ased <strong>S</strong>patial <strong>C</strong>lustering of <strong>A</strong>pplications with <strong>N</strong>oise) from the <strong>R</strong> package <a href="https://cran.r-project.org/package=dbscan"><code>dbscan</code></a>.</p>
+<p>For example, the following code illustrates the use of the <code>DBSCAN</code> algorithm (<strong>D</strong>ensity <strong>B</strong>ased <strong>S</strong>patial <strong>C</strong>lustering of <strong>A</strong>pplications with <strong>N</strong>oise) from the <strong>R</strong> package <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d_nospace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span> <span class="op">(</span><span class="va">dat_nospace</span><span class="op">)</span> <span class="co"># matrix of non-spatial data</span>
-<span class="va">d_space</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span> <span class="op">(</span><span class="va">dat_space</span><span class="op">)</span> <span class="co"># 2-column matrix of spatial data</span>
+<code class="sourceCode R"><span class="va">d_nospace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span> <span class="op">(</span><span class="va">dat_nospace</span><span class="op">)</span> <span class="co"># matrix of non-spatial data</span>
+<span class="va">d_space</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span> <span class="op">(</span><span class="va">dat_space</span><span class="op">)</span> <span class="co"># 2-column matrix of spatial data</span>
 <span class="va">d</span> <span class="op">&lt;-</span> <span class="va">dat_nospace</span> <span class="op">+</span> <span class="va">d_space</span> <span class="co"># simple linear addition</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span> <span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/dbscan">dbscan</a></span><span class="op">)</span>
-<span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">dbscan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dbscan/man/dbscan.html">dbscan</a></span> <span class="op">(</span><span class="va">d</span>, eps <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="co"># more on the eps parameter below</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span> <span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/dbscan" class="external-link">dbscan</a></span><span class="op">)</span>
+<span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">dbscan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dbscan/man/dbscan.html" class="external-link">dbscan</a></span> <span class="op">(</span><span class="va">d</span>, eps <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="co"># more on the eps parameter below</span>
 <span class="va">db</span></code></pre></div>
 <pre><code>## DBSCAN clustering for 49 objects.
 ## Parameters: eps = 0.4, minPts = 5
@@ -145,10 +147,10 @@ The result shows the appropriate number of five clusters. Further insight can be
 Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corresponding spatial data coloured by dbscan clustering results.
 </p>
 </div>
-<p>These results demonstrate that reasonable results can indeed be obtained through simple linear combination of non-spatial and spatial distances. This approach is very simple, and it is very easy to submit such combined distance matrices to high-performance clustering routines such as <a href="https://cran.r-project.org/package=dbscan"><code>dbscan</code></a>. There are nevertheless two notable shortcomings:</p>
+<p>These results demonstrate that reasonable results can indeed be obtained through simple linear combination of non-spatial and spatial distances. This approach is very simple, and it is very easy to submit such combined distance matrices to high-performance clustering routines such as <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a>. There are nevertheless two notable shortcomings:</p>
 <ol style="list-style-type: decimal">
 <li>There is no objectively best way to combine non-spatial and spatial distance matrices; and</li>
-<li>Routines such as <a href="https://cran.r-project.org/package=dbscan"><code>dbscan</code></a> still require an effectively arbitrary parameter represented by the above value of <code>eps = 0.4</code>. This value was simply chosen to best reflect the known structure of the input clusters, but in any practical application will remain largely arbitrary.</li>
+<li>Routines such as <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a> still require an effectively arbitrary parameter represented by the above value of <code>eps = 0.4</code>. This value was simply chosen to best reflect the known structure of the input clusters, but in any practical application will remain largely arbitrary.</li>
 </ol>
 <p>Even one of the most recent <strong>R</strong> packages dedicated to spatial clustering <span class="citation">(Chavent et al. 2017)</span> follows precisely this linear addition strategy, via a parameter determining the relative weights of the non-spatial and spatial data.</p>
 <p>We assert here that such approaches provide more a means of attaining approximately spatially-structured clustering schemes, rather than actually providing spatially-constrained clusters in the sense we now explore.</p>
@@ -157,11 +159,11 @@ Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corres
 <div id="spatially-constrained-clustering" class="section level1">
 <h1 class="hasAnchor">
 <a href="#spatially-constrained-clustering" class="anchor"></a>Spatially-constrained clustering</h1>
-<p>The <a href="https://github.com/mpadge/spatialcluster"><code>spatialcluster</code> package</a> performs strict <em>spatially constrained clustering</em>. This means that clusters are formed entirely on the basis of the non-spatial data, while the spatial data provide a constraint used to ensure that all clusters are spatially contiguous.</p>
+<p>The <a href="https://github.com/mpadge/spatialcluster" class="external-link"><code>spatialcluster</code> package</a> performs strict <em>spatially constrained clustering</em>. This means that clusters are formed entirely on the basis of the non-spatial data, while the spatial data provide a constraint used to ensure that all clusters are spatially contiguous.</p>
 <div id="the-skater-algorithm" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-skater-algorithm" class="anchor"></a>The SKATER algorithm</h2>
-<p>One of the most widespread algorithms for spatially constrained clustering is the so-called “SKATER” algorithm <span class="citation">(<strong>S</strong>patial <strong>K</strong>luster <strong>A</strong>nalysis by <strong>T</strong>ree <strong>E</strong>dge <strong>R</strong>emoval, AssunÇão et al. 2006)</span>, available via the <strong>R</strong> package <a href="https://cran.r-project.org/package=spdep"><code>spdep</code></a> <span class="citation">(Bivand, Hauke, and Kossowski 2013; Bivand and Piras 2015)</span>. This algorithm constructs a minimum spanning tree (MST) connecting neighbours defined by the spatial data, with all connections defined by minimal distances in the non-spatial data. The SKATER algorithm constructs the simplest of all MSTs, by iterating through the list of neighbouring edges according to increasing (non-spatial) distance, and inserting edges where these connect previously unconnected objects. The resultant MST is then partitioned into a specified number of clusters such that the intra-cluster sum of squared deviations from the mean (of the non-spatial data) is minimised. Further details are given in <span class="citation">AssunÇão et al. (2006)</span>.</p>
+<p>One of the most widespread algorithms for spatially constrained clustering is the so-called “SKATER” algorithm <span class="citation">(<strong>S</strong>patial <strong>K</strong>luster <strong>A</strong>nalysis by <strong>T</strong>ree <strong>E</strong>dge <strong>R</strong>emoval, AssunÇão et al. 2006)</span>, available via the <strong>R</strong> package <a href="https://cran.r-project.org/package=spdep" class="external-link"><code>spdep</code></a> <span class="citation">(Bivand, Hauke, and Kossowski 2013; Bivand and Piras 2015)</span>. This algorithm constructs a minimum spanning tree (MST) connecting neighbours defined by the spatial data, with all connections defined by minimal distances in the non-spatial data. The SKATER algorithm constructs the simplest of all MSTs, by iterating through the list of neighbouring edges according to increasing (non-spatial) distance, and inserting edges where these connect previously unconnected objects. The resultant MST is then partitioned into a specified number of clusters such that the intra-cluster sum of squared deviations from the mean (of the non-spatial data) is minimised. Further details are given in <span class="citation">AssunÇão et al. (2006)</span>.</p>
 </div>
 <div id="the-redcap-algorithms" class="section level2">
 <h2 class="hasAnchor">
@@ -252,32 +254,32 @@ Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corres
 <h1 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h1>
 <p>Plus extra refs:</p>
-<p><a href="http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da" class="uri">http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da</a></p>
-<p><a href="https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov" class="uri">https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov</a></p>
+<p><a href="http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da" class="external-link uri">http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da</a></p>
+<p><a href="https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov" class="external-link uri">https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov</a></p>
 <div id="refs" class="references">
 <div id="ref-Assuncao2006">
-<p>AssunÇão, R. M., M. C. Neves, G. Câmara, and C. Da Costa Freitas. 2006. “Efficient Regionalization Techniques for Socio‐economic Geographical Units Using Minimum Spanning Trees.” <em>International Journal of Geographical Information Science</em> 20 (7): 797–811. <a href="https://doi.org/10.1080/13658810600665111">https://doi.org/10.1080/13658810600665111</a>.</p>
+<p>AssunÇão, R. M., M. C. Neves, G. Câmara, and C. Da Costa Freitas. 2006. “Efficient Regionalization Techniques for Socio‐economic Geographical Units Using Minimum Spanning Trees.” <em>International Journal of Geographical Information Science</em> 20 (7): 797–811. <a href="https://doi.org/10.1080/13658810600665111" class="external-link">https://doi.org/10.1080/13658810600665111</a>.</p>
 </div>
 <div id="ref-Bivand2013">
-<p>Bivand, Roger, Jan Hauke, and Tomasz Kossowski. 2013. “Computing the Jacobian in Gaussian Spatial Autoregressive Models: An Illustrated Comparison of Available Methods.” <em>Geographical Analysis</em> 45 (2): 150–79. <a href="https://doi.org/10.1111/gean.12008">https://doi.org/10.1111/gean.12008</a>.</p>
+<p>Bivand, Roger, Jan Hauke, and Tomasz Kossowski. 2013. “Computing the Jacobian in Gaussian Spatial Autoregressive Models: An Illustrated Comparison of Available Methods.” <em>Geographical Analysis</em> 45 (2): 150–79. <a href="https://doi.org/10.1111/gean.12008" class="external-link">https://doi.org/10.1111/gean.12008</a>.</p>
 </div>
 <div id="ref-Bivand2015">
-<p>Bivand, Roger, and Gianfranco Piras. 2015. “Comparing Implementations of Estimation Methods for Spatial Econometrics.” <em>Journal of Statistical Software, Articles</em> 63 (18): 1–36. <a href="https://doi.org/10.18637/jss.v063.i18">https://doi.org/10.18637/jss.v063.i18</a>.</p>
+<p>Bivand, Roger, and Gianfranco Piras. 2015. “Comparing Implementations of Estimation Methods for Spatial Econometrics.” <em>Journal of Statistical Software, Articles</em> 63 (18): 1–36. <a href="https://doi.org/10.18637/jss.v063.i18" class="external-link">https://doi.org/10.18637/jss.v063.i18</a>.</p>
 </div>
 <div id="ref-Chavent2017">
-<p>Chavent, M., V. Kuentz-Simonet, A. Labenne, and Saracco J. 2017. “ClustGeo: An R Package for Hierarchical Clustering with Spatial Constraints.” <em>ArXiv E-Prints</em>, July. <a href="https://arxiv.org/abs/1707.03897">https://arxiv.org/abs/1707.03897</a>.</p>
+<p>Chavent, M., V. Kuentz-Simonet, A. Labenne, and Saracco J. 2017. “ClustGeo: An R Package for Hierarchical Clustering with Spatial Constraints.” <em>ArXiv E-Prints</em>, July. <a href="https://arxiv.org/abs/1707.03897" class="external-link">https://arxiv.org/abs/1707.03897</a>.</p>
 </div>
 <div id="ref-Duque2007">
-<p>Duque, Juan Carlos, Raúl Ramos, and Jordi Suriñach. 2007. “Supervised Regionalization Methods: A Survey.” <em>International Regional Science Review</em> 30 (3): 195–220. <a href="https://doi.org/10.1177/0160017607301605">https://doi.org/10.1177/0160017607301605</a>.</p>
+<p>Duque, Juan Carlos, Raúl Ramos, and Jordi Suriñach. 2007. “Supervised Regionalization Methods: A Survey.” <em>International Regional Science Review</em> 30 (3): 195–220. <a href="https://doi.org/10.1177/0160017607301605" class="external-link">https://doi.org/10.1177/0160017607301605</a>.</p>
 </div>
 <div id="ref-Guo2008">
-<p>Guo, D. 2008. “Regionalization with Dynamically Constrained Agglomerative Clustering and Partitioning (Redcap).” <em>International Journal of Geographical Information Science</em> 22 (7): 801–23. <a href="https://doi.org/10.1080/13658810701674970">https://doi.org/10.1080/13658810701674970</a>.</p>
+<p>Guo, D. 2008. “Regionalization with Dynamically Constrained Agglomerative Clustering and Partitioning (Redcap).” <em>International Journal of Geographical Information Science</em> 22 (7): 801–23. <a href="https://doi.org/10.1080/13658810701674970" class="external-link">https://doi.org/10.1080/13658810701674970</a>.</p>
 </div>
 <div id="ref-Han2001">
-<p>Han, Jiawei, M Kamber, and Anthony Tung. 2001. “Spatial Clustering Methods in Data Mining: A Survey.” In <em>Data Mining and Knowledge Discovery - Datamine</em>. <a href="http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf">http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf</a>.</p>
+<p>Han, Jiawei, M Kamber, and Anthony Tung. 2001. “Spatial Clustering Methods in Data Mining: A Survey.” In <em>Data Mining and Knowledge Discovery - Datamine</em>. <a href="http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf" class="external-link">http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf</a>.</p>
 </div>
 <div id="ref-Lu2009">
-<p>Lu, Y. 2009. “Spatial Clustering, Detection and Analysis of.” In <em>International Encyclopedia of Human Geography</em>, edited by Rob Kitchin and Nigel Thrift, 317–24. Oxford: Elsevier. <a href="https://doi.org/https://doi.org/10.1016/B978-008044910-4.00523-X">https://doi.org/https://doi.org/10.1016/B978-008044910-4.00523-X</a>.</p>
+<p>Lu, Y. 2009. “Spatial Clustering, Detection and Analysis of.” In <em>International Encyclopedia of Human Geography</em>, edited by Rob Kitchin and Nigel Thrift, 317–24. Oxford: Elsevier. <a href="https://doi.org/https://doi.org/10.1016/B978-008044910-4.00523-X" class="external-link">https://doi.org/https://doi.org/10.1016/B978-008044910-4.00523-X</a>.</p>
 </div>
 </div>
 </div>
@@ -294,11 +296,13 @@ Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corres
 
 
       <footer><div class="copyright">
-  <p>Developed by Mark Padgham.</p>
+  <p></p>
+<p>Developed by Mark Padgham.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
@@ -306,6 +310,8 @@ Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corres
 
   
 
+
+  
 
   </body>
 </html>
