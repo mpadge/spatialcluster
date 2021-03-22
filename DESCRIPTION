@@ -1,6 +1,6 @@
 Package: spatialcluster
 Title: R port of redcap
-Version: 0.0.2.048
+Version: 0.0.2.049
 Authors@R: 
     person(given = "Mark",
            family = "Padgham",
@@ -21,7 +21,6 @@ Imports:
     magrittr,
     methods,
     Rcpp (>= 0.12.6),
-    RcppArmadillo,
     tibble,
     tripack
 Suggests:

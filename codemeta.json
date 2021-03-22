@@ -10,7 +10,7 @@
   "codeRepository": "https://github.com/mpadge/spatialcluster",
   "issueTracker": "https://github.com/mpadge/spatialcluster/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.2.048",
+  "version": "0.0.2.49",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -185,18 +185,6 @@
     },
     {
       "@type": "SoftwareApplication",
-      "identifier": "RcppArmadillo",
-      "name": "RcppArmadillo",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=RcppArmadillo"
-    },
-    {
-      "@type": "SoftwareApplication",
       "identifier": "tibble",
       "name": "tibble",
       "provider": {
@@ -225,7 +213,7 @@
     }
   ],
   "readme": "https://github.com/mpadge/spatialcluster/blob/main/README.md",
-  "fileSize": "7090.338KB",
+  "fileSize": "7089.784KB",
   "contIntegration": "https://codecov.io/gh/mpadge/spatialcluster",
   "developmentStatus": "http://www.repostatus.org/#wip",
   "keywords": [
