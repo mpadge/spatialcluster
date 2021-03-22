@@ -10,13 +10,13 @@
   "codeRepository": "https://github.com/mpadge/spatialcluster",
   "issueTracker": "https://github.com/mpadge/spatialcluster/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.2.41",
+  "version": "0.0.2.42",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.0.3 (2020-10-10)",
+  "runtimePlatform": "R version 4.0.4 (2021-02-15)",
   "author": [
     {
       "@type": "Person",
@@ -237,7 +237,7 @@
     }
   ],
   "readme": "https://github.com/mpadge/spatialcluster/blob/main/README.md",
-  "fileSize": "8970.638KB",
+  "fileSize": "8970.643KB",
   "contIntegration": "https://codecov.io/gh/mpadge/spatialcluster",
   "developmentStatus": "http://www.repostatus.org/#wip",
   "keywords": [
