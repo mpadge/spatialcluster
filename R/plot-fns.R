@@ -1,32 +1,3 @@
-#' scl_hulls
-#'
-#' Calculate convex hulls around redcap clusters, mostly cribbed from
-#' osmplotr/R/add-osm-groups.R
-#'
-#' @param tree Spanning tree obtained from \link{scl_redcap}
-#' @param xy Matrix of spatial coordinates of points indexed by \code{tree}.
-#' @return tibble of (id, x, y), where the coordinates trace the convex hulls
-#' for each cluster id
-#' @noRd
-scl_hulls <- function (nodes) {
-    ncl <- length (unique (nodes$cluster [!is.na (nodes$cluster)]))
-    bdry <- list ()
-    for (i in seq (ncl)) {
-        if (length (which (nodes$cluster == i)) > 1) {
-            xyi <- nodes %>%
-                dplyr::filter (cluster == i)
-            xy2 <- spatstat::ppp (xyi$x, xyi$y,
-                                  xrange = range (xyi$x),
-                                  yrange = range (xyi$y))
-            ch <- spatstat::convexhull (xy2)
-            bdry [[i]] <- cbind (i, ch$bdry[[1]]$x, ch$bdry[[1]]$y)
-        }
-    }
-    bdry <- data.frame (do.call (rbind, bdry))
-    names (bdry) <- c ("id", "x", "y")
-    return (bdry)
-}
-
 #' scl_ahulls
 #'
 #' Calculate alpha hulls around clusters via the \pkg{alphahull} package
@@ -80,11 +51,9 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' plot.scl
 #' @method plot scl
 #' @param x object to be plotted
-#' @param convex Should hull be convex? If not, the \code{ashape} routine from
-#' the \pkg{alphahull} package is used to generate non-convex hulls, generated
-#' with the \code{hull_alpha} parameter
-#' @param hull_alpha alpha value of non-convex hulls (see ?alphashape::ashape
-#' for details).
+#' @param hull_alpha alpha value of (non-)convex hulls, with default generating
+#' a convex hull, and smaller values generating concave hulls. (See
+#' ?alphashape::ashape for details).
 #' @param ... ignored here
 #' @family plot_fns
 #' @export
@@ -98,11 +67,11 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' # \code{dmat}:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
-plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1) {
-    if (convex)
-        hulls <- scl_hulls (x$nodes)
-    else
-        hulls <- scl_ahulls (x$nodes, alpha = hull_alpha)
+plot.scl <- function (x, ..., hull_alpha = 0.1) {
+
+    hull_alpha <- check_hull_alpha (hull_alpha)
+
+    hulls <- scl_ahulls (x$nodes, alpha = hull_alpha)
 
     nc <- length (unique (x$nodes$cluster [!is.na (x$nodes$cluster)]))
 
@@ -134,6 +103,19 @@ plot.scl <- function (x, ..., convex = TRUE, hull_alpha = 0.1) {
 
     print (g)
     invisible (g)
+}
+
+check_hull_alpha <- function (a) {
+
+    if (length (a) > 1)
+        stop ("hull_alpha must be a single value")
+    if (!is.numeric (a))
+        stop ("hull_alpha must be numeric")
+
+    if (a <= 0 | a > 1)
+        stop ("hull_alpha must be between 0 and 1")
+
+    return (a)
 }
 
 #' plot_merges

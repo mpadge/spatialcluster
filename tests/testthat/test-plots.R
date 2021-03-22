@@ -8,7 +8,7 @@ test_that("redcap plot", {
               scl <- scl_redcap (xy, dmat, ncl = 4)
               g1 <- plot (scl)
               expect_is (g1, "ggplot")
-              g2 <- plot (scl, convex = FALSE)
+              g2 <- plot (scl, hull_alpha = 0.9)
               # The hulls are then contained in
               h1 <- g1$layers [[2]]$data
               h2 <- g2$layers [[2]]$data
@@ -23,7 +23,7 @@ test_that("full plot", {
               scl <- scl_full (xy, dmat, ncl = 4)
               g1 <- plot (scl)
               expect_is (g1, "ggplot")
-              g2 <- plot (scl, convex = FALSE)
+              g2 <- plot (scl)
               # The hulls are then contained in
               h1 <- g1$layers [[2]]$data
               h2 <- g2$layers [[2]]$data

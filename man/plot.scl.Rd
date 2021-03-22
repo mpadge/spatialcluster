@@ -4,19 +4,16 @@
 \alias{plot.scl}
 \title{plot.scl}
 \usage{
-\method{plot}{scl}(x, ..., convex = TRUE, hull_alpha = 0.1)
+\method{plot}{scl}(x, ..., hull_alpha = 0.1)
 }
 \arguments{
 \item{x}{object to be plotted}
 
 \item{...}{ignored here}
 
-\item{convex}{Should hull be convex? If not, the \code{ashape} routine from
-the \pkg{alphahull} package is used to generate non-convex hulls, generated
-with the \code{hull_alpha} parameter}
-
-\item{hull_alpha}{alpha value of non-convex hulls (see ?alphashape::ashape
-for details).}
+\item{hull_alpha}{alpha value of (non-)convex hulls, with default generating
+a convex hull, and smaller values generating concave hulls. (See
+?alphashape::ashape for details).}
 }
 \description{
 plot.scl

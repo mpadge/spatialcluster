@@ -10,7 +10,7 @@
   "codeRepository": "https://github.com/mpadge/spatialcluster",
   "issueTracker": "https://github.com/mpadge/spatialcluster/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.2.044",
+  "version": "0.0.2.45",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -197,18 +197,6 @@
     },
     {
       "@type": "SoftwareApplication",
-      "identifier": "spatstat",
-      "name": "spatstat",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=spatstat"
-    },
-    {
-      "@type": "SoftwareApplication",
       "identifier": "tibble",
       "name": "tibble",
       "provider": {
@@ -237,7 +225,7 @@
     }
   ],
   "readme": "https://github.com/mpadge/spatialcluster/blob/main/README.md",
-  "fileSize": "8970.643KB",
+  "fileSize": "7090.338KB",
   "contIntegration": "https://codecov.io/gh/mpadge/spatialcluster",
   "developmentStatus": "http://www.repostatus.org/#wip",
   "keywords": [
