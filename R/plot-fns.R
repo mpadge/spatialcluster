@@ -67,7 +67,7 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' # \code{dmat}:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
-plot.scl <- function (x, ..., hull_alpha = 0.1) {
+plot.scl <- function (x, ..., hull_alpha = 1) {
 
     hull_alpha <- check_hull_alpha (hull_alpha)
 

@@ -4,7 +4,7 @@
 \alias{plot.scl}
 \title{plot.scl}
 \usage{
-\method{plot}{scl}(x, ..., hull_alpha = 0.1)
+\method{plot}{scl}(x, ..., hull_alpha = 1)
 }
 \arguments{
 \item{x}{object to be plotted}
