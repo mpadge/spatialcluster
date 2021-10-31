@@ -1,11 +1,8 @@
 Package: spatialcluster
 Title: R port of redcap
-Version: 0.0.2.049
+Version: 0.0.2.050
 Authors@R: 
-    person(given = "Mark",
-           family = "Padgham",
-           role = c("aut", "cre"),
-           email = "mark.padgham@email.com")
+    person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"))
 Description: R port of redcap (Regionalization with dynamically
     constrained agglomerative clustering and partitioning).
 License: GPL-3
