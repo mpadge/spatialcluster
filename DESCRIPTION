@@ -1,6 +1,6 @@
 Package: spatialcluster
 Title: R port of redcap
-Version: 0.0.2.054
+Version: 0.0.2.055
 Authors@R: 
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"))
 Description: R port of redcap (Regionalization with dynamically
