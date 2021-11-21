@@ -31,7 +31,23 @@ statistics for individual clusters.
 
 ## Installation
 
-You can install `spatialcluster` using any of the following options:
+The easiest way to install `spatialcluster` is be enabling the
+[corresponding `r-universe`](https://mpadge.r-universe.dev/):
+
+``` r
+options(repos = c(
+                  mpadge = 'https://mpadge.r-universe.dev',
+                  CRAN = 'https://cloud.r-project.org'))
+```
+
+The package can then be installed as usual with,
+
+``` r
+install.packges ("spatialcluster")
+```
+
+Alternatively, the package can also be installed using any of the
+following options:
 
 ``` r
 # install.packages("remotes")
