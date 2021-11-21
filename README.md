@@ -9,10 +9,15 @@ WIP](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org
 # spatialcluster
 
 An **R** package for spatially-constrained clustering using either
-distance or covariance matrices. The package includes both an
-implementation of the REDCAP collection of efficient yet approximate
-algorithms described in [D. Guo’s 2008 paper, “Regionalization with
-dynamically constrained agglomerative clustering and
+distance or covariance matrices. “*Spatially-constrained*” means that
+the data from which clusters are to be formed also map on to spatial
+reference points, and the constraint is that clusters must be spatially
+contiguous.
+
+The package includes both an implementation of the REDCAP collection of
+efficient yet approximate algorithms described in [D. Guo’s 2008 paper,
+“Regionalization with dynamically constrained agglomerative clustering
+and
 partitioning.”](https://www.tandfonline.com/doi/abs/10.1080/13658810701674970)
 (pdf available
 [here](https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf)),
@@ -22,10 +27,7 @@ analyse matrices of spatial interactions (counts, densities) between
 sets of origin and destination points. The spatial structure of
 interaction matrices is able to be statistically analysed to yield both
 global statistics for the overall spatial structure, and local
-statistics for individual clusters. ‘’Spatially-constrained’’ means that
-the data from which clusters are to be formed also map on to spatial
-reference points, and the constraint is that clusters must be spatially
-contiguous.
+statistics for individual clusters.
 
 ## Installation
 

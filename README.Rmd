@@ -19,7 +19,11 @@ knitr::opts_chunk$set(
 # spatialcluster
 
 An **R** package for spatially-constrained clustering using either distance or
-covariance matrices. The package includes both an implementation of the
+covariance matrices. "*Spatially-constrained*" means that the data from which
+clusters are to be formed also map on to spatial reference points, and the
+constraint is that clusters must be spatially contiguous.
+
+The package includes both an implementation of the
 REDCAP collection of efficient yet approximate algorithms described in [D. Guo's
 2008 paper, "Regionalization with dynamically constrained agglomerative
 clustering and
@@ -32,9 +36,6 @@ matrices of spatial interactions (counts, densities) between sets of origin and
 destination points. The spatial structure of interaction matrices is able to be
 statistically analysed to yield both global statistics for the overall spatial
 structure, and local statistics for individual clusters.
-''Spatially-constrained'' means that the data from which clusters are to be
-formed also map on to spatial reference points, and the constraint is that
-clusters must be spatially contiguous.
 
 
 ## Installation
