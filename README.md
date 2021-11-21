@@ -59,9 +59,28 @@ remotes::install_github("mpadge/spatialcluster")
 
 ## Usage
 
-There are two main functions, `scl_redcap()` and `scl_exact()`, where
-the latter generates a clustering scheme using all available data. Both
-of these require three main arguments:
+The two main functions, `scl_redcap()` and `scl_full()`, implement
+different algorithms for spatial clustering. The former implements the
+algorithms of REDCAP collection of efficient yet approximate algorithms
+described in [D. Guo’s 2008 paper, “Regionalization with dynamically
+constrained agglomerative clustering and
+partitioning.”](https://www.tandfonline.com/doi/abs/10.1080/13658810701674970)
+(pdf available
+[here](https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf)),
+yet also here allowing covariance matrices to be submitted to clustering
+routines. These algorithms are computationally efficient yet generate
+only *approximate* estimates of underlying clusters. The latter
+function, `scl_full()`, trades computational efficiency for accuracy,
+through generating clustering schemes using all available data.
+
+In short:
+
+-   `scl_full()` should always be preferred as long as it returns
+    results within a reasonable amount of time
+-   `scl_redcap()` should be used only where data are too large for
+    `scl_full()` to be run in a reasonable time.
+
+Both of these functions require three main arguments:
 
 1.  A rectangular matrix of coordinates of points to be clustered (`n`
     rows; at least 2 columns);
@@ -72,6 +91,7 @@ of these require three main arguments:
 Usage can be demonstrated with some simple fake data:
 
 ``` r
+set.seed (1)
 n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)
@@ -79,51 +99,25 @@ dmat <- matrix (runif (n ^ 2), ncol = n)
 
 The load the package and call the function:
 
-``` r
-library (spatialcluster)
-scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "single")
-plot (scl)
-```
-
-<!-- ![](man/figures/README-plot-single-1.png) -->
-
-<img src="man/figures/README-plot-single-1.png" width = "80%"/>
-
-``` r
-scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "average")
-plot (scl)
-```
-
-<!-- ![](man/figures/README-plot-average-1.png) -->
-
-<img src="man/figures/README-plot-average-1.png" width = "80%"/>
-
-``` r
-scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "complete")
-plot (scl)
-```
-
-<!-- ![](man/figures/README-plot-complete-1.png) -->
-
-<img src="man/figures/README-plot-complete-1.png" width = "80%"/>
-
-``` r
-scl <- scl_full (xy, dmat, ncl = 8, linkage = "single")
-plot (scl)
-```
-
-<!-- ![](man/figures/README-plot-fullsingle-1.png) -->
-
-<img src="man/figures/README-plot-fullsingle-1.png" width = "80%"/>
+![](man/figures/README-full-single-1.png)<!-- -->
 
 ``` r
 scl <- scl_full (xy, dmat, ncl = 8, linkage = "average")
 plot (scl)
 ```
 
-<!-- ![](man/figures/README-plot-fullaverage-1.png) -->
+![](man/figures/README-full-average-1.png)<!-- -->
 
-<img src="man/figures/README-plot-fullaverage-1.png" width = "80%"/>
+![](man/figures/README-redcap-single-1.png)<!-- -->
+
+![](man/figures/README-redcap-average-1.png)<!-- -->
+
+``` r
+scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "complete")
+plot (scl)
+```
+
+![](man/figures/README-redcap-full-1.png)<!-- -->
 
 This example illustrates the universal danger in all clustering
 algorithms: they can not fail to produce results, even when the data fed
