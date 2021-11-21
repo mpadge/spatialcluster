@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.056</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.058</span>
       </span>
     </div>
 
@@ -80,8 +80,16 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install <code>spatialcluster</code> using any of the following options:</p>
+<p>The easiest way to install <code>spatialcluster</code> is be enabling the <a href="https://mpadge.r-universe.dev/">corresponding <code>r-universe</code></a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+                  mpadge <span class="op">=</span> <span class="st">'https://mpadge.r-universe.dev'</span>,
+                  CRAN <span class="op">=</span> <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>The package can then be installed as usual with,</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">install.packges</span> <span class="op">(</span><span class="st">"spatialcluster"</span><span class="op">)</span></code></pre></div>
+<p>Alternatively, the package can also be installed using any of the following options:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
 <span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_git</span><span class="op">(</span><span class="st">"https://git.sr.ht/~mpadge/spatialcluster"</span><span class="op">)</span>
 <span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_bitbucket</span><span class="op">(</span><span class="st">"mpadge/spatialcluster"</span><span class="op">)</span>
@@ -91,44 +99,38 @@
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<p>There are two main functions, <code><a href="reference/scl_redcap.html">scl_redcap()</a></code> and <code>scl_exact()</code>, where the latter generates a clustering scheme using all available data. Both of these require three main arguments:</p>
+<p>The two main functions, <code><a href="reference/scl_redcap.html">scl_redcap()</a></code> and <code><a href="reference/scl_full.html">scl_full()</a></code>, implement different algorithms for spatial clustering. The former implements the algorithms of REDCAP collection of efficient yet approximate algorithms described in <a href="https://www.tandfonline.com/doi/abs/10.1080/13658810701674970">D. Guo’s 2008 paper, “Regionalization with dynamically constrained agglomerative clustering and partitioning.”</a> (pdf available <a href="https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf">here</a>), yet also here allowing covariance matrices to be submitted to clustering routines. These algorithms are computationally efficient yet generate only <em>approximate</em> estimates of underlying clusters. The latter function, <code><a href="reference/scl_full.html">scl_full()</a></code>, trades computational efficiency for accuracy, through generating clustering schemes using all available data.</p>
+<p>In short:</p>
+<ul>
+<li>
+<code><a href="reference/scl_full.html">scl_full()</a></code> should always be preferred as long as it returns results within a reasonable amount of time</li>
+<li>
+<code><a href="reference/scl_redcap.html">scl_redcap()</a></code> should be used only where data are too large for <code><a href="reference/scl_full.html">scl_full()</a></code> to be run in a reasonable time.</li>
+</ul>
+<p>Both of these functions require three main arguments:</p>
 <ol>
 <li>A rectangular matrix of coordinates of points to be clustered (<code>n</code> rows; at least 2 columns);</li>
 <li>An <code>n</code>-by-<code>n</code> square matrix quantifying relationships between those points;</li>
 <li>A single value (<code>ncl</code>) specifying the desired number of clusters.</li>
 </ol>
 <p>Usage can be demonstrated with some simple fake data:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span> <span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span>
 <span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">n</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">dmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span> <span class="op">(</span><span class="va">n</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="va">n</span><span class="op">)</span></code></pre></div>
 <p>The load the package and call the function:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span> <span class="op">(</span><span class="va"><a href="https://github.com/mpadge/spatialcluster">spatialcluster</a></span><span class="op">)</span>
-<span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
-<!-- ![](man/figures/README-plot-single-1.png) -->
-<p><img src="reference/figures/README-plot-single-1.png" width="80%"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
-<!-- ![](man/figures/README-plot-average-1.png) -->
-<p><img src="reference/figures/README-plot-average-1.png" width="80%"></p>
+<p><img src="reference/figures/README-full-single-1.png"><!-- --></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"complete"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
-<!-- ![](man/figures/README-plot-complete-1.png) -->
-<p><img src="reference/figures/README-plot-complete-1.png" width="80%"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
-<!-- ![](man/figures/README-plot-fullsingle-1.png) -->
-<p><img src="reference/figures/README-plot-fullsingle-1.png" width="80%"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
-<!-- ![](man/figures/README-plot-fullaverage-1.png) -->
-<p><img src="reference/figures/README-plot-fullaverage-1.png" width="80%"></p>
+<p><img src="reference/figures/README-full-average-1.png"><!-- --></p>
+<p><img src="reference/figures/README-redcap-single-1.png"><!-- --></p>
+<p><img src="reference/figures/README-redcap-average-1.png"><!-- --></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"complete"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-redcap-full-1.png"><!-- --></p>
 <p>This example illustrates the universal danger in all clustering algorithms: they can not fail to produce results, even when the data fed to them are definitely devoid of any information as in this example. Clustering algorithms should only be applied to reflect a very specific hypothesis for why data should be clustered in the first place; spatial clustering algorithms should only be applied to reflect two very specific hypothesis for (i) why data should be clustered at all, and</p>
 <p>(ii) why those clusters should manifest a spatial pattern.</p>
 </div>
