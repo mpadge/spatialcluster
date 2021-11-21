@@ -117,12 +117,12 @@ scl <- scl_full (xy, dmat, ncl = 8, linkage = "average")
 plot (scl)
 ```
 
-```{r redcap-single, echo = FALSE, message = FALSE}
+```{r redcap-single, echo = TRUE, message = FALSE}
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "single")
 plot (scl)
 ```
 
-```{r redcap-average, echo = FALSE, message = FALSE}
+```{r redcap-average, echo = TRUE, message = FALSE}
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "average")
 plot (scl)
 ```

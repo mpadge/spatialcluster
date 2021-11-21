@@ -108,7 +108,17 @@ plot (scl)
 
 ![](man/figures/README-full-average-1.png)<!-- -->
 
+``` r
+scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "single")
+plot (scl)
+```
+
 ![](man/figures/README-redcap-single-1.png)<!-- -->
+
+``` r
+scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "average")
+plot (scl)
+```
 
 ![](man/figures/README-redcap-average-1.png)<!-- -->
 
