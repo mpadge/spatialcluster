@@ -54,4 +54,11 @@ bool merge_clusters (
         int merge_from,
         int merge_to);
 
+void reconnect_cluster (
+        arma::Mat <int> &contig_mat,
+        const arma::Mat <double> &d_mat,
+        const indx2int_map_t &index2cl_map,
+        const int2indxset_map_t &cl2index_map,
+        const int clnum);
+
 } // end namespace utils

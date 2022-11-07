@@ -107,11 +107,18 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
     if (fabs (dlim) == INFINITE_DOUBLE)
         Rcpp::stop ("minimal distance not able to be found");
 
+    const int merge_to_id = clk_dat.index2cl_map.at (lmin);
     bool has_outgoing = utils::merge_clusters (clk_dat.contig_mat,
             clk_dat.index2cl_map,
             clk_dat.cl2index_map,
             clk_dat.index2cl_map.at (mmin),
-            clk_dat.index2cl_map.at (lmin));
+            merge_to_id);
+    if (!has_outgoing)
+    {
+        utils::reconnect_cluster (clk_dat.contig_mat, clk_dat.dmat,
+                clk_dat.index2cl_map, clk_dat.cl2index_map,
+                merge_to_id);
+    }
 
     for (auto cl: clk_dat.cl2index_map)
     {

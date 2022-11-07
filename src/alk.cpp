@@ -180,6 +180,11 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
     bool has_outgoing = utils::merge_clusters (alk_dat.contig_mat,
             alk_dat.index2cl_map,
             alk_dat.cl2index_map, mi, li);
+    if (!has_outgoing)
+    {
+        utils::reconnect_cluster (alk_dat.contig_mat, alk_dat.dmat,
+                alk_dat.index2cl_map, alk_dat.cl2index_map, li);
+    }
     update_edgewt_maps (alk_dat, m, l);
 
     /* Cluster numbers start off here the same as vertex numbers, and so are
