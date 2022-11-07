@@ -92,6 +92,10 @@ Rcpp::IntegerVector rcpp_slk (
         {
             e++;
         }
+        if (e >= from_full.size () || e >= to_full.size ())
+        {
+            break;
+        }
     }
 
     std::vector <index_t> treevec (the_tree.begin (), the_tree.end ());
