@@ -1,3 +1,4 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 [![R build
@@ -75,10 +76,10 @@ through generating clustering schemes using all available data.
 
 In short:
 
--   `scl_full()` should always be preferred as long as it returns
-    results within a reasonable amount of time
--   `scl_redcap()` should be used only where data are too large for
-    `scl_full()` to be run in a reasonable time.
+- `scl_full()` should always be preferred as long as it returns results
+  within a reasonable amount of time
+- `scl_redcap()` should be used only where data are too large for
+  `scl_full()` to be run in a reasonable time.
 
 Both of these functions require three main arguments:
 
@@ -100,6 +101,27 @@ dmat <- matrix (runif (n ^ 2), ncol = n)
 The load the package and call the function:
 
 ![](man/figures/README-full-single-1.png)<!-- -->
+
+The `scl` object is a `list` with the following components:
+
+``` r
+names (scl)
+#> [1] "tree"       "merges"     "ord"        "nodes"      "pars"       "statistics"
+```
+
+- `tree` details distances and cluster numbers for all pairwise
+  comparisons between objects.
+- `merges` details increasing distances at which each pair of objects
+  was merged into a single cluster.
+- `ord` provides the …
+- `nodes` records the spatial coordinates of each point (node) of the
+  input data.
+- `pars` retains the parameters used to call the clustering function.
+- `statsiticss` returns the clustering statistics, both for individual
+  clusters and an overall global statistic for the clustering scheme as
+  a whole.
+
+## A Cautionary Note
 
 ``` r
 scl <- scl_full (xy, dmat, ncl = 8, linkage = "average")

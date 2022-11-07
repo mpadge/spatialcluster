@@ -108,9 +108,29 @@ The load the package and call the function:
 
 ```{r full-single, echo = FALSE, eval = TRUE}
 library (spatialcluster)
-scl <- scl_full (xy, dmat, ncl = 8, linkage = "single")
+scl <- scl_full (xy, dmat, ncl = 8)
 plot (scl)
 ```
+
+The `scl` object is a `list` with the following components:
+
+```{r list-components}
+names (scl)
+```
+
+- `tree` details distances and cluster numbers for all pairwise comparisons
+  between objects.
+- `merges` details increasing distances at which each pair of objects was
+  merged into a single cluster.
+- `ord` provides the ...
+- `nodes` records the spatial coordinates of each point (node) of the input
+  data.
+- `pars` retains the parameters used to call the clustering function.
+- `statsiticss` returns the clustering statistics, both for individual clusters
+  and an overall global statistic for the clustering scheme as a whole.
+
+
+## A Cautionary Note
 
 ```{r full-average, eval = TRUE}
 scl <- scl_full (xy, dmat, ncl = 8, linkage = "average")
