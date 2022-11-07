@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2.059</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2.064</span>
       </span>
     </div>
 
@@ -117,19 +117,41 @@
 <span><span class="va">dmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="va">n</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="va">n</span><span class="op">)</span></span></code></pre></div>
 <p>The load the package and call the function:</p>
 <p><img src="reference/figures/README-full-single-1.png"><!-- --></p>
+<p>The <code>scl</code> object is a <code>list</code> with the following components:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "tree"       "merges"     "ord"        "nodes"      "pars"       "statistics"</span></span></code></pre></div>
+<ul>
+<li>
+<code>tree</code> details distances and cluster numbers for all pairwise comparisons between objects.</li>
+<li>
+<code>merges</code> details increasing distances at which each pair of objects was merged into a single cluster.</li>
+<li>
+<code>ord</code> provides the …</li>
+<li>
+<code>nodes</code> records the spatial coordinates of each point (node) of the input data.</li>
+<li>
+<code>pars</code> retains the parameters used to call the clustering function.</li>
+<li>
+<code>statsiticss</code> returns the clustering statistics, both for individual clusters and an overall global statistic for the clustering scheme as a whole.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="a-cautionary-note">A Cautionary Note<a class="anchor" aria-label="anchor" href="#a-cautionary-note"></a>
+</h2>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-full-average-1.png"><!-- --></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-redcap-single-1.png"><!-- --></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-redcap-average-1.png"><!-- --></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"complete"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-redcap-full-1.png"><!-- --></p>
