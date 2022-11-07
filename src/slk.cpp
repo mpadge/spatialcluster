@@ -65,19 +65,6 @@ Rcpp::IntegerVector rcpp_slk (
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
-        if (the_tree.size () % 100 == 0 && e == 0)
-            Rcpp::Rcout << the_tree.size () << " / " << n << std::endl;
-
-        if (e >= from_full.size ())
-        {
-            Rcpp::Rcout << "e = " << e << " > from_full = " << from_full.size () << std::endl;
-            Rcpp::stop ("nope");
-        }
-        if (e >= to_full.size ())
-        {
-            Rcpp::Rcout << "e = " << e << " > to_full = " << to_full.size () << std::endl;
-            Rcpp::stop ("nope");
-        }
 
         index_t ifrom = vert2index_map.at (from_full (e)),
                 ito = vert2index_map.at (to_full (e));
@@ -98,7 +85,6 @@ Rcpp::IntegerVector rcpp_slk (
                         index2cl_map, cl2index_map, cfrom, cto);
                 if (!has_outgoing)
                 {
-                    Rcpp::Rcout << "reconnecting cluster" << std::endl;
                     utils::reconnect_cluster (contig_mat, d_mat,
                         index2cl_map, cl2index_map, cto);
                 }
