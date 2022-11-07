@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2.064</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2.065</span>
       </span>
     </div>
 
@@ -63,11 +63,12 @@
 
       
 
-      </header><script src="spatialcluster_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>spatialcluster</h1>
-                        <h4 data-toc-skip class="author">Mark Padgham</h4>
+                        <h4 data-toc-skip class="author">Mark
+Padgham</h4>
             
             <h4 data-toc-skip class="date">2022-11-07</h4>
       
@@ -81,35 +82,139 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p><code>spatialcluster</code> is an <strong>R</strong> package for performing spatially-constrained clustering. Spatially-constrained clustering is a distinct mode of clustering in which data include additional spatial coordinates in addition to the data used for clustering, and the clustering is performed such that only spatially contiguous or adjacent points may be merged into the same cluster (Fig. 1).</p>
+<p><code>spatialcluster</code> is an <strong>R</strong> package for
+performing spatially-constrained clustering. Spatially-constrained
+clustering is a distinct mode of clustering in which data include
+additional spatial coordinates in addition to the data used for
+clustering, and the clustering is performed such that only spatially
+contiguous or adjacent points may be merged into the same cluster (Fig.
+1).</p>
 <div class="section level3">
 <h3 id="nomenclature">Nomenclature<a class="anchor" aria-label="anchor" href="#nomenclature"></a>
 </h3>
 <ul>
-<li>The term “objects” is used here to refer to the objects which are to be aggregated into clusters; these may be points, lines, polygons, or any other spatial or non-spatial entities</li>
-<li>The term “non-spatial data” also encompasses data which are not necessarily spatial, but which may include some spatial component.</li>
+<li>The term “objects” is used here to refer to the objects which are to
+be aggregated into clusters; these may be points, lines, polygons, or
+any other spatial or non-spatial entities</li>
+<li>The term “non-spatial data” also encompasses data which are not
+necessarily spatial, but which may include some spatial component.</li>
 </ul>
 </div>
 </div>
 <div class="section level2">
 <h2 id="distance-based-versus-covariance-based-clustering">Distance-based versus covariance-based clustering<a class="anchor" aria-label="anchor" href="#distance-based-versus-covariance-based-clustering"></a>
 </h2>
-<p>Almost all clustering routines have been developed for application to distance matrices. Distance-based clustering algorithms generally seek to aggregate objects into clusters that are maximally homogeneous. Clustering may also be performed on covariance or correlation matrices. The present work exclusively focusses on the former type because “any symmetric positive semi-definite matrix is a covariance matrix”. The object of clustering covariance matrices is to maximise intra-cluster covariance while minimising inter-cluster covariance. Intra-cluster homogeneity is neither relevant nor important, and thus distinct implementations are generally required.</p>
-<p>Both the SKATER and REDCAP algorithms, for example, utilise as a measure of inter-cluster homogeneity the sums of squared deviations from mean values. The equivalent measure for covariance-based clustering is simply the sum of covariances. The present approach to covariance clustering extends beyond techniques generally considered under the umbrage of “correlation clustering”. Correlation clustering is often applied in cases where an observation and reference matrix are available, with clusters defined as simply those groups for which observed correlations exceed reference correlations. The present approach also uses observation and reference matrices, while extending beyond traditional correlation clustering through tracing the subsequent hierarchy of merges of all clusters. This is particularly important in spatially-constrained clustering, for which sizes of clusters formed through simply correlation clustering techniques are generally very small.</p>
-<p>The software accompanying this manuscript has accordingly been developed to accept both distance and covariance matrices as input. It includes a reference implementation of the REDCAP algorithms adapted as described below for clustering covariance matrices.</p>
+<p>Almost all clustering routines have been developed for application to
+distance matrices. Distance-based clustering algorithms generally seek
+to aggregate objects into clusters that are maximally homogeneous.
+Clustering may also be performed on covariance or correlation matrices.
+The present work exclusively focusses on the former type because “any
+symmetric positive semi-definite matrix is a covariance matrix”. The
+object of clustering covariance matrices is to maximise intra-cluster
+covariance while minimising inter-cluster covariance. Intra-cluster
+homogeneity is neither relevant nor important, and thus distinct
+implementations are generally required.</p>
+<p>Both the SKATER and REDCAP algorithms, for example, utilise as a
+measure of inter-cluster homogeneity the sums of squared deviations from
+mean values. The equivalent measure for covariance-based clustering is
+simply the sum of covariances. The present approach to covariance
+clustering extends beyond techniques generally considered under the
+umbrage of “correlation clustering”. Correlation clustering is often
+applied in cases where an observation and reference matrix are
+available, with clusters defined as simply those groups for which
+observed correlations exceed reference correlations. The present
+approach also uses observation and reference matrices, while extending
+beyond traditional correlation clustering through tracing the subsequent
+hierarchy of merges of all clusters. This is particularly important in
+spatially-constrained clustering, for which sizes of clusters formed
+through simply correlation clustering techniques are generally very
+small.</p>
+<p>The software accompanying this manuscript has accordingly been
+developed to accept both distance and covariance matrices as input. It
+includes a reference implementation of the REDCAP algorithms adapted as
+described below for clustering covariance matrices.</p>
 <div class="section level3">
 <h3 id="observation-and-reference-matrices-for-covariance-clustering">Observation and reference matrices for covariance clustering<a class="anchor" aria-label="anchor" href="#observation-and-reference-matrices-for-covariance-clustering"></a>
 </h3>
-<p>The present work is focussed on spatially-constrained clustering based on non-spatial data representing objects which also have spatial locations. “Spatially-constrained” implies that the clusters are constrained to be spatially contiguous. Spatial data that involve counts or densities are often represented in terms of flow matrices or, in conventional studies of human transport system, “origin-destination” matrices. Such matrices are rectangular, and represent tallies of numbers, densities, or, in general terms, flows between a set of origins and a (possibly different) set of destinations.</p>
-<p>Such flow data can - and indeed often are - directly submitted to clustering routines, through constructing some suitably-scaled metric of distance as the inverse of flow. In spatial systems, however, flows from some point <span class="math inline">\(A\)</span> to another point <span class="math inline">\(B\)</span> are often closely related to flows from some point <span class="math inline">\(A^\prime\)</span> near <span class="math inline">\(A\)</span> to some <span class="math inline">\(B^\prime\)</span> near <span class="math inline">\(B\)</span>, with similarity positively related to the proximity of <span class="math inline">\(A^\prime\)</span> to <span class="math inline">\(A\)</span> and <span class="math inline">\(B^\prime\)</span> to <span class="math inline">\(B\)</span>. This is nothing other than a definition of “autocorrelation”. (It is also implicitly tautological, as are most definitions of this phenomenon.) Clustering with directly observed flows alone ignores the effects of autocorrelation, and thus introduces a host of well-recognised issues arising through doing so.</p>
-<p>Flow matrices may be converted into covariance matrices through populating the upper or lower triangle with pair-wise covariances (or through copying one triangle to the other to generate a symmetrical covariance matrix). Covariances can be calculated between the rows of a flow matrix to yield covariances in flows <em>from</em> each point, or between the columns to yield covariances in flows <em>to</em> each point. Of course, both may be combined through, for example, filling the upper triangle of a covariance matrix with row-wise covariances, and the lower triangle with column-wise covariances. The value <span class="math inline">\(C_{ij}\)</span> will then represent the covariance in flow <em>from</em> i and flow <em>from</em> j, while <span class="math inline">\(C_{ji}\)</span> will represent the covariance in flow <em>to</em> i and flow <em>to</em> j. Such compound covariance matrices will not be symmetrical.</p>
-<p>Both forms of population covariance matrices are explicitly demonstrated in the empirical application below, revealing the usefulness of considering and comparing both forms of covariance matrices. Values of covariance will manifest similar properties to raw flows, in that nearby values are likely to be more similar or “autocorrelated.” For many spatial processes, “neutral” models of flows have been developed, and can be applied to yield estimates of covariances expected in the presence of these kinds of processes alone. Such estimated covariance matrices are the “reference” matrices referred to above, and are generated in the present work through applying spatial interaction models to the observed flow data, and generating corresponding covariance matrices. These matrices effectively represent the covariance expected in the presence of a particular type of autocorrelation. The difference with observed covariance matrices may then be interpreted to reflect the effects of processes beyond spatial autocorrelation.</p>
+<p>The present work is focussed on spatially-constrained clustering
+based on non-spatial data representing objects which also have spatial
+locations. “Spatially-constrained” implies that the clusters are
+constrained to be spatially contiguous. Spatial data that involve counts
+or densities are often represented in terms of flow matrices or, in
+conventional studies of human transport system, “origin-destination”
+matrices. Such matrices are rectangular, and represent tallies of
+numbers, densities, or, in general terms, flows between a set of origins
+and a (possibly different) set of destinations.</p>
+<p>Such flow data can - and indeed often are - directly submitted to
+clustering routines, through constructing some suitably-scaled metric of
+distance as the inverse of flow. In spatial systems, however, flows from
+some point <span class="math inline">\(A\)</span> to another point <span class="math inline">\(B\)</span> are often closely related to flows from
+some point <span class="math inline">\(A^\prime\)</span> near <span class="math inline">\(A\)</span> to some <span class="math inline">\(B^\prime\)</span> near <span class="math inline">\(B\)</span>, with similarity positively related to
+the proximity of <span class="math inline">\(A^\prime\)</span> to <span class="math inline">\(A\)</span> and <span class="math inline">\(B^\prime\)</span> to <span class="math inline">\(B\)</span>. This is nothing other than a
+definition of “autocorrelation”. (It is also implicitly tautological, as
+are most definitions of this phenomenon.) Clustering with directly
+observed flows alone ignores the effects of autocorrelation, and thus
+introduces a host of well-recognised issues arising through doing
+so.</p>
+<p>Flow matrices may be converted into covariance matrices through
+populating the upper or lower triangle with pair-wise covariances (or
+through copying one triangle to the other to generate a symmetrical
+covariance matrix). Covariances can be calculated between the rows of a
+flow matrix to yield covariances in flows <em>from</em> each point, or
+between the columns to yield covariances in flows <em>to</em> each
+point. Of course, both may be combined through, for example, filling the
+upper triangle of a covariance matrix with row-wise covariances, and the
+lower triangle with column-wise covariances. The value <span class="math inline">\(C_{ij}\)</span> will then represent the covariance
+in flow <em>from</em> i and flow <em>from</em> j, while <span class="math inline">\(C_{ji}\)</span> will represent the covariance in
+flow <em>to</em> i and flow <em>to</em> j. Such compound covariance
+matrices will not be symmetrical.</p>
+<p>Both forms of population covariance matrices are explicitly
+demonstrated in the empirical application below, revealing the
+usefulness of considering and comparing both forms of covariance
+matrices. Values of covariance will manifest similar properties to raw
+flows, in that nearby values are likely to be more similar or
+“autocorrelated.” For many spatial processes, “neutral” models of flows
+have been developed, and can be applied to yield estimates of
+covariances expected in the presence of these kinds of processes alone.
+Such estimated covariance matrices are the “reference” matrices referred
+to above, and are generated in the present work through applying spatial
+interaction models to the observed flow data, and generating
+corresponding covariance matrices. These matrices effectively represent
+the covariance expected in the presence of a particular type of
+autocorrelation. The difference with observed covariance matrices may
+then be interpreted to reflect the effects of processes beyond spatial
+autocorrelation.</p>
 </div>
 <div class="section level3">
 <h3 id="observation-and-reference-matrices-for-correlation-clustering">Observation and reference matrices for correlation clustering<a class="anchor" aria-label="anchor" href="#observation-and-reference-matrices-for-correlation-clustering"></a>
 </h3>
-<p>The ability to calculate observation and reference covariance matrices enables a standardised covariance matrix to be generated, in which positive values represent values of covariance beyond those expected on the basis of the neutral model alone (here, a spatial interaction model). Note, moreover, than negative values may also be interpreted in the observe way: to reflect spatial clusters in which flows are significantly less likely than those expected on the basis of a neutral model alone. The methods developed below are applied separately to positive and negative values of the net covariance matrix, with clusters only formed from either exclusively positive or exclusively negative values. Covariances in such clusters will thus always be entirely significant in the sense of T-tests for divergence from expected values of zero. Thus by definition, any clusters discerned by the methodology may be presumed entirely significant. The software produces summary statistics for each cluster (T- and p-values), enabling the relative significance of different clusters to be compared.</p>
-<p>Note that it will not generally be possible - absent specific hypotheses - to provide a global statistic quantifying the significance of a clustering scheme. This is primarily because there is no reason to presume that positive net covariances will be more likely to form distinct clusters than will negative net covariances. The overall distribution of net covariances will thus generally be symmetrical, although it may also be asymmetrical when spatial patterns of positive net covariance differ from those of negative net covariance - for example through positive covariances being very strongly concentrated in a small number of clusters, while negative covariances remain more dispersed.</p>
+<p>The ability to calculate observation and reference covariance
+matrices enables a standardised covariance matrix to be generated, in
+which positive values represent values of covariance beyond those
+expected on the basis of the neutral model alone (here, a spatial
+interaction model). Note, moreover, than negative values may also be
+interpreted in the observe way: to reflect spatial clusters in which
+flows are significantly less likely than those expected on the basis of
+a neutral model alone. The methods developed below are applied
+separately to positive and negative values of the net covariance matrix,
+with clusters only formed from either exclusively positive or
+exclusively negative values. Covariances in such clusters will thus
+always be entirely significant in the sense of T-tests for divergence
+from expected values of zero. Thus by definition, any clusters discerned
+by the methodology may be presumed entirely significant. The software
+produces summary statistics for each cluster (T- and p-values), enabling
+the relative significance of different clusters to be compared.</p>
+<p>Note that it will not generally be possible - absent specific
+hypotheses - to provide a global statistic quantifying the significance
+of a clustering scheme. This is primarily because there is no reason to
+presume that positive net covariances will be more likely to form
+distinct clusters than will negative net covariances. The overall
+distribution of net covariances will thus generally be symmetrical,
+although it may also be asymmetrical when spatial patterns of positive
+net covariance differ from those of negative net covariance - for
+example through positive covariances being very strongly concentrated in
+a small number of clusters, while negative covariances remain more
+dispersed.</p>
 </div>
 </div>
 <div class="section level2">
@@ -118,13 +223,34 @@
 <div class="section level3">
 <h3 id="spatial-clustering">Spatial clustering<a class="anchor" aria-label="anchor" href="#spatial-clustering"></a>
 </h3>
-<p>Spatial clustering is a very well-studied field <span class="citation">(see reviews in Han, Kamber, and Tung 2001; Duque, Ramos, and Suriñach 2007; Lu 2009)</span>, with many methods implemented in the <strong>R</strong> language (see the CRAN Task View on <a href="https://cran.r-project.org/web/views/Spatial.html" class="external-link">Analysis of Spatial Data</a>). Spatial clustering algorithms take as input a set of spatial distances between objects, and seek to cluster those objects based on these exclusively spatial distances alone (Fig. 1A). Other non-spatial data may be included, but must be somehow reconciled with the spatial component. This is often achieved through weighted addition to attain approximately “spatialized” data. Figure 1B-C illustrate two related non-spatial (B) and spatial (C) datasets. The primary data of interest depicted in B can be “spatialized” through additively combining the associated distance matrices of non-spatial and spatial data, and submitting the resultant distance matrix to a clustering routine of choice.</p>
+<p>Spatial clustering is a very well-studied field <span class="citation">(see reviews in Han, Kamber, and Tung 2001; Duque,
+Ramos, and Suriñach 2007; Lu 2009)</span>, with many methods implemented
+in the <strong>R</strong> language (see the CRAN Task View on <a href="https://cran.r-project.org/web/views/Spatial.html" class="external-link">Analysis of
+Spatial Data</a>). Spatial clustering algorithms take as input a set of
+spatial distances between objects, and seek to cluster those objects
+based on these exclusively spatial distances alone (Fig. 1A). Other
+non-spatial data may be included, but must be somehow reconciled with
+the spatial component. This is often achieved through weighted addition
+to attain approximately “spatialized” data. Figure 1B-C illustrate two
+related non-spatial (B) and spatial (C) datasets. The primary data of
+interest depicted in B can be “spatialized” through additively combining
+the associated distance matrices of non-spatial and spatial data, and
+submitting the resultant distance matrix to a clustering routine of
+choice.</p>
 <div class="figure">
 <img src="spatialcluster_files/figure-html/unnamed-chunk-1-1.png" alt="Figure 1: (A) Illustration of typical spatial clustering application for which input data are explicit spatial distances between points; (B) Illustration of clustering in some other, non-spatial dimensions, D1 and D2, for which associated spatial data in (C) do not manifest clear spatial clusters." width="1152"><p class="caption">
-Figure 1: (A) Illustration of typical spatial clustering application for which input data are explicit spatial distances between points; (B) Illustration of clustering in some other, non-spatial dimensions, D1 and D2, for which associated spatial data in (C) do not manifest clear spatial clusters.
+Figure 1: (A) Illustration of typical spatial clustering application for
+which input data are explicit spatial distances between points; (B)
+Illustration of clustering in some other, non-spatial dimensions, D1 and
+D2, for which associated spatial data in (C) do not manifest clear
+spatial clusters.
 </p>
 </div>
-<p>For example, the following code illustrates the use of the <code>DBSCAN</code> algorithm (<strong>D</strong>ensity <strong>B</strong>ased <strong>S</strong>patial <strong>C</strong>lustering of <strong>A</strong>pplications with <strong>N</strong>oise) from the <strong>R</strong> package <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a>.</p>
+<p>For example, the following code illustrates the use of the
+<code>DBSCAN</code> algorithm (<strong>D</strong>ensity
+<strong>B</strong>ased <strong>S</strong>patial
+<strong>C</strong>lustering of <strong>A</strong>pplications with
+<strong>N</strong>oise) from the <strong>R</strong> package <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d_nospace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span> <span class="op">(</span><span class="va">dat_nospace</span><span class="op">)</span> <span class="co"># matrix of non-spatial data</span></span>
 <span><span class="va">d_space</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span> <span class="op">(</span><span class="va">dat_space</span><span class="op">)</span> <span class="co"># 2-column matrix of spatial data</span></span>
@@ -148,113 +274,374 @@ Figure 1: (A) Illustration of typical spatial clustering application for which i
 <span><span class="co">##  4 17  9  7 12 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Available fields: cluster, eps, minPts, dist, borderPoints</span></span></code></pre>
-The result shows the appropriate number of five clusters. Further insight can be gained through visually inspecting the clusters in both the non-spatial and spatial domains. Doing so reveals (Fig. 2) that the clustering is actually quite representative, being clearly distinct in the non-spatial domain, and also reasonably distinct in the spatial domain.
+The result shows the appropriate number of five clusters. Further
+insight can be gained through visually inspecting the clusters in both
+the non-spatial and spatial domains. Doing so reveals (Fig. 2) that the
+clustering is actually quite representative, being clearly distinct in
+the non-spatial domain, and also reasonably distinct in the spatial
+domain.
 <div class="figure">
 <img src="spatialcluster_files/figure-html/unnamed-chunk-5-1.png" alt="Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corresponding spatial data coloured by dbscan clustering results." width="768"><p class="caption">
-Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corresponding spatial data coloured by dbscan clustering results.
+Figure 2: (A) Non-spatial data coloured by dbscan clustering results;
+(B) Corresponding spatial data coloured by dbscan clustering results.
 </p>
 </div>
-<p>These results demonstrate that reasonable results can indeed be obtained through simple linear combination of non-spatial and spatial distances. This approach is very simple, and it is very easy to submit such combined distance matrices to high-performance clustering routines such as <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a>. There are nevertheless two notable shortcomings:</p>
+<p>These results demonstrate that reasonable results can indeed be
+obtained through simple linear combination of non-spatial and spatial
+distances. This approach is very simple, and it is very easy to submit
+such combined distance matrices to high-performance clustering routines
+such as <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a>.
+There are nevertheless two notable shortcomings:</p>
 <ol style="list-style-type: decimal">
-<li>There is no objectively best way to combine non-spatial and spatial distance matrices; and</li>
-<li>Routines such as <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a> still require an effectively arbitrary parameter represented by the above value of <code>eps = 0.4</code>. This value was simply chosen to best reflect the known structure of the input clusters, but in any practical application will remain largely arbitrary.</li>
+<li>There is no objectively best way to combine non-spatial and spatial
+distance matrices; and</li>
+<li>Routines such as <a href="https://cran.r-project.org/package=dbscan" class="external-link"><code>dbscan</code></a>
+still require an effectively arbitrary parameter represented by the
+above value of <code>eps = 0.4</code>. This value was simply chosen to
+best reflect the known structure of the input clusters, but in any
+practical application will remain largely arbitrary.</li>
 </ol>
-<p>Even one of the most recent <strong>R</strong> packages dedicated to spatial clustering <span class="citation">(Chavent et al. 2017)</span> follows precisely this linear addition strategy, via a parameter determining the relative weights of the non-spatial and spatial data.</p>
-<p>We assert here that such approaches provide more a means of attaining approximately spatially-structured clustering schemes, rather than actually providing spatially-constrained clusters in the sense we now explore.</p>
+<p>Even one of the most recent <strong>R</strong> packages dedicated to
+spatial clustering <span class="citation">(Chavent et al. 2017)</span>
+follows precisely this linear addition strategy, via a parameter
+determining the relative weights of the non-spatial and spatial
+data.</p>
+<p>We assert here that such approaches provide more a means of attaining
+approximately spatially-structured clustering schemes, rather than
+actually providing spatially-constrained clusters in the sense we now
+explore.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="spatially-constrained-clustering">Spatially-constrained clustering<a class="anchor" aria-label="anchor" href="#spatially-constrained-clustering"></a>
 </h2>
-<p>The <a href="https://github.com/mpadge/spatialcluster" class="external-link"><code>spatialcluster</code> package</a> performs strict <em>spatially constrained clustering</em>. This means that clusters are formed entirely on the basis of the non-spatial data, while the spatial data provide a constraint used to ensure that all clusters are spatially contiguous.</p>
+<p>The <a href="https://github.com/mpadge/spatialcluster" class="external-link"><code>spatialcluster</code>
+package</a> performs strict <em>spatially constrained clustering</em>.
+This means that clusters are formed entirely on the basis of the
+non-spatial data, while the spatial data provide a constraint used to
+ensure that all clusters are spatially contiguous.</p>
 <div class="section level3">
 <h3 id="the-skater-algorithm">The SKATER algorithm<a class="anchor" aria-label="anchor" href="#the-skater-algorithm"></a>
 </h3>
-<p>One of the most widespread algorithms for spatially constrained clustering is the so-called “SKATER” algorithm <span class="citation">(<strong>S</strong>patial <strong>K</strong>luster <strong>A</strong>nalysis by <strong>T</strong>ree <strong>E</strong>dge <strong>R</strong>emoval, AssunÇão et al. 2006)</span>, available via the <strong>R</strong> package <a href="https://cran.r-project.org/package=spdep" class="external-link"><code>spdep</code></a> <span class="citation">(Bivand, Hauke, and Kossowski 2013; Bivand and Piras 2015)</span>. This algorithm constructs a minimum spanning tree (MST) connecting neighbours defined by the spatial data, with all connections defined by minimal distances in the non-spatial data. The SKATER algorithm constructs the simplest of all MSTs, by iterating through the list of neighbouring edges according to increasing (non-spatial) distance, and inserting edges where these connect previously unconnected objects. The resultant MST is then partitioned into a specified number of clusters such that the intra-cluster sum of squared deviations from the mean (of the non-spatial data) is minimised. Further details are given in <span class="citation">AssunÇão et al. (2006)</span>.</p>
+<p>One of the most widespread algorithms for spatially constrained
+clustering is the so-called “SKATER” algorithm <span class="citation">(<strong>S</strong>patial <strong>K</strong>luster
+<strong>A</strong>nalysis by <strong>T</strong>ree <strong>E</strong>dge
+<strong>R</strong>emoval, AssunÇão et al. 2006)</span>, available via
+the <strong>R</strong> package <a href="https://cran.r-project.org/package=spdep" class="external-link"><code>spdep</code></a>
+<span class="citation">(Bivand, Hauke, and Kossowski 2013; Bivand and
+Piras 2015)</span>. This algorithm constructs a minimum spanning tree
+(MST) connecting neighbours defined by the spatial data, with all
+connections defined by minimal distances in the non-spatial data. The
+SKATER algorithm constructs the simplest of all MSTs, by iterating
+through the list of neighbouring edges according to increasing
+(non-spatial) distance, and inserting edges where these connect
+previously unconnected objects. The resultant MST is then partitioned
+into a specified number of clusters such that the intra-cluster sum of
+squared deviations from the mean (of the non-spatial data) is minimised.
+Further details are given in <span class="citation">AssunÇão et al.
+(2006)</span>.</p>
 </div>
 <div class="section level3">
 <h3 id="the-redcap-algorithms">The REDCAP algorithms<a class="anchor" aria-label="anchor" href="#the-redcap-algorithms"></a>
 </h3>
-<p>The REDCAP algorithms for spatially-constrained clustering <span class="citation">(<strong>RE</strong>gionalization with <strong>D</strong>ynamically <strong>C</strong>onstrained <strong>A</strong>gglomerative <strong>C</strong>lustering, Guo 2008)</span> employs three distinct methods for constructing MSTs. The original algorithms actually develop these three methods for two distinct ways of constructing spanning trees: through using nearest neighbours only (“first-order constraint”), or through considering all neighbours of each object (“full-order constraint”). The results of the cited manuscript clearly reveal the superiority of the latter, and only full-order constraints are considered here.</p>
-<p>The three methods refer to methods for determining which edges are selected to link clusters, via either single-, average-, or complete-linkage, which function as follows:</p>
+<p>The REDCAP algorithms for spatially-constrained clustering <span class="citation">(<strong>RE</strong>gionalization with
+<strong>D</strong>ynamically <strong>C</strong>onstrained
+<strong>A</strong>gglomerative <strong>C</strong>lustering, Guo
+2008)</span> employs three distinct methods for constructing MSTs. The
+original algorithms actually develop these three methods for two
+distinct ways of constructing spanning trees: through using nearest
+neighbours only (“first-order constraint”), or through considering all
+neighbours of each object (“full-order constraint”). The results of the
+cited manuscript clearly reveal the superiority of the latter, and only
+full-order constraints are considered here.</p>
+<p>The three methods refer to methods for determining which edges are
+selected to link clusters, via either single-, average-, or
+complete-linkage, which function as follows:</p>
 <ol style="list-style-type: decimal">
-<li>Single-linkage clustering simply loops through the list of minimal-distance, nearest-neighbour edges, and inserts each next-minima distance edge into the clustering tree if it is not part of any previous cluster, and if it connects two separate yet contiguous clusters.</li>
-<li>Average-linkage clustering assigns weights to each unassigned edge based on their average distance to all edges within all adjacent clusters. Thus when an edge becomes part of a cluster, the distances to all non-assigned edges adjacent to that cluster are updated to reflect the change in average distance calculated over all edges in that cluster. Edges are continually (re-)sorted based on average distances, and the tree is built through sequentially inserting minimal-distance edges.</li>
-<li>Maximal-linkage clustering forms clusters through inserting the edge having the minimal distance to the farthest point of any adjacent cluster.</li>
+<li>Single-linkage clustering simply loops through the list of
+minimal-distance, nearest-neighbour edges, and inserts each next-minima
+distance edge into the clustering tree if it is not part of any previous
+cluster, and if it connects two separate yet contiguous clusters.</li>
+<li>Average-linkage clustering assigns weights to each unassigned edge
+based on their average distance to all edges within all adjacent
+clusters. Thus when an edge becomes part of a cluster, the distances to
+all non-assigned edges adjacent to that cluster are updated to reflect
+the change in average distance calculated over all edges in that
+cluster. Edges are continually (re-)sorted based on average distances,
+and the tree is built through sequentially inserting minimal-distance
+edges.</li>
+<li>Maximal-linkage clustering forms clusters through inserting the edge
+having the minimal distance to the farthest point of any adjacent
+cluster.</li>
 </ol>
-<p>Single-linkage is equivalent to the SKATER algorithm, where the single best edge connecting two clusters is selected. (The SKATER algorithm is actually equivalent to the worst-performing REDCAP algorithm: single-linkage, first-order constraint.) <span class="citation">(See Guo 2008 for details.)</span> The resultant MSTs are then partitioned into specified numbers of clusters using an identical approach to SKATER, namely through minimising the intra-cluster sum of squared deviations from mean values.</p>
+<p>Single-linkage is equivalent to the SKATER algorithm, where the
+single best edge connecting two clusters is selected. (The SKATER
+algorithm is actually equivalent to the worst-performing REDCAP
+algorithm: single-linkage, first-order constraint.) <span class="citation">(See Guo 2008 for details.)</span> The resultant MSTs
+are then partitioned into specified numbers of clusters using an
+identical approach to SKATER, namely through minimising the
+intra-cluster sum of squared deviations from mean values.</p>
 </div>
 <div class="section level3">
 <h3 id="the-redcap-algorithms-and-covariance-clustering">The REDCAP algorithms and covariance clustering<a class="anchor" aria-label="anchor" href="#the-redcap-algorithms-and-covariance-clustering"></a>
 </h3>
-<p>The software accompanying this manuscript includes a reference implementation of the REDCAP algorithms <span class="citation">(<span class="citeproc-not-found" data-reference-id="Gu2008"><strong>???</strong></span>)</span> for distance-based clustering. Conversion of the three algorithms described above to covariance based clustering is straightforward. The first stage of constructing MSTs via the three forms of linkage remains largely identical, with minimal distances simply replaced by maximal covariances. Tree bi-section becomes a slightly different, and computationally simpler, procedure, replacing the previous measure of intra-cluster homogeneity (<span class="math inline">\(\sum_i (X_i - \overline{X} ^ 2\)</span>) with a simple maximum (<span class="math inline">\(\sum_i X_i\)</span>). Application to the two forms of matrix remains otherwise identical.</p>
+<p>The software accompanying this manuscript includes a reference
+implementation of the REDCAP algorithms <span class="citation">(<strong>Gu2008?</strong>)</span> for distance-based
+clustering. Conversion of the three algorithms described above to
+covariance based clustering is straightforward. The first stage of
+constructing MSTs via the three forms of linkage remains largely
+identical, with minimal distances simply replaced by maximal
+covariances. Tree bi-section becomes a slightly different, and
+computationally simpler, procedure, replacing the previous measure of
+intra-cluster homogeneity (<span class="math inline">\(\sum_i (X_i -
+\overline{X} ^ 2\)</span>) with a simple maximum (<span class="math inline">\(\sum_i X_i\)</span>). Application to the two forms
+of matrix remains otherwise identical.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="the-exact-clustering-algorithm">The Exact Clustering Algorithm<a class="anchor" aria-label="anchor" href="#the-exact-clustering-algorithm"></a>
 </h2>
-<p>As described above, the REDCAP algorithms provide different ways of constructing minimal spanning trees for a given data set, with resultant clusters based on bisecting these spanning trees. They effectively represent the relationships within a data set by the “best” minimal set (according to the chosen algorithm). Here, we develop a simple algorithm for deriving a clustering scheme that uses the full set of nearest-neighbour relationships in a given data set.</p>
-<p>Each point or object within a typical planar (effectively two-dimensional) data set may have on average just under three nearest neighbours if these are calculated with a triangulation, or potentially up to <span class="math inline">\(k\)</span> for some <span class="math inline">\(k\)</span>-nearest neighbours scheme. Each point in a minimal-spanning tree generally has an average of between two and three neighbours (one for terminal nodes; two for non-branching nodes; three for branching nodes). It may accordingly be presumed that reducing a full set of neighbours to an MST reduces average numbers of edges per node from <span class="math inline">\(\gtrapprox 3\)</span> to <span class="math inline">\(\sim 2.5\)</span>. The loss in computational complexity produced through using all neighbouring nodes instead of an MST is thus likely to be only around 20%. Moreover, if a clustering algorithm scales sub-linearly with <span class="math inline">\(N\)</span>, as many do, this loss is likely to be even less pronounced with increasing <span class="math inline">\(N\)</span>.</p>
-<p>The exact clustering algorithm proceeds through the following steps, looping until all data objects have been allocated to a cluster, and beginning with both <code>i = 0</code> and <code>clnum = 0</code>. The primary data is an array of edges (<code>edge</code>) sorted by increasing distance.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fl">1.</span>  Select edge [i] connecting nodes a and b.</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="fl">2.</span>  i<span class="op">++</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="fl">3.</span>  <span class="cf">if</span> both a and b are already <span class="cf">in</span> clusters<span class="op">:</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="st">        </span>continue to <span class="cf">next</span> iteration</span>
-<span id="cb7-5"><a href="#cb7-5"></a>    <span class="cf">else</span> <span class="cf">if</span> neither node is <span class="cf">in</span> a cluster<span class="op">:</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="st">        </span><span class="kw">cluster</span> (clnum) =<span class="st"> </span><span class="kw">create_new_cluster</span> (<span class="kw">c</span> (a, b))</span>
-<span id="cb7-7"><a href="#cb7-7"></a>        clnum<span class="op">++</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="st">    </span><span class="cf">else</span> <span class="cf">if</span> only a is <span class="cf">in</span> a cluster<span class="op">:</span></span>
-<span id="cb7-9"><a href="#cb7-9"></a><span class="st">        </span><span class="kw">set_cluster_number</span> (a, <span class="kw">get_cluster_number</span> (b))</span>
-<span id="cb7-10"><a href="#cb7-10"></a>    <span class="cf">else</span> <span class="cf">if</span> only b is <span class="cf">in</span> a cluster<span class="op">:</span></span>
-<span id="cb7-11"><a href="#cb7-11"></a><span class="st">        </span><span class="kw">set_cluster_number</span> (b, <span class="kw">get_cluster_number</span> (a))</span></code></pre></div>
-<p>This procedure allocates all nodes (data objects) to clusters. The number of resultant clusters can not be known in advance, and many clusters may be very small, comprising for example only a single edge connecting two nodes. This initial clustering may then be used as the basis of a further hierarchical clustering, through sequentially merging clusters having the minimal distance according to some specified metric. This merging involves linking previously distinct clusters according to some specified criteria, for which the same three criteria used in the REDCAP algorithms can be directly applied here. Note, however, that average and maximal distances in the REDCAP algorithms simply represent the respective average and maximal individual edge distances, and not the corresponding distances traversed within a cluster through the MST.</p>
-<p>It is possible within the present exact clustering approach to select edges based on actual average or maximal traversal distances from a potential connecting edge to all other edges in two clusters. Doing so, however, simply merges the two smallest clusters, all other things being equal, because these must by definition have the shortest average and maximal distance. Edge selection is therefore implemented here in the same way as the REDCAP algorithms, by selecting edges based on average and maximal single edge distances. Clusters are hierarchically connected by selecting edges according to on of the following three schemes:</p>
+<p>As described above, the REDCAP algorithms provide different ways of
+constructing minimal spanning trees for a given data set, with resultant
+clusters based on bisecting these spanning trees. They effectively
+represent the relationships within a data set by the “best” minimal set
+(according to the chosen algorithm). Here, we develop a simple algorithm
+for deriving a clustering scheme that uses the full set of
+nearest-neighbour relationships in a given data set.</p>
+<p>Each point or object within a typical planar (effectively
+two-dimensional) data set may have on average just under three nearest
+neighbours if these are calculated with a triangulation, or potentially
+up to <span class="math inline">\(k\)</span> for some <span class="math inline">\(k\)</span>-nearest neighbours scheme. Each point
+in a minimal-spanning tree generally has an average of between two and
+three neighbours (one for terminal nodes; two for non-branching nodes;
+three for branching nodes). It may accordingly be presumed that reducing
+a full set of neighbours to an MST reduces average numbers of edges per
+node from <span class="math inline">\(\gtrapprox 3\)</span> to <span class="math inline">\(\sim 2.5\)</span>. The loss in computational
+complexity produced through using all neighbouring nodes instead of an
+MST is thus likely to be only around 20%. Moreover, if a clustering
+algorithm scales sub-linearly with <span class="math inline">\(N\)</span>, as many do, this loss is likely to be
+even less pronounced with increasing <span class="math inline">\(N\)</span>.</p>
+<p>The exact clustering algorithm proceeds through the following steps,
+looping until all data objects have been allocated to a cluster, and
+beginning with both <code>i = 0</code> and <code>clnum = 0</code>. The
+primary data is an array of edges (<code>edge</code>) sorted by
+increasing distance.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fl">1.</span>  Select edge [i] connecting nodes a and b.</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fl">2.</span>  i<span class="sc">++</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fl">3.</span>  <span class="cf">if</span> both a and b are already <span class="cf">in</span> clusters<span class="sc">:</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        continue to <span class="cf">next</span> iteration</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> neither node is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cluster</span> (clnum) <span class="ot">=</span> <span class="fu">create_new_cluster</span> (<span class="fu">c</span> (a, b))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        clnum<span class="sc">++</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only a is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (a, <span class="fu">get_cluster_number</span> (b))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only b is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (b, <span class="fu">get_cluster_number</span> (a))</span></code></pre></div>
+<p>This procedure allocates all nodes (data objects) to clusters. The
+number of resultant clusters can not be known in advance, and many
+clusters may be very small, comprising for example only a single edge
+connecting two nodes. This initial clustering may then be used as the
+basis of a further hierarchical clustering, through sequentially merging
+clusters having the minimal distance according to some specified metric.
+This merging involves linking previously distinct clusters according to
+some specified criteria, for which the same three criteria used in the
+REDCAP algorithms can be directly applied here. Note, however, that
+average and maximal distances in the REDCAP algorithms simply represent
+the respective average and maximal individual edge distances, and not
+the corresponding distances traversed within a cluster through the
+MST.</p>
+<p>It is possible within the present exact clustering approach to select
+edges based on actual average or maximal traversal distances from a
+potential connecting edge to all other edges in two clusters. Doing so,
+however, simply merges the two smallest clusters, all other things being
+equal, because these must by definition have the shortest average and
+maximal distance. Edge selection is therefore implemented here in the
+same way as the REDCAP algorithms, by selecting edges based on average
+and maximal single edge distances. Clusters are hierarchically connected
+by selecting edges according to on of the following three schemes:</p>
 <ol style="list-style-type: decimal">
-<li>Single-linkage: select the single edge having the minimal distance between any two clusters;</li>
-<li>Average-linkage: select the edge connecting the two clusters which, when merged, give the lowest average intra-cluster edge distance; or</li>
-<li>Maximal-linkage: select the edge connecting the two clusters which, when merged, gives the lowest maximal intra-cluster edge distance.</li>
+<li>Single-linkage: select the single edge having the minimal distance
+between any two clusters;</li>
+<li>Average-linkage: select the edge connecting the two clusters which,
+when merged, give the lowest average intra-cluster edge distance;
+or</li>
+<li>Maximal-linkage: select the edge connecting the two clusters which,
+when merged, gives the lowest maximal intra-cluster edge distance.</li>
 </ol>
-<p>The latter two of these yield clusters with preferentially shorter intra-cluster distances, yet the selection procedure remains statistically unbiased by cluster size.</p>
+<p>The latter two of these yield clusters with preferentially shorter
+intra-cluster distances, yet the selection procedure remains
+statistically unbiased by cluster size.</p>
 </div>
 <div class="section level2">
 <h2 id="clustering-origin-destination-od-matrices">Clustering Origin-Destination (OD) matrices<a class="anchor" aria-label="anchor" href="#clustering-origin-destination-od-matrices"></a>
 </h2>
-<p>The exact clustering scheme provides a uniquely powerful approach to discerning spatial clusters in Origin-Destination (OD) matrices. These are ubiquitous in transport planning, and quantify numbers or densities of journeys undertaken between a set of origin points and a (potentially different) set of destination points. Origin-destination matrices are frequently modelled by spatial interaction models, which explain the “interaction” between two locations based on their size, measured as aggregate numbers or densities of trips to and from those points, and their distance apart. The sizes of origin locations are the row sums of the OD matrix; the sizes of destinations the column sums. Respectively denoting the sizes of origin <span class="math inline">\(i\)</span> and destination <span class="math inline">\(j\)</span> by <span class="math inline">\(O_i\)</span> and <span class="math inline">\(D_j\)</span>, the canonical spatial interaction model is, <span class="math display">\[\begin{equation}
+<p>The exact clustering scheme provides a uniquely powerful approach to
+discerning spatial clusters in Origin-Destination (OD) matrices. These
+are ubiquitous in transport planning, and quantify numbers or densities
+of journeys undertaken between a set of origin points and a (potentially
+different) set of destination points. Origin-destination matrices are
+frequently modelled by spatial interaction models, which explain the
+“interaction” between two locations based on their size, measured as
+aggregate numbers or densities of trips to and from those points, and
+their distance apart. The sizes of origin locations are the row sums of
+the OD matrix; the sizes of destinations the column sums. Respectively
+denoting the sizes of origin <span class="math inline">\(i\)</span> and
+destination <span class="math inline">\(j\)</span> by <span class="math inline">\(O_i\)</span> and <span class="math inline">\(D_j\)</span>, the canonical spatial interaction
+model is, <span class="math display">\[\begin{equation}
     S_{ij} = \frac{O_i D_j e ^ {-\alpha d_{ij}}} {\sum_m O_m \sum_n D_n}
-\end{equation}\]</span> where <span class="math inline">\(d_{ij}\)</span> denotes the distance between the points <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>.</p>
-<p>A spatial interaction model explains the portion of the OD matrix expected to arise based on individual locational importance and relative position alone. A spatial interaction model represents the portion of an OD matrix able to be explained by the hypotheses that (i) “larger” or more important locations must be expected to attract more journeys, and (ii) journeys between two locations must be expected to decrease with increasing distance, all other things being equal.</p>
-<p>We develop here an approach to extracting that portion of an OD matrix reflecting processes beyond those expected from simple spatial interactions alone. This is not done here in terms of numbers or densities of trips, because results would then still depend on the original scales of observations - “larger” locations would still manifest larger anomalies. Instead, OD matrices are converted to covariance matrices, through calculating row- and column-wise covariances, respectively representing the covariances of origin and destination locations. Resultant covariances can either be stored in the diagonal halves of two separate matrices, or combined into a single, non-symmetrical matrix.</p>
-<p>Covariance matrices calculated from spatial interaction models can be subtracted from covariance matrices calculated from directly observed data to quantify aggregate covariance beyond that expected from spatial interaction models alone. Standardised measures are derived here as relative deviations, <span class="math inline">\((C_{obs} - C_{SI}) / C_{SI}\)</span>. We use these resultant covariance matrices to discern spatial clusters within which observed interactions are anomalously high. An immediate advantage of this approach is that all pair-wise interactions for which observed covariances are merely equal to or less than those explained by spatial interaction may be removed (through replacing with <code>NA</code> or <code>NaN</code> values), so that clustering uses only those interactions which exceed neutrally expected values.</p>
-<p>Finally, note that covariances are the obverse of distances, and so need to be converted to some suitable distance metric such as <span class="math inline">\({\rm max} C - C_{ij}\)</span>. The resultant matrix can then be used to extract a set of (triangulated or otherwise nearest) neighbours which can be used to extract exact clusters. In summary, an OD matrix can be used to form a set of neighbouring edges through the following steps:</p>
+\end{equation}\]</span> where <span class="math inline">\(d_{ij}\)</span> denotes the distance between the
+points <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>.</p>
+<p>A spatial interaction model explains the portion of the OD matrix
+expected to arise based on individual locational importance and relative
+position alone. A spatial interaction model represents the portion of an
+OD matrix able to be explained by the hypotheses that (i) “larger” or
+more important locations must be expected to attract more journeys, and
+(ii) journeys between two locations must be expected to decrease with
+increasing distance, all other things being equal.</p>
+<p>We develop here an approach to extracting that portion of an OD
+matrix reflecting processes beyond those expected from simple spatial
+interactions alone. This is not done here in terms of numbers or
+densities of trips, because results would then still depend on the
+original scales of observations - “larger” locations would still
+manifest larger anomalies. Instead, OD matrices are converted to
+covariance matrices, through calculating row- and column-wise
+covariances, respectively representing the covariances of origin and
+destination locations. Resultant covariances can either be stored in the
+diagonal halves of two separate matrices, or combined into a single,
+non-symmetrical matrix.</p>
+<p>Covariance matrices calculated from spatial interaction models can be
+subtracted from covariance matrices calculated from directly observed
+data to quantify aggregate covariance beyond that expected from spatial
+interaction models alone. Standardised measures are derived here as
+relative deviations, <span class="math inline">\((C_{obs} - C_{SI}) /
+C_{SI}\)</span>. We use these resultant covariance matrices to discern
+spatial clusters within which observed interactions are anomalously
+high. An immediate advantage of this approach is that all pair-wise
+interactions for which observed covariances are merely equal to or less
+than those explained by spatial interaction may be removed (through
+replacing with <code>NA</code> or <code>NaN</code> values), so that
+clustering uses only those interactions which exceed neutrally expected
+values.</p>
+<p>Finally, note that covariances are the obverse of distances, and so
+need to be converted to some suitable distance metric such as <span class="math inline">\({\rm max} C - C_{ij}\)</span>. The resultant
+matrix can then be used to extract a set of (triangulated or otherwise
+nearest) neighbours which can be used to extract exact clusters. In
+summary, an OD matrix can be used to form a set of neighbouring edges
+through the following steps:</p>
 <ol style="list-style-type: decimal">
-<li>Fit a spatial interaction model and derive corresponding model OD matrix;</li>
-<li>Calculate covariance matrices for both observed and model OD matrices, and for either or both origins and/or destinations;</li>
-<li>Subtract modelled from observed covariance matrix to obtain standardised covariance fractions beyond those expected from spatial interaction alone;</li>
-<li>(Optionally) Set all fractions <span class="math inline">\(\le 0\)</span> to <code>NA</code>.</li>
-<li>Convert to distance metric, for example, <span class="math inline">\(C_{ij} \rightarrow {\rm max} C - C_{ij}\)</span>.</li>
-<li>Construct set of neighbouring edges via preferred algorithm (such as triangulation or <span class="math inline">\(k\)</span>-nearest neighbours), and including only those neighbours with non-<code>NA</code> distances.</li>
-<li>Use resultant edges to calculate exact clusters using chosen linkage scheme.</li>
+<li>Fit a spatial interaction model and derive corresponding model OD
+matrix;</li>
+<li>Calculate covariance matrices for both observed and model OD
+matrices, and for either or both origins and/or destinations;</li>
+<li>Subtract modelled from observed covariance matrix to obtain
+standardised covariance fractions beyond those expected from spatial
+interaction alone;</li>
+<li>(Optionally) Set all fractions <span class="math inline">\(\le
+0\)</span> to <code>NA</code>.</li>
+<li>Convert to distance metric, for example, <span class="math inline">\(C_{ij} \rightarrow {\rm max} C -
+C_{ij}\)</span>.</li>
+<li>Construct set of neighbouring edges via preferred algorithm (such as
+triangulation or <span class="math inline">\(k\)</span>-nearest
+neighbours), and including only those neighbours with
+non-<code>NA</code> distances.</li>
+<li>Use resultant edges to calculate exact clusters using chosen linkage
+scheme.</li>
 </ol>
 <div class="section level3">
 <h3 id="interpretation-of-od-clusters">Interpretation of OD clusters<a class="anchor" aria-label="anchor" href="#interpretation-of-od-clusters"></a>
 </h3>
-<p>As described at the outset, clusters discerned from net covariance matrices derived from flow data may be either significantly positive or significantly negative. The results of such analyses must be interpreted with caution. Although all clusters may by definition be considered individually significant, these are clusters of <strong>covariances</strong> and not of underlying flows. Thus, for example, positive clusters calculated from origin data (row-wise covariances) <strong>will not</strong> reflect regions from which which movement is significantly more likely. Rather, each point in such a cluster will be a point from which movement covaries with all other clustered points more than expected on the basis of a neutral model. A positive cluster calculated from origin data may thus be interpreted to represent a distinct region from which movement significantly covaries in a manner independent of the precise point of origin. Importantly, the significance of these net origin- or destination-clusters does not reflect any net patterns of in- or out-flow: net origins (destinations) may still be regions of net inflow (outflow). Rather, these will be regions towards or away from which patterns of flow or movement covary more closely than neutrally expected, independent of actual net rates of flow or movement.</p>
-<p>For clarity, the following re-phrase the four kinds of cluster able to be discerned with these analyses:</p>
+<p>As described at the outset, clusters discerned from net covariance
+matrices derived from flow data may be either significantly positive or
+significantly negative. The results of such analyses must be interpreted
+with caution. Although all clusters may by definition be considered
+individually significant, these are clusters of
+<strong>covariances</strong> and not of underlying flows. Thus, for
+example, positive clusters calculated from origin data (row-wise
+covariances) <strong>will not</strong> reflect regions from which which
+movement is significantly more likely. Rather, each point in such a
+cluster will be a point from which movement covaries with all other
+clustered points more than expected on the basis of a neutral model. A
+positive cluster calculated from origin data may thus be interpreted to
+represent a distinct region from which movement significantly covaries
+in a manner independent of the precise point of origin. Importantly, the
+significance of these net origin- or destination-clusters does not
+reflect any net patterns of in- or out-flow: net origins (destinations)
+may still be regions of net inflow (outflow). Rather, these will be
+regions towards or away from which patterns of flow or movement covary
+more closely than neutrally expected, independent of actual net rates of
+flow or movement.</p>
+<p>For clarity, the following re-phrase the four kinds of cluster able
+to be discerned with these analyses:</p>
 <ol style="list-style-type: decimal">
-<li>Positive clusters calculated from origin data represent regions <strong>from</strong> which movement covaries significantly <strong>more</strong> than expected, and thus represent significant net origins - and importantly, this phenomenon is independent of net rates of out- or in-flow;</li>
-<li>Negative clusters calculated from origin data represent regions <strong>from</strong> which movement covaries significantly <strong>less</strong> than expected, and thus represent significant net <strong>non-</strong>origins from which movement is expected to covary yet doesn’t;</li>
-<li>Positive clusters calculated from destination data represent regions <strong>toward</strong> which movement covaries significantly <strong>more</strong> than expected, and thus represent significant net destinations; and</li>
-<li>Negative clusters calculated from destination data represent regions <strong>toward</strong> which movement covaries significantly <strong>less</strong> than expected, and thus represent significant net <strong>non-</strong>destinations.</li>
+<li>Positive clusters calculated from origin data represent regions
+<strong>from</strong> which movement covaries significantly
+<strong>more</strong> than expected, and thus represent significant net
+origins - and importantly, this phenomenon is independent of net rates
+of out- or in-flow;</li>
+<li>Negative clusters calculated from origin data represent regions
+<strong>from</strong> which movement covaries significantly
+<strong>less</strong> than expected, and thus represent significant net
+<strong>non-</strong>origins from which movement is expected to covary
+yet doesn’t;</li>
+<li>Positive clusters calculated from destination data represent regions
+<strong>toward</strong> which movement covaries significantly
+<strong>more</strong> than expected, and thus represent significant net
+destinations; and</li>
+<li>Negative clusters calculated from destination data represent regions
+<strong>toward</strong> which movement covaries significantly
+<strong>less</strong> than expected, and thus represent significant net
+<strong>non-</strong>destinations.</li>
 </ol>
-<p>The phrases “non-origins” and “non-destinations” refer to regions within which movement respectively from or to adjacent locations covaries significantly less than expected. Hypothetical causes are likely to be highly specific for any given study, but may include for example the dominance of a single location within these clusters to or from which movement is focussed at the expense of neighbouring locations. Such dominant locations would then represent locations which effectively act to weaken general patterns of spatial autocorrelation (or interaction) which would otherwise exist.</p>
+<p>The phrases “non-origins” and “non-destinations” refer to regions
+within which movement respectively from or to adjacent locations
+covaries significantly less than expected. Hypothetical causes are
+likely to be highly specific for any given study, but may include for
+example the dominance of a single location within these clusters to or
+from which movement is focussed at the expense of neighbouring
+locations. Such dominant locations would then represent locations which
+effectively act to weaken general patterns of spatial autocorrelation
+(or interaction) which would otherwise exist.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="appendix-1-why-clusters-of-significant-net-in--or-out-flow-can-not-be-identified">Appendix 1: Why clusters of significant net in- or out-flow can not be identified<a class="anchor" aria-label="anchor" href="#appendix-1-why-clusters-of-significant-net-in--or-out-flow-can-not-be-identified"></a>
+<h2 id="appendix-1-why-clusters-of-significant-net-in--or-out-flow-can-not-be-identified">Appendix 1: Why clusters of significant net in- or out-flow can not
+be identified<a class="anchor" aria-label="anchor" href="#appendix-1-why-clusters-of-significant-net-in--or-out-flow-can-not-be-identified"></a>
 </h2>
-<p>The present covariance analyses work by converting an observed covariance matrix into measures of net covariance beyond that expected on the basis of a neutral model. These neutral models reflect, among other aspects, expected patterns of spatial autocorrelation (cite Getis 1991). These models are nevertheless calculated from directly observed flow matrices, and themselves represent flow matrices which are only converted to covariance matrices to be submitted to the procedures developed here. It might be expected that net flow matrices could therefore be directly analysed in the same way to generate clusters reflecting significant concentrations of flow, rather than the clusters of significant covariance analysed in the main manuscript. This appendix briefly describes why this is not possible.</p>
-<p>A spatial interaction model of an observed flow matrix represents the component of the observed values expected to arise through spatial interaction processes alone. These processes are a specific form off autocorrelation, such that nearby points are expected to have more highly correlated values (here, of flow) than more distant points. A spatial interaction model will thus “predict” relatively similar values of flow towards two nearby points, <span class="math inline">\(a\)</span> and <span class="math inline">\(A^\prime\)</span>. Observed values may nevertheless be distinctly different for any range of particular and idiosyncratic reasons - <span class="math inline">\(a\)</span> may be an important destination for some spatially-defined sub-section of the population, while <span class="math inline">\(A^\prime\)</span> is important for some other, spatially distinct sub-population. Comparing net counts alone will nevertheless reveal a strong similarity between these two points.</p>
-<p>In contrast, covariances between <span class="math inline">\(a\)</span> and <span class="math inline">\(A^\prime\)</span> will only be high when patterns of flow from the entire population towards <span class="math inline">\(a\)</span> are similar to patterns of flow towards <span class="math inline">\(A^\prime\)</span>. The clusters discerned here are forced to be spatially-contiguous, and yet direct analyses of flows permits clusters to be formed based on processes which are potentially unrelated in space. In contrast, clusters discerned from analyses of covariance matrix must by definition reflect regions towards or away from which movement of the entire, spatially-structured population significantly covaries.</p>
+<p>The present covariance analyses work by converting an observed
+covariance matrix into measures of net covariance beyond that expected
+on the basis of a neutral model. These neutral models reflect, among
+other aspects, expected patterns of spatial autocorrelation (cite Getis
+1991). These models are nevertheless calculated from directly observed
+flow matrices, and themselves represent flow matrices which are only
+converted to covariance matrices to be submitted to the procedures
+developed here. It might be expected that net flow matrices could
+therefore be directly analysed in the same way to generate clusters
+reflecting significant concentrations of flow, rather than the clusters
+of significant covariance analysed in the main manuscript. This appendix
+briefly describes why this is not possible.</p>
+<p>A spatial interaction model of an observed flow matrix represents the
+component of the observed values expected to arise through spatial
+interaction processes alone. These processes are a specific form off
+autocorrelation, such that nearby points are expected to have more
+highly correlated values (here, of flow) than more distant points. A
+spatial interaction model will thus “predict” relatively similar values
+of flow towards two nearby points, <span class="math inline">\(a\)</span> and <span class="math inline">\(A^\prime\)</span>. Observed values may
+nevertheless be distinctly different for any range of particular and
+idiosyncratic reasons - <span class="math inline">\(a\)</span> may be an
+important destination for some spatially-defined sub-section of the
+population, while <span class="math inline">\(A^\prime\)</span> is
+important for some other, spatially distinct sub-population. Comparing
+net counts alone will nevertheless reveal a strong similarity between
+these two points.</p>
+<p>In contrast, covariances between <span class="math inline">\(a\)</span> and <span class="math inline">\(A^\prime\)</span> will only be high when patterns
+of flow from the entire population towards <span class="math inline">\(a\)</span> are similar to patterns of flow towards
+<span class="math inline">\(A^\prime\)</span>. The clusters discerned
+here are forced to be spatially-contiguous, and yet direct analyses of
+flows permits clusters to be formed based on processes which are
+potentially unrelated in space. In contrast, clusters discerned from
+analyses of covariance matrix must by definition reflect regions towards
+or away from which movement of the entire, spatially-structured
+population significantly covaries.</p>
 <p>TODO: Now develop a proper mathematical argument for this</p>
 </div>
 <div class="section level2">
@@ -263,30 +650,51 @@ Figure 2: (A) Non-spatial data coloured by dbscan clustering results; (B) Corres
 <p>Plus extra refs:</p>
 <p><a href="http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da" class="external-link uri">http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da</a></p>
 <p><a href="https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov" class="external-link uri">https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov</a></p>
-<div id="refs" class="references">
-<div id="ref-Assuncao2006">
-<p>AssunÇão, R. M., M. C. Neves, G. Câmara, and C. Da Costa Freitas. 2006. “Efficient Regionalization Techniques for Socio‐economic Geographical Units Using Minimum Spanning Trees.” <em>International Journal of Geographical Information Science</em> 20 (7): 797–811. <a href="https://doi.org/10.1080/13658810600665111" class="external-link">https://doi.org/10.1080/13658810600665111</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Assuncao2006" class="csl-entry">
+AssunÇão, R. M., M. C. Neves, G. Câmara, and C. Da Costa Freitas. 2006.
+<span>“Efficient Regionalization Techniques for Socio‐economic
+Geographical Units Using Minimum Spanning Trees.”</span>
+<em>International Journal of Geographical Information Science</em> 20
+(7): 797–811. <a href="https://doi.org/10.1080/13658810600665111" class="external-link">https://doi.org/10.1080/13658810600665111</a>.
 </div>
-<div id="ref-Bivand2013">
-<p>Bivand, Roger, Jan Hauke, and Tomasz Kossowski. 2013. “Computing the Jacobian in Gaussian Spatial Autoregressive Models: An Illustrated Comparison of Available Methods.” <em>Geographical Analysis</em> 45 (2): 150–79. <a href="https://doi.org/10.1111/gean.12008" class="external-link">https://doi.org/10.1111/gean.12008</a>.</p>
+<div id="ref-Bivand2013" class="csl-entry">
+Bivand, Roger, Jan Hauke, and Tomasz Kossowski. 2013. <span>“Computing
+the Jacobian in Gaussian Spatial Autoregressive Models: An Illustrated
+Comparison of Available Methods.”</span> <em>Geographical Analysis</em>
+45 (2): 150–79. <a href="https://doi.org/10.1111/gean.12008" class="external-link">https://doi.org/10.1111/gean.12008</a>.
 </div>
-<div id="ref-Bivand2015">
-<p>Bivand, Roger, and Gianfranco Piras. 2015. “Comparing Implementations of Estimation Methods for Spatial Econometrics.” <em>Journal of Statistical Software, Articles</em> 63 (18): 1–36. <a href="https://doi.org/10.18637/jss.v063.i18" class="external-link">https://doi.org/10.18637/jss.v063.i18</a>.</p>
+<div id="ref-Bivand2015" class="csl-entry">
+Bivand, Roger, and Gianfranco Piras. 2015. <span>“Comparing
+Implementations of Estimation Methods for Spatial Econometrics.”</span>
+<em>Journal of Statistical Software, Articles</em> 63 (18): 1–36. <a href="https://doi.org/10.18637/jss.v063.i18" class="external-link">https://doi.org/10.18637/jss.v063.i18</a>.
 </div>
-<div id="ref-Chavent2017">
-<p>Chavent, M., V. Kuentz-Simonet, A. Labenne, and Saracco J. 2017. “ClustGeo: An R Package for Hierarchical Clustering with Spatial Constraints.” <em>ArXiv E-Prints</em>, July. <a href="https://arxiv.org/abs/1707.03897" class="external-link">https://arxiv.org/abs/1707.03897</a>.</p>
+<div id="ref-Chavent2017" class="csl-entry">
+Chavent, M., V. Kuentz-Simonet, A. Labenne, and Saracco J. 2017.
+<span>“ClustGeo: An r Package for Hierarchical Clustering with Spatial
+Constraints.”</span> <em>ArXiv e-Prints</em>, July. <a href="https://arxiv.org/abs/1707.03897" class="external-link">https://arxiv.org/abs/1707.03897</a>.
 </div>
-<div id="ref-Duque2007">
-<p>Duque, Juan Carlos, Raúl Ramos, and Jordi Suriñach. 2007. “Supervised Regionalization Methods: A Survey.” <em>International Regional Science Review</em> 30 (3): 195–220. <a href="https://doi.org/10.1177/0160017607301605" class="external-link">https://doi.org/10.1177/0160017607301605</a>.</p>
+<div id="ref-Duque2007" class="csl-entry">
+Duque, Juan Carlos, Raúl Ramos, and Jordi Suriñach. 2007.
+<span>“Supervised Regionalization Methods: A Survey.”</span>
+<em>International Regional Science Review</em> 30 (3): 195–220. <a href="https://doi.org/10.1177/0160017607301605" class="external-link">https://doi.org/10.1177/0160017607301605</a>.
 </div>
-<div id="ref-Guo2008">
-<p>Guo, D. 2008. “Regionalization with Dynamically Constrained Agglomerative Clustering and Partitioning (Redcap).” <em>International Journal of Geographical Information Science</em> 22 (7): 801–23. <a href="https://doi.org/10.1080/13658810701674970" class="external-link">https://doi.org/10.1080/13658810701674970</a>.</p>
+<div id="ref-Guo2008" class="csl-entry">
+Guo, D. 2008. <span>“Regionalization with Dynamically Constrained
+Agglomerative Clustering and Partitioning (REDCAP).”</span>
+<em>International Journal of Geographical Information Science</em> 22
+(7): 801–23. <a href="https://doi.org/10.1080/13658810701674970" class="external-link">https://doi.org/10.1080/13658810701674970</a>.
 </div>
-<div id="ref-Han2001">
-<p>Han, Jiawei, M Kamber, and Anthony Tung. 2001. “Spatial Clustering Methods in Data Mining: A Survey.” In <em>Data Mining and Knowledge Discovery - Datamine</em>. <a href="http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf" class="external-link">http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf</a>.</p>
+<div id="ref-Han2001" class="csl-entry">
+Han, Jiawei, M Kamber, and Anthony Tung. 2001. <span>“Spatial Clustering
+Methods in Data Mining: A Survey.”</span> In <em>Data Mining and
+Knowledge Discovery - DATAMINE</em>. <a href="http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf" class="external-link">http://hanj.cs.illinois.edu/pdf/gkdbk01.pdf</a>.
 </div>
-<div id="ref-Lu2009">
-<p>Lu, Y. 2009. “Spatial Clustering, Detection and Analysis of.” In <em>International Encyclopedia of Human Geography</em>, edited by Rob Kitchin and Nigel Thrift, 317–24. Oxford: Elsevier. <a href="https://doi.org/https://doi.org/10.1016/B978-008044910-4.00523-X" class="external-link">https://doi.org/https://doi.org/10.1016/B978-008044910-4.00523-X</a>.</p>
+<div id="ref-Lu2009" class="csl-entry">
+Lu, Y. 2009. <span>“Spatial Clustering, Detection and Analysis
+Of.”</span> In <em>International Encyclopedia of Human Geography</em>,
+edited by Rob Kitchin and Nigel Thrift, 317–24. Oxford: Elsevier.
+https://doi.org/<a href="https://doi.org/10.1016/B978-008044910-4.00523-X" class="external-link">https://doi.org/10.1016/B978-008044910-4.00523-X</a>.
 </div>
 </div>
 </div>
