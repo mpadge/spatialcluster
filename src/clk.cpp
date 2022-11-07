@@ -107,7 +107,7 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
     if (fabs (dlim) == INFINITE_DOUBLE)
         Rcpp::stop ("minimal distance not able to be found");
 
-    utils::merge_clusters (clk_dat.contig_mat,
+    bool has_outgoing = utils::merge_clusters (clk_dat.contig_mat,
             clk_dat.index2cl_map,
             clk_dat.cl2index_map,
             clk_dat.index2cl_map.at (mmin),

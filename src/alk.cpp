@@ -177,7 +177,7 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
             alk_dat.vert2index_map, alk_dat.dmat,
             alk_dat.cl2index_map, mi, li, alk_dat.shortest);
     // ishort is return value; an index into (from, to)
-    utils::merge_clusters (alk_dat.contig_mat,
+    bool has_outgoing = utils::merge_clusters (alk_dat.contig_mat,
             alk_dat.index2cl_map,
             alk_dat.cl2index_map, mi, li);
     update_edgewt_maps (alk_dat, m, l);

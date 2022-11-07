@@ -81,8 +81,8 @@ Rcpp::IntegerVector rcpp_slk (
                         vert2index_map, d_mat, cl2index_map, cfrom, cto,
                         shortest);
                 the_tree.insert (ishort);
-                utils::merge_clusters (contig_mat, index2cl_map, cl2index_map,
-                        cfrom, cto);
+                bool has_outgoing = utils::merge_clusters (contig_mat,
+                        index2cl_map, cl2index_map, cfrom, cto);
                 e = 0;
             } else
             {

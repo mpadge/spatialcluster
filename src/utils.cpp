@@ -153,6 +153,7 @@ size_t utils::find_shortest_connection (
         Rcpp::stop ("cluster index not found");
     if (cl2index_map.find (cto) == cl2index_map.end ())
         Rcpp::stop ("cluster index not found");
+
     indxset_t index_i = cl2index_map.at (cfrom),
              index_j = cl2index_map.at (cto);
 
@@ -161,7 +162,7 @@ size_t utils::find_shortest_connection (
         dlim = -dlim;
     size_t short_i = INFINITE_INT, short_j = INFINITE_INT;
 
-    // from and to here are not directional, so need to examine both directions
+    // from and to here are directional, so need to examine both directions
     for (auto i: index_i)
         for (auto j: index_j)
         {
@@ -206,8 +207,11 @@ size_t utils::find_shortest_connection (
 
 //' merge two clusters in the contiguity matrix, reducing the size of the matrix
 //' by one row and column.
+//'
+//' @return A logical parameter indicating whether or not the newly formed
+//' cluster has any outgoing connections.
 //' @noRd
-void utils::merge_clusters (
+bool utils::merge_clusters (
         arma::Mat <int> &contig_mat,
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map,
@@ -218,13 +222,15 @@ void utils::merge_clusters (
         Rcpp::stop ("cluster_from must be non-zero");
     if (cluster_to < 0)
         Rcpp::stop ("cluster_to must be non-zero");
+
     arma::uword cfr = static_cast <arma::uword> (cluster_from),
                 cto = static_cast <arma::uword> (cluster_to);
     // Set all contig_mat (cluster_from, .) to 1
     for (arma::uword i = 0; i < contig_mat.n_rows; i++)
     {
-        if (contig_mat (cfr, i) == 1 )
+        if (contig_mat (cfr, i) == 1 || contig_mat (i, cfr) == 1)
         {
+            contig_mat (cfr, i) = contig_mat (i, cfr) = 1;
             contig_mat (cto, i) = contig_mat (i, cto) = 1;
         }
     }
@@ -242,10 +248,34 @@ void utils::merge_clusters (
 
     // then re-number all cluster numbers in cl2index 
     cl2index_map.erase (cluster_from);
+    cl2index_map.erase (cluster_to);
     for (auto i: idx_from)
         idx_to.insert (i);
-    cl2index_map [cluster_to] = idx_to;
+    cl2index_map.emplace (cluster_to, idx_to);
     // and in index2cl:
     for (auto i: idx_from)
-        index2cl_map [i] = cluster_to;
+    {
+        index2cl_map.erase (i);
+        index2cl_map.emplace (i, cluster_to);
+    }
+
+    // Finally, if there is no shortest connection out of new cluster, then
+    // insert one. First determine whether one exists:
+    bool connects_out = false;
+    arma::uword imin;
+    double dmin = INFINITE_INT;
+    for (auto i: idx_to)
+    {
+        for (arma::uword j = 0; j < contig_mat.n_rows; j++)
+        {
+            if (index2cl_map.at (j) != index2cl_map.at (i) &&
+                    (contig_mat (j, i) == 1 || contig_mat (i, j) == 1))
+            {
+                connects_out = true;
+                break;
+            }
+        }
+    }
+
+    return connects_out;
 }
