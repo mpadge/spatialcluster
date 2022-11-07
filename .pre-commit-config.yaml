@@ -30,6 +30,9 @@ repos:
           .*\.Rds|
           .*\.sh|
           .*\.RData
+          .*\.jpeg|
+          .*\.pdf|
+          .*\.png|
           )$
     -   id: readme-rmd-rendered
 -   repo: https://github.com/pre-commit/pre-commit-hooks
