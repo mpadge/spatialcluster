@@ -4,14 +4,14 @@
 \alias{scl_full}
 \title{scl_full}
 \usage{
-scl_full(xy, dmat, ncl, linkage = "single", shortest = TRUE, nnbs = 6)
+scl_full(xy, dmat, ncl, linkage = "single", shortest = TRUE, nnbs = 6L)
 }
 \arguments{
 \item{xy}{Rectangular structure (matrix, data.frame, tibble), containing
 coordinates of points to be clustered.}
 
 \item{dmat}{Square structure (matrix, data.frame, tibble) containing
-distances or equivalent metrics betwen all points in \code{xy}. If \code{xy}
+distances or equivalent metrics between all points in \code{xy}. If \code{xy}
 has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 columns.}
 

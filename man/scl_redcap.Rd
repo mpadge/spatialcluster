@@ -11,7 +11,7 @@ scl_redcap(
   full_order = TRUE,
   linkage = "single",
   shortest = TRUE,
-  nnbs = 6
+  nnbs = 6L
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ scl_redcap(
 coordinates of points to be clustered.}
 
 \item{dmat}{Square structure (matrix, data.frame, tibble) containing
-distances or equivalent metrics betwen all points in \code{xy}. If \code{xy}
+distances or equivalent metrics between all points in \code{xy}. If \code{xy}
 has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 columns.}
 

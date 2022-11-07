@@ -16,7 +16,7 @@ scl_full <- function (xy,
                       ncl,
                       linkage = "single",
                       shortest = TRUE,
-                      nnbs = 6) {
+                      nnbs = 6L) {
     linkage <- scl_linkage_type (linkage)
     if (methods::is (xy, "scl")) {
         message ("scl_full is for initial cluster construction; ",

@@ -6,7 +6,7 @@
 #' @param xy Rectangular structure (matrix, data.frame, tibble), containing
 #' coordinates of points to be clustered.
 #' @param dmat Square structure (matrix, data.frame, tibble) containing
-#' distances or equivalent metrics betwen all points in \code{xy}. If \code{xy}
+#' distances or equivalent metrics between all points in \code{xy}. If \code{xy}
 #' has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 #' columns.
 #' @param ncl Desired number of clusters
@@ -54,7 +54,7 @@ scl_redcap <- function (xy,
                         full_order = TRUE,
                         linkage = "single",
                         shortest = TRUE,
-                        nnbs = 6) {
+                        nnbs = 6L) {
     linkage <- scl_linkage_type (linkage)
 
     if (methods::is (xy, "scl")) {
