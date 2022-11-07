@@ -1,6 +1,7 @@
 #include "common.h"
 #include "utils.h"
 #include "slk.h"
+#include <algorithm>
 
 // --------- SINGLE LINKAGE CLUSTER ----------------
 
@@ -63,6 +64,8 @@ Rcpp::IntegerVector rcpp_slk (
     size_t e = 0; // edge number in gr_full
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
+        Rcpp::checkUserInterrupt ();
+
         index_t ifrom = vert2index_map.at (from_full (e)),
                 ito = vert2index_map.at (to_full (e));
         if (index2cl_map.find (ifrom) != index2cl_map.end () &&

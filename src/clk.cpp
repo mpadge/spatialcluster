@@ -184,6 +184,8 @@ Rcpp::IntegerVector rcpp_clk (
     std::vector <size_t> treevec;
     for (size_t i = 0; i < clk_dat.edges_all.size (); i++)
     {
+        Rcpp::checkUserInterrupt ();
+
         utils::OneEdge ei = clk_dat.edges_all [i];
         arma::uword u = static_cast <arma::uword> (
                                     clk_dat.vert2index_map.at (ei.from)),
