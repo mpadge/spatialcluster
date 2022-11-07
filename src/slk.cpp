@@ -81,13 +81,8 @@ Rcpp::IntegerVector rcpp_slk (
                         vert2index_map, d_mat, cl2index_map, cfrom, cto,
                         shortest);
                 the_tree.insert (ishort);
-                bool has_outgoing = utils::merge_clusters (contig_mat,
+                utils::merge_clusters (contig_mat,
                         index2cl_map, cl2index_map, cfrom, cto);
-                if (!has_outgoing)
-                {
-                    utils::reconnect_cluster (contig_mat, d_mat,
-                        index2cl_map, cl2index_map, cto);
-                }
                 e = 0;
             } else
             {

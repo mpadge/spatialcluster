@@ -212,7 +212,7 @@ size_t utils::find_shortest_connection (
 //' @return A logical parameter indicating whether or not the newly formed
 //' cluster has any outgoing connections.
 //' @noRd
-bool utils::merge_clusters (
+void utils::merge_clusters (
         arma::Mat <int> &contig_mat,
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map,
@@ -258,58 +258,5 @@ bool utils::merge_clusters (
     {
         index2cl_map.erase (i);
         index2cl_map.emplace (i, cluster_to);
-    }
-
-    // Finally, if there is no shortest connection out of new cluster, then
-    // insert one. First determine whether one exists:
-    bool connects_out = false;
-    for (auto i: idx_to)
-    {
-        for (arma::uword j = 0; j < contig_mat.n_rows; j++)
-        {
-            if (index2cl_map.at (j) != index2cl_map.at (i) &&
-                    (contig_mat (j, i) == 1 || contig_mat (i, j) == 1))
-            {
-                connects_out = true;
-                break;
-            }
-        }
-    }
-
-    return connects_out;
-}
-
-void utils::reconnect_cluster (
-        arma::Mat <int> &contig_mat,
-        const arma::Mat <double> &d_mat,
-        const indx2int_map_t &index2cl_map,
-        const int2indxset_map_t &cl2index_map,
-        const int clnum)
-{
-    arma::uword imin = INFINITE_INT, jmin = INFINITE_INT;
-    double dmin = INFINITE_DOUBLE;
-
-    indxset_t idx = cl2index_map.at (clnum);
-
-    for (auto i: idx)
-    {
-        for (arma::uword j = 0; j < contig_mat.n_rows; j++)
-        {
-            if (index2cl_map.at (j) != index2cl_map.at (i) &&
-                    contig_mat (j, i) == 0 && contig_mat (i, j) == 0 &&
-                    (d_mat (j, i) < dmin || d_mat (i, j) < dmin))
-            {
-                imin = i;
-                jmin = j;
-                dmin = d_mat (i, j);
-                if (d_mat (j, i) < dmin) // will never happen
-                    dmin = d_mat (j, i);
-            }
-        }
-    }
-
-    if (imin < INFINITE_INT && jmin < INFINITE_INT) // always
-    {
-        contig_mat (imin, jmin) = contig_mat (jmin, imin) = 1L;
     }
 }

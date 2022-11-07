@@ -47,7 +47,7 @@ size_t find_shortest_connection (
         const int cto,
         bool shortest);
 
-bool merge_clusters (
+void merge_clusters (
         arma::Mat <int> &contig_mat,
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map,
