@@ -220,9 +220,9 @@ bool utils::merge_clusters (
         int cluster_to)
 {
     if (cluster_from < 0)
-        Rcpp::stop ("cluster_from must be non-zero");
+        Rcpp::stop ("cluster_from must be non-negative");
     if (cluster_to < 0)
-        Rcpp::stop ("cluster_to must be non-zero");
+        Rcpp::stop ("cluster_to must be non-negative");
 
     arma::uword cfr = static_cast <arma::uword> (cluster_from),
                 cto = static_cast <arma::uword> (cluster_to);
