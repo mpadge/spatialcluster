@@ -73,63 +73,6 @@ size_t utils::sets_init (
     return static_cast <size_t> (vert_set.size ());
 }
 
-//' initial contiguity and distance matrices. The contiguity matrix is between
-//' clusters, so is constantly modified, whereas the distance matrix is between
-//' edges, so is fixed at load time.
-//' @noRd
-void utils::mats_init (
-        const Rcpp::IntegerVector &from,
-        const Rcpp::IntegerVector &to,
-        const Rcpp::NumericVector &d,
-        const int2indx_map_t &vert2index_map,
-        arma::Mat <int> &contig_mat,
-        arma::Mat <double> &d_mat,
-        bool shortest)
-{
-    // arma::uword = unsigned int
-    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
-
-    contig_mat = arma::zeros <arma::Mat <int> > (n, n);
-    //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    d_mat.resize (n, n);
-    if (shortest)
-        d_mat.fill (INFINITE_DOUBLE);
-    else
-        d_mat.fill (-INFINITE_DOUBLE);
-
-    for (int i = 0; i < from.length (); i++)
-    {
-        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
-                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
-        contig_mat (fi, ti) = contig_mat (ti, fi) = 1;
-        d_mat (fi, ti) = d_mat (ti, fi) = d [i];
-    }
-}
-
-void utils::dmat_full_init (
-        const Rcpp::IntegerVector &from, // here, from_full, etc.
-        const Rcpp::IntegerVector &to,
-        const Rcpp::NumericVector &d,
-        const int2indx_map_t &vert2index_map,
-        arma::Mat <double> &d_mat,
-        bool shortest) // here: d_mat_full
-{
-    //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
-    d_mat.resize (n, n);
-    if (shortest)
-        d_mat.fill (INFINITE_DOUBLE);
-    else
-        d_mat.fill (-INFINITE_DOUBLE);
-
-    for (int i = 0; i < from.length (); i++)
-    {
-        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
-                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
-        d_mat (fi, ti) = d_mat (ti, fi) = d [i];
-    }
-}
-
 //' find shortest (or longest) connection between two clusters
 //' @param from, to, d the columns of the edge graph
 //' @param d_mat distance matrix between all edges (not between clusters!)
@@ -142,7 +85,6 @@ void utils::dmat_full_init (
 size_t utils::find_shortest_connection (
         const Rcpp::IntegerVector &from,
         const Rcpp::IntegerVector &to,
-        const Rcpp::NumericVector &d,
         const int2indx_map_t &vert2index_map,
         const arma::Mat <double> &d_mat,
         const int2indxset_map_t &cl2index_map,
@@ -258,5 +200,62 @@ void utils::merge_clusters (
     {
         index2cl_map.erase (i);
         index2cl_map.emplace (i, cluster_to);
+    }
+}
+
+//' initial contiguity and distance matrices. The contiguity matrix is between
+//' clusters, so is constantly modified, whereas the distance matrix is between
+//' edges, so is fixed at load time.
+//' @noRd
+void utils_slk::mats_init (
+        const Rcpp::IntegerVector &from,
+        const Rcpp::IntegerVector &to,
+        const Rcpp::NumericVector &d,
+        const int2indx_map_t &vert2index_map,
+        arma::Mat <int> &contig_mat,
+        arma::Mat <double> &d_mat,
+        bool shortest)
+{
+    // arma::uword = unsigned int
+    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
+
+    contig_mat = arma::zeros <arma::Mat <int> > (n, n);
+    //d_mat = arma::zeros <arma::Mat <double> > (n, n);
+    d_mat.resize (n, n);
+    if (shortest)
+        d_mat.fill (INFINITE_DOUBLE);
+    else
+        d_mat.fill (-INFINITE_DOUBLE);
+
+    for (int i = 0; i < from.length (); i++)
+    {
+        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
+                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
+        contig_mat (fi, ti) = contig_mat (ti, fi) = 1;
+        d_mat (fi, ti) = d_mat (ti, fi) = d [i];
+    }
+}
+
+void utils_slk::dmat_full_init (
+        const Rcpp::IntegerVector &from, // here, from_full, etc.
+        const Rcpp::IntegerVector &to,
+        const Rcpp::NumericVector &d,
+        const int2indx_map_t &vert2index_map,
+        arma::Mat <double> &d_mat,
+        bool shortest) // here: d_mat_full
+{
+    //d_mat = arma::zeros <arma::Mat <double> > (n, n);
+    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
+    d_mat.resize (n, n);
+    if (shortest)
+        d_mat.fill (INFINITE_DOUBLE);
+    else
+        d_mat.fill (-INFINITE_DOUBLE);
+
+    for (int i = 0; i < from.length (); i++)
+    {
+        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
+                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
+        d_mat (fi, ti) = d_mat (ti, fi) = d [i];
     }
 }

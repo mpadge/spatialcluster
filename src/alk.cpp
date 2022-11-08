@@ -173,7 +173,7 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
     }
     int li = static_cast <int> (l), mi = static_cast <int> (m);
     
-    size_t ishort = utils::find_shortest_connection (from, to, d,
+    size_t ishort = utils::find_shortest_connection (from, to,
             alk_dat.vert2index_map, alk_dat.dmat,
             alk_dat.cl2index_map, mi, li, alk_dat.shortest);
     // ishort is return value; an index into (from, to)

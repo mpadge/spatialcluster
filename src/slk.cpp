@@ -50,9 +50,9 @@ Rcpp::IntegerVector rcpp_slk (
     size_t n = utils::sets_init (from, to, vert2index_map, index2vert_map,
                           index2cl_map, cl2index_map);
 
-    utils::mats_init (from, to, d, vert2index_map, contig_mat, d_mat,
+    utils_slk::mats_init (from, to, d, vert2index_map, contig_mat, d_mat,
             shortest);
-    utils::dmat_full_init (from_full, to_full, d_full, vert2index_map,
+    utils_slk::dmat_full_init (from_full, to_full, d_full, vert2index_map,
             d_mat_full, shortest);
 
     /* The contiguity matrix retains is shape, so is always indexed by the
@@ -77,7 +77,7 @@ Rcpp::IntegerVector rcpp_slk (
                     contig_mat (static_cast <arma::uword> (ifrom),
                                 static_cast <arma::uword> (ito)) > 0)
             {
-                size_t ishort = utils::find_shortest_connection (from, to, d,
+                size_t ishort = utils::find_shortest_connection (from, to,
                         vert2index_map, d_mat, cl2index_map, cfrom, cto,
                         shortest);
                 the_tree.insert (ishort);
