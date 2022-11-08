@@ -52,6 +52,7 @@ following options:
 
 ``` r
 # install.packages("remotes")
+remotes::install_git("https://codeberg.org/mpadge/spatialcluster")
 remotes::install_git("https://git.sr.ht/~mpadge/spatialcluster")
 remotes::install_bitbucket("mpadge/spatialcluster")
 remotes::install_gitlab("mpadge/spatialcluster")
