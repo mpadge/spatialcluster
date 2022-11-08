@@ -51,14 +51,7 @@ void merge_clusters (
         arma::Mat <int> &contig_mat,
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map,
-        int merge_from,
-        int merge_to);
-
-void reconnect_cluster (
-        arma::Mat <int> &contig_mat,
-        const arma::Mat <double> &d_mat,
-        const indx2int_map_t &index2cl_map,
-        const int2indxset_map_t &cl2index_map,
-        const int clnum);
+        const int merge_from,
+        const int merge_to);
 
 } // end namespace utils

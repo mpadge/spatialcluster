@@ -216,8 +216,8 @@ void utils::merge_clusters (
         arma::Mat <int> &contig_mat,
         indx2int_map_t &index2cl_map,
         int2indxset_map_t &cl2index_map,
-        int cluster_from,
-        int cluster_to)
+        const int cluster_from,
+        const int cluster_to)
 {
     if (cluster_from < 0)
         Rcpp::stop ("cluster_from must be non-negative");
