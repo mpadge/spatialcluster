@@ -1,0 +1,17 @@
+title: spatialcluster
+url: https://mpadge.github.io/spatialcluster
+
+template:
+  params:
+    bootswatch: cerulean
+
+reference:
+- title: Package
+  contents:
+    - has_concept("package")
+- title: Clustering Functions
+  contents:
+    - has_concept("clustering_fns")
+- title: Plotting Functions
+  contents:
+    - has_concept("plot_fns")

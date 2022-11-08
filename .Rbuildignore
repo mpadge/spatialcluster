@@ -9,9 +9,10 @@
 ^\.gitignore$
 ^\.hooks$
 ^\.pre-commit-config\.yaml$
+^_pkgdown.yml$
 ^aaa*
 ^codemeta\.json$
-^makefile$
 ^inst/WORDLIST$
+^makefile$
 ^vignettes/makefile$
 docs/
