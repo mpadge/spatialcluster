@@ -19,6 +19,7 @@ a convex hull, and smaller values generating concave hulls. (See
 plot.scl
 }
 \examples{
+set.seed (1)
 n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
 dmat <- matrix (runif (n ^ 2), ncol = n)

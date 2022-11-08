@@ -58,6 +58,7 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' @family plot_fns
 #' @export
 #' @examples
+#' set.seed (1)
 #' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
 #' dmat <- matrix (runif (n ^ 2), ncol = n)
