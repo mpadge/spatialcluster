@@ -6,6 +6,7 @@
 #'
 #' @noRd
 scl_statistics <- function (scl) {
+
     tree <- scl$tree %>%
         dplyr::mutate (tf = paste0 (to, "-", from))
     edges_in <- scl$tree [which (scl$tree$cluster >= 0), ] %>%
@@ -20,10 +21,14 @@ scl_statistics <- function (scl) {
     tt_cl <- vapply (sort (unique (scl$tree$cluster)),
                      function (i) {
                          index <- which (edges_in$cluster == i)
-                         tt <- stats::t.test (edges_in$d [index], tree$d,
-                                              alternative = "less",
-                                              var.equal = TRUE)
-                         res <- c (tt$statistic, tt$parameter, tt$p.value)
+                         if (length (index) <= 3) {
+                             res <- rep (NA, 3L)
+                         } else {
+                             tt <- stats::t.test (edges_in$d [index], tree$d,
+                                                  alternative = "less",
+                                                  var.equal = TRUE)
+                             res <- c (tt$statistic, tt$parameter, tt$p.value)
+                         }
                          names (res) <- c ("statistic", "parameter", "p.value")
                          return (res)
                      }
