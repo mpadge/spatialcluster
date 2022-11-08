@@ -74,6 +74,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_mst
+Rcpp::DataFrame rcpp_mst(Rcpp::DataFrame input);
+RcppExport SEXP _spatialcluster_rcpp_mst(SEXP inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type input(inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_mst(input));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_slk
 Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, bool shortest);
 RcppExport SEXP _spatialcluster_rcpp_slk(SEXP gr_fullSEXP, SEXP grSEXP, SEXP shortestSEXP) {

@@ -24,10 +24,20 @@ scl_full <- function (xy,
         scl_recluster_full (xy, ncl = ncl)
     } else {
         xy <- scl_tbl (xy)
-        if (nnbs <= 0)
+        edges_all <- scl_edges_all (xy, dmat, shortest)
+
+        if (nnbs <= 0) {
             edges <- scl_edges_tri (xy, dmat, shortest = shortest)
-        else
-            edges <- scl_edges_nn (xy, dmat, nnbs, shortest = shortest)
+        } else {
+            edges <- scl_edges_nn (
+                xy,
+                dmat,
+                edges_all = edges_all,
+                nnbs = nnbs,
+                shortest = shortest
+            )
+        }
+
         # cluster numbers can be joined with edges through either from or to:
         cl <- as.integer (rcpp_full_initial (edges, shortest) + 1)
 

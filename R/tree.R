@@ -11,29 +11,11 @@
 #' @return A tree
 #' @noRd
 scl_spantree_ord1 <- function (edges) {
-    n <- edges %>%
-        dplyr::select (from, to) %>%
-        unlist () %>%
-        max ()
-    tree <- tibble::tibble (from = integer(), to = integer())
-    clusters <- tibble::tibble (id = seq (n), cluster = seq (n))
 
-    # make the minimal tree:
-    for (e in seq (nrow (edges))) {
-        clf <- clusters$cluster [edges$from [e]]
-        clt <- clusters$cluster [edges$to [e]]
-        if (clf != clt) {
-            cli <- min (c (clf, clt))
-            clj <- max (c (clf, clt))
-            clusters %<>% dplyr::mutate (cluster = replace (cluster,
-                                                            cluster == clj,
-                                                            cli))
-            tree %<>% dplyr::bind_rows (tibble::tibble (from = edges$from [e],
-                                                        to = edges$to [e]))
-        }
-        if (length (unique (clusters$cluster)) == 1)
-            break
-    }
+    tree <- rcpp_mst (edges) %>%
+        dplyr::arrange (from, to) %>%
+        tibble::tibble ()
+
     return (tree)
 }
 

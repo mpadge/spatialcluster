@@ -71,15 +71,23 @@ scl_redcap <- function (xy,
     } else {
 
         xy <- scl_tbl (xy)
+        edges_all <- scl_edges_all (xy, dmat, shortest)
 
-        if (nnbs <= 0)
+        if (nnbs <= 0) {
             edges_nn <- scl_edges_tri (xy, dmat, shortest)
-        else
-            edges_nn <- scl_edges_nn (xy, dmat, nnbs, shortest)
+        } else {
+            edges_nn <- scl_edges_nn (
+                xy,
+                dmat,
+                edges_all = edges_all,
+                nnbs = nnbs,
+                shortest = shortest
+            )
+        }
 
         if (!full_order) {
 
-            tree_full <- scl_spantree_ord1 (edges_nn)
+            tree_full <- scl_spantree_ord1 (edges_nn) [, c ("from", "to")]
 
         } else {
 

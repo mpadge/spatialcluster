@@ -63,6 +63,11 @@ Rcpp::IntegerVector rcpp_slk (
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
+        if (the_tree.size () % 100 == 0 && e == 0)
+        {
+            Rcpp::Rcout << "\r" << the_tree.size () << " / " << n - 1;
+            Rcpp::Rcout.flush ();
+        }
 
         index_t ifrom = vert2index_map.at (from_full (e)),
                 ito = vert2index_map.at (to_full (e));
@@ -90,7 +95,10 @@ Rcpp::IntegerVector rcpp_slk (
         {
             e++;
         }
+        if (e >= from_full.size ())
+            Rcpp::stop ("nope, from_full ain't that big");
     }
+    Rcpp::Rcout << std::endl;
 
     std::vector <index_t> treevec (the_tree.begin (), the_tree.end ());
 

@@ -73,6 +73,15 @@ rcpp_full_merge <- function(gr, linkage, shortest) {
     .Call(`_spatialcluster_rcpp_full_merge`, gr, linkage, shortest)
 }
 
+#' rcpp_mst
+#'
+#' Minimum spanning tree
+#'
+#' @noRd
+rcpp_mst <- function(input) {
+    .Call(`_spatialcluster_rcpp_mst`, input)
+}
+
 #' rcpp_slk
 #'
 #' Full-order single linkage cluster redcap algorithm
