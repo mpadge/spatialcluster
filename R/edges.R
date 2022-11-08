@@ -25,15 +25,13 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE) {
 #' points, ensuring that all edges connect to a single component. The minimal
 #' spanning tree is constructed from **spatial** distances, not from distances
 #' given in `dmat`.
-#' @param edges_all `data.frame` of all edges returned from
-#' \link{scl_edges_all}.
 #' @param nnbs Number of nearest neighbours
 #' @inheritParams scl_redcap
 #'
 #' @return A `tibble` of `from` and `to` vertex indices for the minimal spanning
 #' tree edges, along with corresponding distances from `dmat`.
 #' @noRd
-scl_edges_nn <- function (xy, dmat, edges_all, nnbs, shortest = TRUE) {
+scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE) {
 
     # Initially contruct with nnbs + 1, because the `d` matrix includes
     # self-distances of zero, which are subsequently removed.
@@ -61,13 +59,14 @@ scl_edges_nn <- function (xy, dmat, edges_all, nnbs, shortest = TRUE) {
     xmat <- array (xvals, dim = c (n, n))
     ymat <- array (yvals, dim = c (n, n))
     dxy <- sqrt ((xmat - t (xmat)) ^ 2 + (ymat - t (ymat)) ^ 2)
+
     edges_all <- tibble::tibble (
         from = rep (seq_len (n), n),
         to = rep (seq_len (n), each = n),
         d = as.vector (dxy)
     ) %>%
-        dplyr::arrange (d, from, to)
-    edges_all <- edges_all [which (!edges_all$from == edges_all$to), ]
+        dplyr::arrange (d, from, to) %>%
+        dplyr::filter (from != to)
 
     mst <- scl_spantree_ord1 (edges_all)
     # duplicate all of those:

@@ -24,7 +24,6 @@ scl_full <- function (xy,
         scl_recluster_full (xy, ncl = ncl)
     } else {
         xy <- scl_tbl (xy)
-        edges_all <- scl_edges_all (xy, dmat, shortest)
 
         if (nnbs <= 0) {
             edges <- scl_edges_tri (xy, dmat, shortest = shortest)
@@ -32,7 +31,6 @@ scl_full <- function (xy,
             edges <- scl_edges_nn (
                 xy,
                 dmat,
-                edges_all = edges_all,
                 nnbs = nnbs,
                 shortest = shortest
             )
