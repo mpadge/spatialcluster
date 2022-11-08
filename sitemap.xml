@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/404.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/articles/index.html</loc>
   </url>
   <url>
-    <loc>/articles/spatialcluster.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/articles/spatialcluster.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/index.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/pipe.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>/reference/plot.scl.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/plot.scl.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_merges.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/plot_merges.html</loc>
   </url>
   <url>
-    <loc>/reference/scl_full.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/scl_full.html</loc>
   </url>
   <url>
-    <loc>/reference/scl_recluster.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/scl_recluster.html</loc>
   </url>
   <url>
-    <loc>/reference/scl_redcap.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/scl_redcap.html</loc>
   </url>
   <url>
-    <loc>/reference/spatialcluster.html</loc>
+    <loc>https://mpadge.github.io/spatialcluster/reference/spatialcluster.html</loc>
   </url>
 </urlset>
