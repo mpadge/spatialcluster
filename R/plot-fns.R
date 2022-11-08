@@ -9,9 +9,10 @@
 #' for each cluster id
 #' @noRd
 scl_ahulls <- function (nodes, alpha = 0.1) {
-    ncl <- length (unique (nodes$cluster [!is.na (nodes$cluster)]))
+
+    clnums <- unique (nodes$cluster [!is.na (nodes$cluster)])
     bdry <- list ()
-    for (i in seq (ncl)) {
+    for (i in clnums) {
         if (length (which (nodes$cluster == i)) > 2) {
             xyi <- nodes %>%
                 dplyr::filter (cluster == i) %>%
@@ -40,7 +41,7 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
                 inds <- inds [-j, , drop = FALSE] #nolint
             }
             xy <- xy [match (ind_seq, xy$ind), ]
-            bdry [[i]] <- cbind (i, xy$x, xy$y)
+            bdry [[length (bdry) + 1]] <- cbind (i, xy$x, xy$y)
         }
     }
     bdry <- data.frame (do.call (rbind, bdry))
@@ -69,6 +70,10 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE, full_order = FALSE)
 #' plot (scl)
 plot.scl <- function (x, ..., hull_alpha = 1) {
+
+    # Any length zero clusters then become NA, so cluster enumeration can start
+    # at > 1. This resets that:
+    x$nodes$cluster <- x$nodes$cluster - min (x$nodes$cluster, na.rm = TRUE) + 1L
 
     hull_alpha <- check_hull_alpha (hull_alpha)
 
