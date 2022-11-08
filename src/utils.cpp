@@ -235,27 +235,3 @@ void utils_slk::mats_init (
         d_mat (fi, ti) = d_mat (ti, fi) = d [i];
     }
 }
-
-void utils_slk::dmat_full_init (
-        const Rcpp::IntegerVector &from, // here, from_full, etc.
-        const Rcpp::IntegerVector &to,
-        const Rcpp::NumericVector &d,
-        const int2indx_map_t &vert2index_map,
-        arma::Mat <double> &d_mat,
-        bool shortest) // here: d_mat_full
-{
-    //d_mat = arma::zeros <arma::Mat <double> > (n, n);
-    const arma::uword n = static_cast <arma::uword> (vert2index_map.size ());
-    d_mat.resize (n, n);
-    if (shortest)
-        d_mat.fill (INFINITE_DOUBLE);
-    else
-        d_mat.fill (-INFINITE_DOUBLE);
-
-    for (int i = 0; i < from.length (); i++)
-    {
-        arma::uword fi = static_cast <arma::uword> (vert2index_map.at (from [i])),
-                    ti = static_cast <arma::uword> (vert2index_map.at (to [i]));
-        d_mat (fi, ti) = d_mat (ti, fi) = d [i];
-    }
-}

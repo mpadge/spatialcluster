@@ -37,7 +37,7 @@ Rcpp::IntegerVector rcpp_slk (
     to = to - 1;
 
     arma::Mat <int> contig_mat;
-    arma::Mat <double> d_mat, d_mat_full;
+    arma::Mat <double> d_mat;
 
     // index2cl and cl2index are dynamically updated with cluster memberships;
     // vert2index and index2vert are retained at initial values which map (from,
@@ -52,8 +52,6 @@ Rcpp::IntegerVector rcpp_slk (
 
     utils_slk::mats_init (from, to, d, vert2index_map, contig_mat, d_mat,
             shortest);
-    utils_slk::dmat_full_init (from_full, to_full, d_full, vert2index_map,
-            d_mat_full, shortest);
 
     /* The contiguity matrix retains is shape, so is always indexed by the
      * (from, to) vectors. Merging clusters simply switches additional entries
