@@ -22,12 +22,16 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE) {
 #' scl_edges_nn
 #'
 #' Generate distance-based nearest-neighbour edges between a set of input
-#' points, ensuring that all edges connect to a single component.
+#' points, ensuring that all edges connect to a single component. The minimal
+#' spanning tree is constructed from **spatial** distances, not from distances
+#' given in `dmat`.
 #' @param edges_all `data.frame` of all edges returned from
 #' \link{scl_edges_all}.
 #' @param nnbs Number of nearest neighbours
-#'
 #' @inheritParams scl_redcap
+#'
+#' @return A `tibble` of `from` and `to` vertex indices for the minimal spanning
+#' tree edges, along with corresponding distances from `dmat`.
 #' @noRd
 scl_edges_nn <- function (xy, dmat, edges_all, nnbs, shortest = TRUE) {
 
@@ -44,14 +48,38 @@ scl_edges_nn <- function (xy, dmat, edges_all, nnbs, shortest = TRUE) {
     edges <- edges [which (edges$from != edges$to), ]
 
     # then ensure that the minimal spanning tree is included, to ensure all
-    # nearest neighbour edges are connected in a single component.
-    mst <- scl_spantree_ord1 (edges_all) [, c ("from", "to")]
+    # nearest neighbour edges are connected in a single component. The distances
+    # used for this MST are spatial distances, not from `dmat`.
+    n <- nrow (xy)
+    if (inherits (xy, "data.frame")) {
+        xvals <- xy [[1]]
+        yvals <- xy [[2]]
+    } else {
+        xvals <- xy [, 1]
+        yvals <- xy [, 2]
+    }
+    xmat <- array (xvals, dim = c (n, n))
+    ymat <- array (yvals, dim = c (n, n))
+    dxy <- sqrt ((xmat - t (xmat)) ^ 2 + (ymat - t (ymat)) ^ 2)
+    edges_all <- tibble::tibble (
+        from = rep (seq_len (n), n),
+        to = rep (seq_len (n), each = n),
+        d = as.vector (dxy)
+    ) %>%
+        dplyr::arrange (d, from, to)
+    edges_all <- edges_all [which (!edges_all$from == edges_all$to), ]
+
+    mst <- scl_spantree_ord1 (edges_all)
     # duplicate all of those:
-    mst <- rbind (mst, tibble::tibble (from = mst$to, to = mst$from))
+    mst <- rbind (
+        mst [, c ("from", "to")],
+        tibble::tibble (from = mst$to, to = mst$from)
+    )
 
     edges <- rbind (edges, mst)
     edges <- edges [which (!duplicated (edges)), ]
 
+    # Then append final distances from `dmat` to the return value:
     edges <- append_dist_to_edges (edges, dmat, shortest)
 
     return (edges)
