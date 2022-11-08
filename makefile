@@ -1,15 +1,27 @@
-LFILE = README
+.PHONY: all build check document test
 
-all: knith #open 
+all: document build check
 
-knith: $(LFILE).Rmd
-	echo "rmarkdown::render('$(LFILE).Rmd',output_file='$(LFILE).html')" | R --no-save -q
+build: doc
+	R CMD build .
 
-knitr: $(LFILE).Rmd
-	echo "rmarkdown::render('$(LFILE).Rmd',rmarkdown::md_document(variant='gfm'))" | R --no-save -q
-
-open: $(LFILE).html
-	xdg-open $(LFILE).html &
+#check: build
+#	R CMD check spatialcluster*tar.gz
 
 clean:
-	rm -rf *.html *.png README_cache 
+	-rm -f spatialcluster*tar.gz
+	-rm -fr spatialcluster.Rcheck
+	-rm -fr src/*.{o,so}
+
+doc: clean
+	Rscript -e 'devtools::document()'
+	Rscript -e 'rmarkdown::render("README.Rmd")'
+
+test:
+	Rscript -e 'devtools::test()'
+
+check:
+	Rscript -e 'library(pkgcheck); checks <- pkgcheck(); print(checks); summary (checks)'
+
+install: clean
+	R CMD INSTALL .
