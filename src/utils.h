@@ -37,15 +37,15 @@ void dmat_full_init (
         bool shortest);
 
 size_t find_shortest_connection (
-        Rcpp::IntegerVector &from,
-        Rcpp::IntegerVector &to,
-        Rcpp::NumericVector &d,
-        int2indx_map_t &vert2index_map,
-        arma::Mat <double> &d_mat,
-        int2indxset_map_t &cl2index_map,
+        const Rcpp::IntegerVector &from,
+        const Rcpp::IntegerVector &to,
+        const Rcpp::NumericVector &d,
+        const int2indx_map_t &vert2index_map,
+        const arma::Mat <double> &d_mat,
+        const int2indxset_map_t &cl2index_map,
         const int cfrom,
         const int cto,
-        bool shortest);
+        const bool shortest);
 
 void merge_clusters (
         arma::Mat <int> &contig_mat,

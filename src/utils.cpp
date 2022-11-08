@@ -140,15 +140,15 @@ void utils::dmat_full_init (
 //' @return Index directly into from, to - **NOT** into the actual matrices!
 //' @noRd
 size_t utils::find_shortest_connection (
-        Rcpp::IntegerVector &from,
-        Rcpp::IntegerVector &to,
-        Rcpp::NumericVector &d,
-        int2indx_map_t &vert2index_map,
-        arma::Mat <double> &d_mat,
-        int2indxset_map_t &cl2index_map,
+        const Rcpp::IntegerVector &from,
+        const Rcpp::IntegerVector &to,
+        const Rcpp::NumericVector &d,
+        const int2indx_map_t &vert2index_map,
+        const arma::Mat <double> &d_mat,
+        const int2indxset_map_t &cl2index_map,
         const int cfrom,
         const int cto,
-        bool shortest)
+        const bool shortest)
 {
     if (cl2index_map.find (cfrom) == cl2index_map.end ())
         Rcpp::stop ("cluster index not found");
