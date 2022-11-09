@@ -155,11 +155,11 @@ cuttree::BestCut cuttree::find_min_cut (
     size_t n = cuttree::cluster_size (tree.edges, cluster_num);
 
     // fill component vector
-    std::vector <cuttree::EdgeComponent> cluster_edges;
-    cluster_edges.reserve (n);
+    std::vector <cuttree::EdgeComponent> cluster_edges (n);
+    size_t pos = 0;
     for (auto e: tree.edges)
         if (e.cluster_num == cluster_num)
-            cluster_edges.push_back (e);
+            cluster_edges [pos++] = e;
 
     std::vector <cuttree::EdgeComponent> edges_copy;
 
@@ -169,6 +169,7 @@ cuttree::BestCut cuttree::find_min_cut (
     the_cut.ss1 = the_cut.ss2 = INFINITE_DOUBLE;
     the_cut.ss_diff = 0.0; // default, coz search is over max ss_diff
     double ssmin = INFINITE_DOUBLE;
+
     // TODO: Rewrite this to just erase and re-insert a single edge each time
     for (int i = 0; i < static_cast <int> (n); i++)
     {
@@ -178,7 +179,14 @@ cuttree::BestCut cuttree::find_min_cut (
         std::copy (cluster_edges.begin (), cluster_edges.end (),
                 edges_copy.begin ());
         edges_copy.erase (edges_copy.begin () + i);
+
+        if (edges_copy.size () < cuttree::MIN_CLUSTER_SIZE)
+        {
+            break;
+        }
+
         std::unordered_set <int> tree_edges = cuttree::build_one_tree (edges_copy);
+
         // only include groups with >= MIN_CLUSTER_SIZE members
         if (tree_edges.size () >= cuttree::MIN_CLUSTER_SIZE &&
                 tree_edges.size () < (edges_copy.size () -
@@ -260,7 +268,6 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
 
         auto mp = std::max_element (ss_diff.begin (), ss_diff.end ());
         long int maxi_int = std::distance (ss_diff.begin (), mp);
-        // could assert non-negative here, but no need
         size_t maxi = static_cast <size_t> (maxi_int);
         if (cluster_map.find (maxi) == cluster_map.end ())
             Rcpp::Rcout << "ss_diff has no max element in cluster_map" <<
