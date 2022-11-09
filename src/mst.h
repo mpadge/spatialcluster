@@ -6,7 +6,7 @@
 struct MSTEdge {
     int from, to;
     double dist;
-    bool operator<(const MSTEdge& rhs) const { dist < rhs.dist; }
+    bool operator<(const MSTEdge& rhs) const { return dist < rhs.dist; }
 };
 
 std::vector <MSTEdge> mst (Rcpp::IntegerVector from,
