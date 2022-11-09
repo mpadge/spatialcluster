@@ -114,8 +114,7 @@ plot.scl <- function (x, ..., hull_alpha = 1) {
                                size = hull_width) +
         ggthemes::theme_solarized ()
 
-    print (g)
-    invisible (g)
+    g
 }
 
 check_hull_alpha <- function (a) {
