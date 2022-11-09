@@ -71,9 +71,8 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' plot (scl)
 plot.scl <- function (x, ..., hull_alpha = 1) {
 
-    # Any length zero clusters then become NA, so cluster enumeration can start
-    # at > 1. This resets that:
-    x$nodes$cluster <- x$nodes$cluster - min (x$nodes$cluster, na.rm = TRUE) + 1L
+    # Reset cluster numbers to sequence starting at 1:
+    x$nodes$cluster <- match (x$nodes$cluster, sort (unique (x$nodes$cluster)))
 
     hull_alpha <- check_hull_alpha (hull_alpha)
 
