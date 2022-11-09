@@ -90,7 +90,8 @@ scl_redcap <- function (xy,
 
             } else {
 
-                edges_all <- scl_edges_all (xy, dmat, shortest)
+                d_xy <- as.matrix (dist (xy))
+                edges_all <- scl_edges_all (xy, d_xy, shortest)
 
                 if (linkage == "single") {
                     tree_full <- scl_spantree_slk (edges_all, edges_nn,
@@ -106,6 +107,10 @@ scl_redcap <- function (xy,
 
         }
 
+        # Then the critical stage of changing the distance metric on 'edges_nn'
+        # from the spatial distances of 'd_xy' to the data-based distances in
+        # 'dmat':
+        edges_nn <- append_dist_to_edges (edges_nn, dmat, shortest = shortest)
         tree <- scl_cuttree (tree_full, edges_nn, ncl, shortest)
 
         # meta-data:
