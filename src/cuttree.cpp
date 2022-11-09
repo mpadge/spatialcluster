@@ -244,13 +244,15 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
     std::unordered_map <size_t, int> cluster_map;
     cluster_map.emplace (0, 0);
 
+    const bool really_quiet = !(!quiet && from_in.size () > 100);
+
     int num_clusters = 1;
     // This loop fills the three vectors (ss_diff, ss1, ss2), as well as the
     // cluster_map.
     while (num_clusters < ncl)
     {
         Rcpp::checkUserInterrupt ();
-        if (!quiet)
+        if (!really_quiet)
         {
             Rcpp::Rcout << "\rNumber of clusters: " << num_clusters << " / " << ncl;
             Rcpp::Rcout.flush ();
@@ -303,7 +305,7 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
         num_clusters++;
     }
 
-    if (!quiet)
+    if (!really_quiet)
         Rcpp::Rcout << " -> done" << std::endl;
 
     Rcpp::IntegerVector res (tree_dat.edges.size ());

@@ -184,7 +184,7 @@ Rcpp::IntegerVector rcpp_clk (
         clk_dat.dmat.fill (-INFINITE_DOUBLE);
 
     const size_t n = clk_dat.edges_all.size ();
-    const bool really_quiet = !(!quiet && n > 100);
+    const bool really_quiet = !(!quiet && n > (100 * 100));
 
     std::vector <size_t> treevec;
     for (size_t i = 0; i < n; i++)

@@ -95,6 +95,8 @@ scl_cuttree <- function (tree, edges, ncl, shortest,
     num_clusters <- 0
     ncl_trial <- ncl
 
+    quiet <- !(!quiet & nrow (tree) > 100)
+
     while (num_clusters < ncl) {
 
         if (num_clusters > 0 && !quiet) {
