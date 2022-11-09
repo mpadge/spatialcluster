@@ -83,10 +83,21 @@ scl_spantree_clk <- function (edges_all, edges_nn, shortest) {
 #'
 #' @noRd
 scl_cuttree <- function (tree, edges, ncl, shortest) {
-    tree %<>%
-        dplyr::left_join (edges, by = c ("from", "to")) %>%
-        dplyr::mutate (cluster = rcpp_cut_tree (., ncl = ncl,
-                                                shortest = shortest) + 1)
 
-    return (tree)
+    num_clusters <- 0
+    ncl_trial <- ncl
+
+    while (num_clusters < ncl) {
+
+        tree_temp <- tree %>%
+            dplyr::left_join (edges, by = c ("from", "to")) %>%
+            dplyr::mutate (cluster = rcpp_cut_tree (., ncl = ncl_trial,
+                                                    shortest = shortest) + 1)
+        num_clusters <- length (which (table (tree_temp$cluster) > 2))
+        ncl_trial <- ncl_trial + 1
+        if (ncl_trial >= nrow (tree))
+            break
+    }
+
+    return (tree_temp)
 }
