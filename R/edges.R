@@ -48,18 +48,9 @@ scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE) {
     # then ensure that the minimal spanning tree is included, to ensure all
     # nearest neighbour edges are connected in a single component. The distances
     # used for this MST are spatial distances, not from `dmat`.
-    n <- nrow (xy)
-    if (inherits (xy, "data.frame")) {
-        xvals <- xy [[1]]
-        yvals <- xy [[2]]
-    } else {
-        xvals <- xy [, 1]
-        yvals <- xy [, 2]
-    }
-    xmat <- array (xvals, dim = c (n, n))
-    ymat <- array (yvals, dim = c (n, n))
-    dxy <- sqrt ((xmat - t (xmat)) ^ 2 + (ymat - t (ymat)) ^ 2)
+    dxy <- as.matrix (dist (xy))
 
+    n <- nrow (xy)
     edges_all <- tibble::tibble (
         from = rep (seq_len (n), n),
         to = rep (seq_len (n), each = n),
