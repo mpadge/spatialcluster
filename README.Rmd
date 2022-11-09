@@ -107,7 +107,7 @@ dmat <- matrix (runif (n ^ 2), ncol = n)
 
 The load the package and call the function:
 
-```{r full-single, echo = FALSE, eval = TRUE}
+```{r full-single, echo = TRUE, eval = TRUE}
 library (spatialcluster)
 scl <- scl_full (xy, dmat, ncl = 8)
 plot (scl)
@@ -136,7 +136,7 @@ names (scl)
 The following plot compares the results of applying four different clustering
 algorithms to the same data.
 
-```{r cautionary, eval = TRUE}
+```{r cautionary, eval = TRUE, fig.width = 7, fig.height = 7}
 library (ggplot2)
 library (gridExtra)
 scl <- scl_full (xy, dmat, ncl = 8, linkage = "single")

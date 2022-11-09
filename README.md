@@ -101,6 +101,12 @@ dmat <- matrix (runif (n ^ 2), ncol = n)
 
 The load the package and call the function:
 
+``` r
+library (spatialcluster)
+scl <- scl_full (xy, dmat, ncl = 8)
+plot (scl)
+```
+
 ![](man/figures/README-full-single-1.png)<!-- -->
 
 The `scl` object is a `list` with the following components:
