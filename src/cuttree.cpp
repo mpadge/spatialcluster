@@ -249,6 +249,8 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
     // cluster_map.
     while (num_clusters < ncl)
     {
+        Rcpp::checkUserInterrupt ();
+
         auto mp = std::max_element (ss_diff.begin (), ss_diff.end ());
         long int maxi_int = std::distance (ss_diff.begin (), mp);
         // could assert non-negative here, but no need
