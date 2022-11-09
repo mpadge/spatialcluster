@@ -90,7 +90,7 @@ scl_redcap <- function (xy,
 
             } else {
 
-                d_xy <- as.matrix (dist (xy))
+                d_xy <- as.matrix (stats::dist (xy))
                 edges_all <- scl_edges_all (xy, d_xy, shortest)
 
                 if (linkage == "single") {

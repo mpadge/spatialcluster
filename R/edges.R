@@ -17,7 +17,7 @@ scl_edges_tri <- function (xy, shortest = TRUE) {
     edges <- tibble::tibble (from = edges [, 1],
                              to = edges [, 2])
 
-    dxy <- as.matrix (dist (xy))
+    dxy <- as.matrix (stats::dist (xy))
 
     append_dist_to_edges (edges, dxy, shortest)
 }
