@@ -26,14 +26,9 @@ scl_full <- function (xy,
         xy <- scl_tbl (xy)
 
         if (nnbs <= 0) {
-            edges <- scl_edges_tri (xy, dmat, shortest = shortest)
+            edges <- scl_edges_tri (xy, shortest = shortest)
         } else {
-            edges <- scl_edges_nn (
-                xy,
-                dmat,
-                nnbs = nnbs,
-                shortest = shortest
-            )
+            edges <- scl_edges_nn (xy, nnbs = nnbs, shortest = shortest)
         }
 
         # cluster numbers can be joined with edges through either from or to:
@@ -66,20 +61,23 @@ scl_full <- function (xy,
         merges <- tibble::tibble (from = as.integer (merges$from),
                                   to = as.integer (merges$to),
                                   dist = merges$dist)
+
         # full_cluster_nodes just auto-merges the tree to the specified number,
         # but some of these may be clusters with only 2 members. These are
         # excluded here by iterating until the desired number is achieved in
         # which each cluster has >= 3 members:
-        num_nodes <- 0
+        num_clusters <- 0
         ncl_trial <- ncl
-        while (num_nodes < ncl) {
+        while (num_clusters < ncl) {
+
             nodes <- full_cluster_nodes (edges, merges, ncl_trial)
-            num_nodes <- length (which (table (nodes$cluster) > 2))
+            num_clusters <- length (which (table (nodes$cluster) > 2))
             ncl_trial <- ncl_trial + 1
             if (ncl_trial >= nrow (nodes))
                 break
         }
-        n <- which (table (nodes$cluster) <= 2)
+        nt <- sort (table (nodes$cluster), decreasing = TRUE)
+        n <- as.integer (names (nt) [which (nt <= 2)])
         nodes$cluster [nodes$cluster %in% n] <- NA
 
         # tree at that point has initial cluster numbers which must be
@@ -114,6 +112,7 @@ scl_full <- function (xy,
 #' @param merges output from rccp_full_merge
 #' @noRd
 order_merges <- function (merges) {
+
     merges <- as.matrix (merges)
     nodes <- merges [nrow (merges), c ("from", "to")]
     for (i in rev (seq (nrow (merges))) [-1]) {
@@ -133,14 +132,17 @@ order_merges <- function (merges) {
 #' Transform edge and merge data into rectangle of nodes and cluster IDs
 #' @noRd
 full_cluster_nodes <- function (edges, merges, ncl) {
+
     edges$cluster [edges$cluster < 0] <- NA
     ncl_full <- length (unique (edges$cluster))
     merge_tree <- merges [1:(ncl_full - ncl - 1), ]
-    for (i in seq (nrow (merge_tree)))
+    for (i in seq (nrow (merge_tree))) {
         edges$cluster [edges$cluster == merge_tree$from [i]] <-
             merge_tree$to [i]
+    }
 
     node <- cluster <- NULL # rm undefined variable note
+    all_nodes <- unique (c (edges$from, edges$to))
     nodes <- tibble::tibble (node = c (edges$from, edges$to),
                              cluster = rep (edges$cluster, 2)) %>%
         dplyr::distinct () %>%
@@ -152,9 +154,20 @@ full_cluster_nodes <- function (edges, merges, ncl) {
     nodes$cluster [nodes$node %in% dup_nodes] <- NA_integer_
     nodes <- nodes [which (!duplicated (nodes)), ]
 
+    # Plus nodes entirely in NA clusters can then be removed, and need to be
+    # re-inserted:
+    na_nodes <- all_nodes [which (!all_nodes %in% nodes$node)]
+    if (length (na_nodes) > 0L) {
+        na_nodes <- tibble::tibble (
+            node = na_nodes,
+            cluster = rep (NA_integer_, length (na_nodes))
+        )
+        nodes <- rbind (nodes, na_nodes)
+    }
+
     # re-order cluster numbers by frequencies
     nt <- sort (table (nodes$cluster), decreasing = TRUE)
-    nodes$cluster <- match (nodes$cluster, names (nt))
+    nodes$cluster <- as.integer (names (nt) [match (nodes$cluster, names (nt))])
 
     return (nodes)
 }
@@ -163,17 +176,21 @@ full_cluster_nodes <- function (edges, merges, ncl) {
 #'
 #' @noRd
 scl_recluster_full <- function (scl, ncl = ncl) {
+
     xy <- scl$nodes %>% dplyr::select (x, y)
-    num_nodes <- 0
+    num_clusters <- 0
     ncl_trial <- ncl
-    while (num_nodes < ncl) {
+
+    while (num_clusters < ncl) {
+
         scl$nodes <- full_cluster_nodes (scl$tree, scl$merges, ncl_trial)
-        num_nodes <- length (which (table (scl$nodes$cluster) > 2))
+        num_clusters <- length (which (table (scl$nodes$cluster) > 2))
         ncl_trial <- ncl_trial + 1
         if (ncl_trial >= nrow (scl$nodes))
             break
     }
-    n <- which (table (scl$nodes$cluster) == 2)
+    nt <- sort (table (scl$nodes$cluster), decreasing = TRUE)
+    n <- as.integer (names (nt) [which (nt <= 2)])
     scl$nodes$cluster [scl$nodes$cluster %in% n] <- NA
 
     scl$nodes <- dplyr::bind_cols (scl$nodes, xy)

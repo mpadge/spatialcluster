@@ -4,7 +4,8 @@
 #'
 #' @inheritParams scl_redcap
 #' @noRd
-scl_edges_tri <- function (xy, dmat, shortest = TRUE) {
+scl_edges_tri <- function (xy, shortest = TRUE) {
+
     nbs <- dplyr::select (xy, c (x, y)) %>%
         tripack::tri.mesh () %>%
         tripack::neighbours ()
@@ -16,7 +17,9 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE) {
     edges <- tibble::tibble (from = edges [, 1],
                              to = edges [, 2])
 
-    append_dist_to_edges (edges, dmat, shortest)
+    dxy <- as.matrix (dist (xy))
+
+    append_dist_to_edges (edges, dxy, shortest)
 }
 
 #' scl_edges_nn
@@ -29,9 +32,9 @@ scl_edges_tri <- function (xy, dmat, shortest = TRUE) {
 #' @inheritParams scl_redcap
 #'
 #' @return A `tibble` of `from` and `to` vertex indices for the minimal spanning
-#' tree edges, along with corresponding distances from `dmat`.
+#' tree edges, along with corresponding spatial distances calculated from 'xy'.
 #' @noRd
-scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE) {
+scl_edges_nn <- function (xy, nnbs, shortest = TRUE) {
 
     # Initially contruct with nnbs + 1, because the `d` matrix includes
     # self-distances of zero, which are subsequently removed.
@@ -48,7 +51,7 @@ scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE) {
     # then ensure that the minimal spanning tree is included, to ensure all
     # nearest neighbour edges are connected in a single component. The distances
     # used for this MST are spatial distances, not from `dmat`.
-    dxy <- as.matrix (dist (xy))
+    dxy <- as.matrix (stats::dist (xy))
 
     n <- nrow (xy)
     edges_all <- tibble::tibble (
@@ -69,8 +72,8 @@ scl_edges_nn <- function (xy, dmat, nnbs, shortest = TRUE) {
     edges <- rbind (edges, mst)
     edges <- edges [which (!duplicated (edges)), ]
 
-    # Then append final distances from `dmat` to the return value:
-    edges <- append_dist_to_edges (edges, dmat, shortest)
+    # Then append final distances from `dxy` to the return value:
+    edges <- append_dist_to_edges (edges, dxy, shortest)
 
     return (edges)
 }
