@@ -117,8 +117,12 @@ scl_redcap <- function (xy,
 
                 } else if (linkage == "complete") {
 
-                    tree_full <- scl_spantree_clk (edges_all, edges_nn,
-                                                   shortest)
+                    tree_full <- scl_spantree_clk (
+                        edges_all,
+                        edges_nn,
+                        shortest = shortest,
+                        quiet = quiet
+                    )
 
                 } else {
 

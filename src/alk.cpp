@@ -251,7 +251,8 @@ size_t alk::alk_step (alk::ALKDat &alk_dat,
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_alk (
         const Rcpp::DataFrame gr,
-        bool shortest)
+        const bool shortest,
+        const bool quiet)
 {
     Rcpp::IntegerVector from_ref = gr ["from"];
     Rcpp::IntegerVector to_ref = gr ["to"];
@@ -269,13 +270,27 @@ Rcpp::IntegerVector rcpp_alk (
     BinarySearchTree tree;
     alk::alk_init (alk_dat, tree, from, to, d);
     const size_t n = alk_dat.n;
+    const bool really_quiet = !(!quiet && n > 100);
 
     std::unordered_set <size_t> the_tree;
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
     {
         Rcpp::checkUserInterrupt ();
+
         size_t ishort = alk::alk_step (alk_dat, tree, from, to, d);
         the_tree.insert (ishort);
+
+        if (!really_quiet && the_tree.size () % 100 == 0)
+        {
+            Rcpp::Rcout << "\rBuilding tree: " << the_tree.size () << " / " <<
+                n - 1;
+            Rcpp::Rcout.flush ();
+        }
+    }
+    if (!really_quiet)
+    {
+        Rcpp::Rcout << "\rBuilding tree: " << the_tree.size () << " / " <<
+            n - 1 << " -> done" << std::endl;
     }
 
     std::vector <int> treevec (the_tree.begin (), the_tree.end ());

@@ -12,27 +12,29 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rcpp_alk
-Rcpp::IntegerVector rcpp_alk(const Rcpp::DataFrame gr, bool shortest);
-RcppExport SEXP _spatialcluster_rcpp_alk(SEXP grSEXP, SEXP shortestSEXP) {
+Rcpp::IntegerVector rcpp_alk(const Rcpp::DataFrame gr, const bool shortest, const bool quiet);
+RcppExport SEXP _spatialcluster_rcpp_alk(SEXP grSEXP, SEXP shortestSEXP, SEXP quietSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_alk(gr, shortest));
+    Rcpp::traits::input_parameter< const bool >::type shortest(shortestSEXP);
+    Rcpp::traits::input_parameter< const bool >::type quiet(quietSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_alk(gr, shortest, quiet));
     return rcpp_result_gen;
 END_RCPP
 }
 // rcpp_clk
-Rcpp::IntegerVector rcpp_clk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, bool shortest);
-RcppExport SEXP _spatialcluster_rcpp_clk(SEXP gr_fullSEXP, SEXP grSEXP, SEXP shortestSEXP) {
+Rcpp::IntegerVector rcpp_clk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, const bool shortest, const bool quiet);
+RcppExport SEXP _spatialcluster_rcpp_clk(SEXP gr_fullSEXP, SEXP grSEXP, SEXP shortestSEXP, SEXP quietSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr_full(gr_fullSEXP);
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_clk(gr_full, gr, shortest));
+    Rcpp::traits::input_parameter< const bool >::type shortest(shortestSEXP);
+    Rcpp::traits::input_parameter< const bool >::type quiet(quietSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_clk(gr_full, gr, shortest, quiet));
     return rcpp_result_gen;
 END_RCPP
 }

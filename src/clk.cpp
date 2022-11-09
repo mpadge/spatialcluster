@@ -150,7 +150,8 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
 Rcpp::IntegerVector rcpp_clk (
         const Rcpp::DataFrame gr_full,
         const Rcpp::DataFrame gr,
-        bool shortest)
+        const bool shortest,
+        const bool quiet)
 {
     Rcpp::IntegerVector from_full_ref = gr_full ["from"];
     Rcpp::IntegerVector to_full_ref = gr_full ["to"];
@@ -182,8 +183,11 @@ Rcpp::IntegerVector rcpp_clk (
     else
         clk_dat.dmat.fill (-INFINITE_DOUBLE);
 
+    const size_t n = clk_dat.edges_all.size ();
+    const bool really_quiet = !(!quiet && n > 100);
+
     std::vector <size_t> treevec;
-    for (size_t i = 0; i < clk_dat.edges_all.size (); i++)
+    for (size_t i = 0; i < n; i++)
     {
         Rcpp::checkUserInterrupt ();
 
@@ -201,6 +205,17 @@ Rcpp::IntegerVector rcpp_clk (
             size_t the_edge = clk_step (clk_dat, i);
             treevec.push_back (the_edge);
         }
+        if (!really_quiet && i % 100 == 0)
+        {
+            Rcpp::Rcout << "\rBuilding tree: " << i << " / " << n;
+            Rcpp::Rcout.flush ();
+        }
+    }
+
+    if (!really_quiet)
+    {
+        Rcpp::Rcout << "\rBuilding tree: " << n << " / " << n <<
+            " -> done" << std::endl;
     }
 
     // treevec here in an index into a **sorted** version of (from, to , d)

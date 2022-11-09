@@ -59,7 +59,7 @@ Rcpp::IntegerVector rcpp_slk (
      * from  0 to 1.
      */
 
-    const bool really_quiet = quiet && n > 100;
+    const bool really_quiet = !(!quiet && n > 100);
 
     indxset_t the_tree;
     size_t e = 0; // edge number in gr_full
