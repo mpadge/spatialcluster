@@ -73,7 +73,7 @@ scl_redcap <- function (xy,
         xy <- scl_tbl (xy)
 
         if (nnbs <= 0) {
-            edges_nn <- scl_edges_tri (xy, nnbs = nnbs, shortest = shortest)
+            edges_nn <- scl_edges_tri (xy, shortest = shortest)
         } else {
             edges_nn <- scl_edges_nn (xy, nnbs = nnbs, shortest = shortest)
         }
