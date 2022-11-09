@@ -41,7 +41,7 @@ repos:
     -   id: check-added-large-files
         args: ['--maxkb=200']
     -   id: end-of-file-fixer
-        exclude: '\.Rd'
+        exclude: '\.Rd|RcppExports'
 -   repo: local
     hooks:
     -   id: forbid-to-commit
