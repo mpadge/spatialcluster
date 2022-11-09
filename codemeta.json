@@ -7,7 +7,7 @@
   "codeRepository": "https://github.com/mpadge/spatialcluster",
   "issueTracker": "https://github.com/mpadge/spatialcluster/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.2.109",
+  "version": "0.1.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -203,17 +203,9 @@
     },
     "SystemRequirements": "C++11,"
   },
-  "fileSize": "2532.074KB",
+  "fileSize": "2535.165KB",
   "readme": "https://github.com/mpadge/spatialcluster/blob/main/README.md",
-  "contIntegration": [
-    "https://github.com/mpadge/spatialcluster/actions?query=workflow%3AR-CMD-check",
-    "https://codecov.io/gh/mpadge/spatialcluster"
-  ],
+  "contIntegration": ["https://github.com/mpadge/spatialcluster/actions?query=workflow%3AR-CMD-check", "https://codecov.io/gh/mpadge/spatialcluster"],
   "developmentStatus": "http://www.repostatus.org/#wip",
-  "keywords": [
-    "clustering-algorithm",
-    "cluster",
-    "r",
-    "spatial"
-  ]
+  "keywords": ["clustering-algorithm", "cluster", "r", "spatial"]
 }
