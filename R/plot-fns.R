@@ -71,6 +71,14 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' plot (scl)
 plot.scl <- function (x, ..., hull_alpha = 1) {
 
+    # Clusters are defined has having > 2 edges, so any with < 3 edges need to
+    # be removed here:
+    etab <- table (x$tree$cluster)
+    clusters_to_rm <- as.integer (names (etab) [which (etab < 3)])
+    if (length (clusters_to_rm) > 0L) {
+        x$nodes$cluster [x$nodes$cluster %in% clusters_to_rm] <- NA_integer_
+    }
+
     # Reset cluster numbers to sequence starting at 1:
     x$nodes$cluster <- match (x$nodes$cluster, sort (unique (x$nodes$cluster)))
 
