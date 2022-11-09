@@ -107,7 +107,8 @@ The `scl` object is a `list` with the following components:
 
 ``` r
 names (scl)
-#> [1] "tree"       "merges"     "ord"        "nodes"      "pars"       "statistics"
+#> [1] "tree"       "merges"     "ord"        "nodes"      "pars"      
+#> [6] "statistics"
 ```
 
 - `tree` details distances and cluster numbers for all pairwise
@@ -124,33 +125,25 @@ names (scl)
 
 ## A Cautionary Note
 
-``` r
-scl <- scl_full (xy, dmat, ncl = 8, linkage = "average")
-plot (scl)
-```
-
-![](man/figures/README-full-average-1.png)<!-- -->
+The following plot compares the results of applying four different
+clustering algorithms to the same data.
 
 ``` r
+library (ggplot2)
+library (gridExtra)
+scl <- scl_full (xy, dmat, ncl = 8, linkage = "single")
+p1 <- plot (scl) + ggtitle ("full-single")
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "single")
-plot (scl)
-```
-
-![](man/figures/README-redcap-single-1.png)<!-- -->
-
-``` r
+p2 <- plot (scl) + ggtitle ("redcap-single")
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "average")
-plot (scl)
-```
-
-![](man/figures/README-redcap-average-1.png)<!-- -->
-
-``` r
+p3 <- plot (scl) + ggtitle ("redcap-average")
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "complete")
-plot (scl)
+p4 <- plot (scl) + ggtitle ("redcap-complete")
+
+grid.arrange (p1, p2, p3, p4, ncol = 2)
 ```
 
-![](man/figures/README-redcap-full-1.png)<!-- -->
+![](man/figures/README-cautionary-1.png)<!-- -->
 
 This example illustrates the universal danger in all clustering
 algorithms: they can not fail to produce results, even when the data fed

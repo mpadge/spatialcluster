@@ -133,24 +133,22 @@ names (scl)
 
 ## A Cautionary Note
 
-```{r full-average, eval = TRUE}
-scl <- scl_full (xy, dmat, ncl = 8, linkage = "average")
-plot (scl)
-```
+The following plot compares the results of applying four different clustering
+algorithms to the same data.
 
-```{r redcap-single, echo = TRUE, message = FALSE}
+```{r cautionary, eval = TRUE}
+library (ggplot2)
+library (gridExtra)
+scl <- scl_full (xy, dmat, ncl = 8, linkage = "single")
+p1 <- plot (scl) + ggtitle ("full-single")
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "single")
-plot (scl)
-```
-
-```{r redcap-average, echo = TRUE, message = FALSE}
+p2 <- plot (scl) + ggtitle ("redcap-single")
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "average")
-plot (scl)
-```
-
-```{r redcap-full, eval = TRUE}
+p3 <- plot (scl) + ggtitle ("redcap-average")
 scl <- scl_redcap (xy, dmat, ncl = 8, linkage = "complete")
-plot (scl)
+p4 <- plot (scl) + ggtitle ("redcap-complete")
+
+grid.arrange (p1, p2, p3, p4, ncol = 2)
 ```
 
 
