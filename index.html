@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.002</span>
       </span>
     </div>
 
@@ -121,7 +121,8 @@
 <p>The <code>scl</code> object is a <code>list</code> with the following components:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "tree"       "merges"     "ord"        "nodes"      "pars"       "statistics"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "tree"       "merges"     "ord"        "nodes"      "pars"      </span></span>
+<span><span class="co">#&gt; [6] "statistics"</span></span></code></pre></div>
 <ul>
 <li>
 <code>tree</code> details distances and cluster numbers for all pairwise comparisons between objects.</li>
@@ -140,22 +141,21 @@
 <div class="section level2">
 <h2 id="a-cautionary-note">A Cautionary Note<a class="anchor" aria-label="anchor" href="#a-cautionary-note"></a>
 </h2>
+<p>The following plot compares the results of applying four different clustering algorithms to the same data.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-full-average-1.png"><!-- --></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-redcap-single-1.png"><!-- --></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-redcap-average-1.png"><!-- --></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"complete"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-redcap-full-1.png"><!-- --></p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span> <span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span> <span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span></span>
+<span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span> <span class="op">(</span><span class="st">"full-single"</span><span class="op">)</span></span>
+<span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span> <span class="op">(</span><span class="st">"redcap-single"</span><span class="op">)</span></span>
+<span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span> <span class="op">(</span><span class="st">"redcap-average"</span><span class="op">)</span></span>
+<span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_redcap.html">scl_redcap</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"complete"</span><span class="op">)</span></span>
+<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span> <span class="op">(</span><span class="st">"redcap-complete"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">grid.arrange</span> <span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span>, <span class="va">p4</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-cautionary-1.png"><!-- --></p>
 <p>This example illustrates the universal danger in all clustering algorithms: they can not fail to produce results, even when the data fed to them are definitely devoid of any information as in this example. Clustering algorithms should only be applied to reflect a very specific hypothesis for why data should be clustered in the first place; spatial clustering algorithms should only be applied to reflect two very specific hypothesis for (i) why data should be clustered at all, and (ii) why those clusters should manifest a spatial pattern.</p>
 </div>
 </div>
