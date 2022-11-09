@@ -17,6 +17,7 @@ scl_full <- function (xy,
                       linkage = "single",
                       shortest = TRUE,
                       nnbs = 6L) {
+
     linkage <- scl_linkage_type (linkage)
     if (methods::is (xy, "scl")) {
         message ("scl_full is for initial cluster construction; ",
@@ -53,6 +54,10 @@ scl_full <- function (xy,
         edges$cluster [is.na (edges$cluster)] <- -1L
         edges$cl_from [is.na (edges$cl_from)] <- -1L
         edges$cl_to [is.na (edges$cl_to)] <- -1L
+
+        # Then replace the spatial distance in the edges table with the distance
+        # from the data to use that as the basis for merging:
+        edges <- append_dist_to_edges (edges, dmat, shortest = shortest)
 
         merges <- rcpp_full_merge (edges, linkage = linkage,
                                     shortest = shortest) %>%
