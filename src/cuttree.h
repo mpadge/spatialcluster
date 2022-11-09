@@ -51,4 +51,4 @@ BestCut find_min_cut (const TreeDat &tree, const int cluster_num,
 } // end namespace cuttree
 
 Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
-        const bool shortest);
+        const bool shortest, const bool quiet);

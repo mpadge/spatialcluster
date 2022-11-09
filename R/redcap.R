@@ -9,7 +9,9 @@
 #' distances or equivalent metrics between all points in \code{xy}. If \code{xy}
 #' has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 #' columns.
-#' @param ncl Desired number of clusters
+#' @param ncl Desired number of clusters. See description of `ncl_iterate`
+#' parameter for conditions under which actual number may be less than this
+#' value.
 #' @param full_order If \code{FALSE}, build spanning trees from first-order
 #' relationships only, otherwise build from full-order relationships (see Note).
 #' @param linkage One of \code{"single"}, \code{"average"}, or
@@ -20,6 +22,14 @@
 #' relationships, as is the case for example with covariances.
 #' @param nnbs Number of nearest neighbours to be used in calculating clustering
 #' trees. Triangulation will be used if \code{nnbs <= 0}.
+#' @param iterate_ncl Actual numbers of clusters found may be less than the
+#' specified value of `ncl`, because clusters formed from < 3 edges are removed.
+#' If `iterate_ncl = FALSE` (the default), the value is returned with whatever
+#' number of actual clusters is found. Setting this parameter to `TRUE` forces
+#' the algorithm to iterate until the exact number of clusters has been found.
+#' For large data sets, this may result in considerable longer calculation
+#' times.
+#' @param quiet If `FALSE` (default), display progress information on screen.
 #'
 #' @return A object of class \code{scl} with \code{tree} containing the
 #' clustering scheme, and \code{xy} the original coordinate data of the
@@ -54,7 +64,10 @@ scl_redcap <- function (xy,
                         full_order = TRUE,
                         linkage = "single",
                         shortest = TRUE,
-                        nnbs = 6L) {
+                        nnbs = 6L,
+                        iterate_ncl = FALSE,
+                        quiet = FALSE) {
+
     linkage <- scl_linkage_type (linkage)
 
     if (methods::is (xy, "scl")) {
@@ -94,12 +107,21 @@ scl_redcap <- function (xy,
                 edges_all <- scl_edges_all (xy, d_xy, shortest)
 
                 if (linkage == "single") {
-                    tree_full <- scl_spantree_slk (edges_all, edges_nn,
-                                                   shortest)
+
+                    tree_full <- scl_spantree_slk (
+                        edges_all,
+                        edges_nn,
+                        shortest = shortest,
+                        quiet = quiet
+                    )
+
                 } else if (linkage == "complete") {
+
                     tree_full <- scl_spantree_clk (edges_all, edges_nn,
                                                    shortest)
+
                 } else {
+
                     stop ("linkage must be one of ",
                           "(single, average, complete)")
                 }
@@ -111,7 +133,15 @@ scl_redcap <- function (xy,
         # from the spatial distances of 'd_xy' to the data-based distances in
         # 'dmat':
         edges_nn <- append_dist_to_edges (edges_nn, dmat, shortest = shortest)
-        tree <- scl_cuttree (tree_full, edges_nn, ncl, shortest)
+
+        tree <- scl_cuttree (
+            tree_full,
+            edges_nn,
+            ncl,
+            shortest = shortest,
+            iterate_ncl = iterate_ncl,
+            quiet = quiet
+        )
 
         # meta-data:
         clo <- c ("single", "full") [match (full_order, c (FALSE, TRUE))]
@@ -167,7 +197,7 @@ tree_nodes <- function (tree) {
 #' plot (scl)
 #' scl <- scl_recluster (scl, ncl = 5)
 #' plot (scl)
-scl_recluster <- function (scl, ncl, shortest = TRUE) {
+scl_recluster <- function (scl, ncl, shortest = TRUE, quiet = FALSE) {
 
     if (!methods::is (scl, "scl"))
         stop ("scl_recluster can only be applied to 'scl' objects ",
@@ -178,7 +208,7 @@ scl_recluster <- function (scl, ncl, shortest = TRUE) {
         scl_recluster_full (scl = scl, ncl = ncl)
 }
 
-scl_recluster_redcap <- function (scl, ncl, shortest = TRUE) {
+scl_recluster_redcap <- function (scl, ncl, shortest = TRUE, quiet = FALSE) {
 
     from <- to <- d <- NULL # no visible binding messages
 
@@ -190,7 +220,8 @@ scl_recluster_redcap <- function (scl, ncl, shortest = TRUE) {
         tree_full %<>% dplyr::arrange (dplyr::desc (d))
 
     tree_full$cluster <- rcpp_cut_tree (tree_full, ncl,
-                                        shortest = shortest) + 1
+                                        shortest = shortest,
+                                        quiet = quiet) + 1
 
     pars <- scl$pars
     pars$ncl <- ncl

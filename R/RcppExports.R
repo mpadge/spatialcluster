@@ -34,8 +34,8 @@ rcpp_clk <- function(gr_full, gr, shortest) {
 #'
 #' @return Vector of cluster IDs for each tree edge
 #' @noRd
-rcpp_cut_tree <- function(tree, ncl, shortest) {
-    .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl, shortest)
+rcpp_cut_tree <- function(tree, ncl, shortest, quiet) {
+    .Call(`_spatialcluster_rcpp_cut_tree`, tree, ncl, shortest, quiet)
 }
 
 #' step
@@ -87,7 +87,7 @@ rcpp_mst <- function(input) {
 #' Full-order single linkage cluster redcap algorithm
 #'
 #' @noRd
-rcpp_slk <- function(gr_full, gr, shortest) {
-    .Call(`_spatialcluster_rcpp_slk`, gr_full, gr, shortest)
+rcpp_slk <- function(gr_full, gr, shortest, quiet) {
+    .Call(`_spatialcluster_rcpp_slk`, gr_full, gr, shortest, quiet)
 }
 

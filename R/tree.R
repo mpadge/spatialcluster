@@ -31,8 +31,9 @@ scl_spantree_ord1 <- function (edges) {
 #'
 #' @return A tree
 #' @noRd
-scl_spantree_slk <- function (edges_all, edges_nn, shortest) {
-    clusters <- rcpp_slk (edges_all, edges_nn, shortest) + 1
+scl_spantree_slk <- function (edges_all, edges_nn, shortest, quiet = FALSE) {
+
+    clusters <- rcpp_slk (edges_all, edges_nn, shortest, quiet) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
 }
@@ -45,6 +46,7 @@ scl_spantree_slk <- function (edges_all, edges_nn, shortest) {
 #' @inheritParams scl_spantree_slk
 #' @noRd
 scl_spantree_alk <- function (edges, shortest) {
+
     clusters <- rcpp_alk (edges, shortest) + 1
     tibble::tibble (from = edges$from [clusters],
                     to = edges$to [clusters])
@@ -58,6 +60,7 @@ scl_spantree_alk <- function (edges, shortest) {
 #' @inheritParams scl_spantree_slk
 #' @noRd
 scl_spantree_clk <- function (edges_all, edges_nn, shortest) {
+
     clusters <- rcpp_clk (edges_all, edges_nn, shortest) + 1
     tibble::tibble (from = edges_nn$from [clusters],
                     to = edges_nn$to [clusters])
@@ -82,20 +85,32 @@ scl_spantree_clk <- function (edges_all, edges_nn, shortest) {
 #' \code{constexpr MIN_CLUSTER_SIZE = 3}.
 #'
 #' @noRd
-scl_cuttree <- function (tree, edges, ncl, shortest) {
+scl_cuttree <- function (tree, edges, ncl, shortest,
+                         iterate_ncl = FALSE, quiet = FALSE) {
 
     num_clusters <- 0
     ncl_trial <- ncl
 
     while (num_clusters < ncl) {
 
+        if (num_clusters > 0 && !quiet) {
+            message ("Not enough clusters found; re-starting search.")
+        }
+
         tree_temp <- tree %>%
             dplyr::left_join (edges, by = c ("from", "to")) %>%
-            dplyr::mutate (cluster = rcpp_cut_tree (., ncl = ncl_trial,
-                                                    shortest = shortest) + 1)
+            dplyr::mutate (cluster = rcpp_cut_tree (
+                .,
+                ncl = ncl_trial,
+                shortest = shortest,
+                quiet = quiet
+            ) + 1)
         num_clusters <- length (which (table (tree_temp$cluster) > 2))
+        if (!quiet) {
+            message ("Total clusters found with > 2 members: ", num_clusters)
+        }
         ncl_trial <- ncl_trial + 1
-        if (ncl_trial >= nrow (tree))
+        if (ncl_trial >= nrow (tree) || iterate_ncl)
             break
     }
 

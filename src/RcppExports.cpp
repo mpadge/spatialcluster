@@ -37,15 +37,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_cut_tree
-Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl, const bool shortest);
-RcppExport SEXP _spatialcluster_rcpp_cut_tree(SEXP treeSEXP, SEXP nclSEXP, SEXP shortestSEXP) {
+Rcpp::IntegerVector rcpp_cut_tree(const Rcpp::DataFrame tree, const int ncl, const bool shortest, const bool quiet);
+RcppExport SEXP _spatialcluster_rcpp_cut_tree(SEXP treeSEXP, SEXP nclSEXP, SEXP shortestSEXP, SEXP quietSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type tree(treeSEXP);
     Rcpp::traits::input_parameter< const int >::type ncl(nclSEXP);
     Rcpp::traits::input_parameter< const bool >::type shortest(shortestSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_cut_tree(tree, ncl, shortest));
+    Rcpp::traits::input_parameter< const bool >::type quiet(quietSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_cut_tree(tree, ncl, shortest, quiet));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -86,15 +87,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // rcpp_slk
-Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, bool shortest);
-RcppExport SEXP _spatialcluster_rcpp_slk(SEXP gr_fullSEXP, SEXP grSEXP, SEXP shortestSEXP) {
+Rcpp::IntegerVector rcpp_slk(const Rcpp::DataFrame gr_full, const Rcpp::DataFrame gr, const bool shortest, const bool quiet);
+RcppExport SEXP _spatialcluster_rcpp_slk(SEXP gr_fullSEXP, SEXP grSEXP, SEXP shortestSEXP, SEXP quietSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr_full(gr_fullSEXP);
     Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type gr(grSEXP);
-    Rcpp::traits::input_parameter< bool >::type shortest(shortestSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_slk(gr_full, gr, shortest));
+    Rcpp::traits::input_parameter< const bool >::type shortest(shortestSEXP);
+    Rcpp::traits::input_parameter< const bool >::type quiet(quietSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_slk(gr_full, gr, shortest, quiet));
     return rcpp_result_gen;
 END_RCPP
 }

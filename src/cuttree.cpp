@@ -222,7 +222,7 @@ cuttree::BestCut cuttree::find_min_cut (
 //' @noRd
 // [[Rcpp::export]]
 Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
-        const bool shortest)
+        const bool shortest, const bool quiet)
 {
     Rcpp::IntegerVector from_in = tree ["from"];
     Rcpp::IntegerVector to_in = tree ["to"];
@@ -250,6 +250,11 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
     while (num_clusters < ncl)
     {
         Rcpp::checkUserInterrupt ();
+        if (!quiet)
+        {
+            Rcpp::Rcout << "\rNumber of clusters: " << num_clusters << " / " << ncl;
+            Rcpp::Rcout.flush ();
+        }
 
         auto mp = std::max_element (ss_diff.begin (), ss_diff.end ());
         long int maxi_int = std::distance (ss_diff.begin (), mp);
@@ -297,6 +302,9 @@ Rcpp::IntegerVector rcpp_cut_tree (const Rcpp::DataFrame tree, const int ncl,
 
         num_clusters++;
     }
+
+    if (!quiet)
+        Rcpp::Rcout << " -> done" << std::endl;
 
     Rcpp::IntegerVector res (tree_dat.edges.size ());
     for (int i = 0; i < static_cast <int> (tree_dat.edges.size ()); i++)

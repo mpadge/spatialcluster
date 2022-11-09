@@ -14,7 +14,8 @@
 Rcpp::IntegerVector rcpp_slk (
         const Rcpp::DataFrame gr_full,
         const Rcpp::DataFrame gr,
-        bool shortest)
+        const bool shortest,
+        const bool quiet)
 {
     Rcpp::IntegerVector from_full_ref = gr_full ["from"];
     Rcpp::IntegerVector to_full_ref = gr_full ["to"];
@@ -58,6 +59,8 @@ Rcpp::IntegerVector rcpp_slk (
      * from  0 to 1.
      */
 
+    const bool really_quiet = quiet && n > 100;
+
     indxset_t the_tree;
     size_t e = 0; // edge number in gr_full
     while (the_tree.size () < (n - 1)) // tree has n - 1 edges
@@ -90,6 +93,18 @@ Rcpp::IntegerVector rcpp_slk (
         {
             e++;
         }
+        if (!really_quiet && the_tree.size () % 100 == 0)
+        {
+            Rcpp::Rcout << "\rBuilding tree: " << the_tree.size () << " / " <<
+                n - 1;
+            Rcpp::Rcout.flush ();
+        }
+    }
+
+    if (!really_quiet)
+    {
+        Rcpp::Rcout << "\rBuilding tree: " << the_tree.size () << " / " <<
+            n - 1 << " -> done" << std::endl;
     }
 
     std::vector <index_t> treevec (the_tree.begin (), the_tree.end ());

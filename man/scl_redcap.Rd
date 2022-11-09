@@ -11,7 +11,9 @@ scl_redcap(
   full_order = TRUE,
   linkage = "single",
   shortest = TRUE,
-  nnbs = 6L
+  nnbs = 6L,
+  iterate_ncl = FALSE,
+  quiet = FALSE
 )
 }
 \arguments{
@@ -23,7 +25,9 @@ distances or equivalent metrics between all points in \code{xy}. If \code{xy}
 has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 columns.}
 
-\item{ncl}{Desired number of clusters}
+\item{ncl}{Desired number of clusters. See description of `ncl_iterate`
+parameter for conditions under which actual number may be less than this
+value.}
 
 \item{full_order}{If \code{FALSE}, build spanning trees from first-order
 relationships only, otherwise build from full-order relationships (see Note).}
@@ -38,6 +42,16 @@ relationships, as is the case for example with covariances.}
 
 \item{nnbs}{Number of nearest neighbours to be used in calculating clustering
 trees. Triangulation will be used if \code{nnbs <= 0}.}
+
+\item{iterate_ncl}{Actual numbers of clusters found may be less than the
+specified value of `ncl`, because clusters formed from < 3 edges are removed.
+If `iterate_ncl = FALSE` (the default), the value is returned with whatever
+number of actual clusters is found. Setting this parameter to `TRUE` forces
+the algorithm to iterate until the exact number of clusters has been found.
+For large data sets, this may result in considerable longer calculation
+times.}
+
+\item{quiet}{If `FALSE` (default), display progress information on screen.}
 }
 \value{
 A object of class \code{scl} with \code{tree} containing the

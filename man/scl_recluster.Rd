@@ -4,17 +4,21 @@
 \alias{scl_recluster}
 \title{scl_reccluster}
 \usage{
-scl_recluster(scl, ncl, shortest = TRUE)
+scl_recluster(scl, ncl, shortest = TRUE, quiet = FALSE)
 }
 \arguments{
 \item{scl}{An \code{scl} object returned from \link{scl_redcap}.}
 
-\item{ncl}{Desired number of clusters}
+\item{ncl}{Desired number of clusters. See description of `ncl_iterate`
+parameter for conditions under which actual number may be less than this
+value.}
 
 \item{shortest}{If \code{TRUE}, the \code{dmat} is interpreted as distances
 such that lower values are preferentially selected; if \code{FALSE}, then
 higher values of \code{dmat} are interpreted to indicate stronger
 relationships, as is the case for example with covariances.}
+
+\item{quiet}{If `FALSE` (default), display progress information on screen.}
 }
 \value{
 Modified \code{scl} object in which \code{tree} is re-cut into

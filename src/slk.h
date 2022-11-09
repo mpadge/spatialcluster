@@ -5,4 +5,5 @@
 Rcpp::IntegerVector rcpp_slk (
         const Rcpp::DataFrame gr_full,
         const Rcpp::DataFrame gr,
-        bool shortest);
+        const bool shortest,
+        const bool quiet);

@@ -15,7 +15,9 @@ distances or equivalent metrics between all points in \code{xy}. If \code{xy}
 has \code{n} rows, then \code{dat} must have \code{n} rows and \code{n}
 columns.}
 
-\item{ncl}{Desired number of clusters}
+\item{ncl}{Desired number of clusters. See description of `ncl_iterate`
+parameter for conditions under which actual number may be less than this
+value.}
 
 \item{linkage}{One of \code{"single"}, \code{"average"}, or
 \code{"complete"}; see Note.}
