@@ -94,9 +94,13 @@ append_dist_to_edges <- function (edges, dmat, shortest) {
 #'
 #' Generate full set of edges between a set of input points
 #'
+#' @param dmat Either a spatial distance matrix generated from 'xy', or a
+#' separate distance matrix passed as the 'dmat' parameter to the main
+#' \link{scl_redcap} function.
 #' @inheritParams scl_redcap
 #' @noRd
 scl_edges_all <- function (xy, dmat, shortest = TRUE) {
+
     n <- nrow (dmat)
     edges <- tibble::tibble (from = rep (seq (n), times = n),
                              to = rep (seq (n), each = n),
