@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.003</span>
       </span>
     </div>
 
@@ -117,9 +117,13 @@
 <span><span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">n</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">dmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="va">n</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="va">n</span><span class="op">)</span></span></code></pre></div>
 <p>The load the package and call the function:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span> <span class="op">(</span><span class="va"><a href="https://github.com/mpadge/spatialcluster" class="external-link">spatialcluster</a></span><span class="op">)</span></span>
+<span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-full-single-1.png"><!-- --></p>
 <p>The <code>scl</code> object is a <code>list</code> with the following components:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "tree"       "merges"     "ord"        "nodes"      "pars"      </span></span>
 <span><span class="co">#&gt; [6] "statistics"</span></span></code></pre></div>
@@ -142,7 +146,7 @@
 <h2 id="a-cautionary-note">A Cautionary Note<a class="anchor" aria-label="anchor" href="#a-cautionary-note"></a>
 </h2>
 <p>The following plot compares the results of applying four different clustering algorithms to the same data.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span> <span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span> <span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span></span>
 <span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span>, linkage <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
