@@ -128,7 +128,7 @@ full_merge::OneMerge full_merge::merge_one_single (full_merge::FullMergeDat &cld
                          clto = cldat.clusters.at (cl_to_i);
     clto.n += clfrom.n;
     clto.dist_sum += clfrom.dist_sum;
-    // TODO: Same as TODO in init fn above
+
     if ((cldat.shortest && clfrom.dist_max > clto.dist_max) ||
             (!cldat.shortest && clfrom.dist_max < clto.dist_max))
         clto.dist_max = clfrom.dist_max;
@@ -184,13 +184,13 @@ void full_merge::merge_single (full_merge::FullMergeDat &cldat)
 bool full_merge::avgdist_sorter_incr (const OneDist &lhs,
         const OneDist &rhs)
 {
-    return lhs.average < rhs.average;
+    return lhs.value < rhs.value;
 }
 
 bool full_merge::avgdist_sorter_decr (const OneDist &lhs,
         const OneDist &rhs)
 {
-    return lhs.average > rhs.average;
+    return lhs.value > rhs.value;
 }
 
 bool full_merge::maxdist_sorter_incr (const OneDist &lhs,
@@ -222,7 +222,7 @@ void full_merge::fill_avg_dists (full_merge::FullMergeDat &cldat,
         onedist.ni = cldat.clusters [ei.from].n;
         onedist.nj = cldat.clusters [ei.to].n;
 
-        onedist.average = (onedist.di + onedist.dj + onedist.d) /
+        onedist.value = (onedist.di + onedist.dj + onedist.d) /
             static_cast <double> (onedist.ni + onedist.nj + 1);
 
         cl_dists.avg_dists [nc++] = onedist;
@@ -311,14 +311,14 @@ full_merge::OneMerge full_merge::merge_avg (full_merge::FullMergeDat &cldat,
     for (auto i: clj_indx)
     {
         cl_dists.avg_dists [i].d = dmin;
-        cl_dists.avg_dists [i].average =
+        cl_dists.avg_dists [i].value =
             (cl_dists.avg_dists [i].di + dtot + dmin) /
             static_cast <double> (cl_dists.avg_dists [i].ni + ntot + 1);
     }
     for (auto i: cli_indx)
     {
         cl_dists.avg_dists [i].d = dmin;
-        cl_dists.avg_dists [i].average =
+        cl_dists.avg_dists [i].value =
             (cl_dists.avg_dists [i].dj + dtot + dmin) /
             static_cast <double> (cl_dists.avg_dists [i].nj + ntot + 1);
     }
@@ -452,14 +452,14 @@ full_merge::OneMerge full_merge::merge_max (full_merge::FullMergeDat &cldat,
     for (auto i: clj_indx)
     {
         cl_dists.avg_dists [i].d = dmin;
-        cl_dists.avg_dists [i].average =
+        cl_dists.avg_dists [i].value =
             (cl_dists.avg_dists [i].di + dtot + dmin) /
             static_cast <double> (cl_dists.avg_dists [i].ni + ntot + 1);
     }
     for (auto i: cli_indx)
     {
         cl_dists.avg_dists [i].d = dmin;
-        cl_dists.avg_dists [i].average =
+        cl_dists.avg_dists [i].value =
             (cl_dists.avg_dists [i].dj + dtot + dmin) /
             static_cast <double> (cl_dists.avg_dists [i].nj + ntot + 1);
     }

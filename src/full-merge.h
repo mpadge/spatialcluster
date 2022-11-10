@@ -38,7 +38,7 @@ struct OneDist
 {
     int cli, clj;
     size_t ni, nj;
-    double di, dj, d, average; 
+    double di, dj, d, value; 
     // di, dj are dist_sums, d is min dist of connecting edge
 };
 
