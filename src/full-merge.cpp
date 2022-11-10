@@ -181,26 +181,26 @@ void full_merge::merge_single (full_merge::FullMergeDat &cldat)
     }
 }
 
-bool full_merge::avgdist_sorter_incr (const OneAvgDist &lhs,
-        const OneAvgDist &rhs)
+bool full_merge::avgdist_sorter_incr (const OneDist &lhs,
+        const OneDist &rhs)
 {
     return lhs.average < rhs.average;
 }
 
-bool full_merge::avgdist_sorter_decr (const OneAvgDist &lhs,
-        const OneAvgDist &rhs)
+bool full_merge::avgdist_sorter_decr (const OneDist &lhs,
+        const OneDist &rhs)
 {
     return lhs.average > rhs.average;
 }
 
-bool full_merge::maxdist_sorter_incr (const OneAvgDist &lhs,
-        const OneAvgDist &rhs)
+bool full_merge::maxdist_sorter_incr (const OneDist &lhs,
+        const OneDist &rhs)
 {
     return lhs.d < rhs.d;
 }
 
-bool full_merge::maxdist_sorter_decr (const OneAvgDist &lhs,
-        const OneAvgDist &rhs)
+bool full_merge::maxdist_sorter_decr (const OneDist &lhs,
+        const OneDist &rhs)
 {
     return lhs.d > rhs.d;
 }
@@ -213,7 +213,7 @@ void full_merge::fill_avg_dists (full_merge::FullMergeDat &cldat,
     std::unordered_set <std::string> edgenames; // TODO: Remove
     for (auto ei: cldat.edges)
     {
-        full_merge::OneAvgDist onedist;
+        full_merge::OneDist onedist;
         onedist.cli = ei.from;
         onedist.clj = ei.to;
         onedist.d = ei.dist;
@@ -270,7 +270,7 @@ void full_merge::fill_cl_indx_maps (full_merge::AvgDists &cl_dists)
 full_merge::OneMerge full_merge::merge_avg (full_merge::FullMergeDat &cldat,
         full_merge::AvgDists &cl_dists)
 {
-    full_merge::OneAvgDist the_dist = cl_dists.avg_dists [0];
+    full_merge::OneDist the_dist = cl_dists.avg_dists [0];
     const double dtot = the_dist.di + the_dist.dj + the_dist.d;
     const size_t ntot = the_dist.ni + the_dist.nj + 1;
     const double average = dtot / static_cast <double> (ntot);
@@ -387,7 +387,7 @@ void full_merge::fill_max_dists (full_merge::FullMergeDat &cldat,
     std::unordered_set <std::string> edgenames; // TODO: Remove
     for (auto ei: cldat.edges)
     {
-        full_merge::OneAvgDist onedist;
+        full_merge::OneDist onedist;
         onedist.cli = ei.from;
         onedist.clj = ei.to;
         onedist.d = ei.dist;
@@ -411,7 +411,7 @@ void full_merge::max (full_merge::FullMergeDat &cldat)
 full_merge::OneMerge full_merge::merge_max (full_merge::FullMergeDat &cldat,
         full_merge::AvgDists &cl_dists)
 {
-    full_merge::OneAvgDist the_dist = cl_dists.avg_dists [0];
+    full_merge::OneDist the_dist = cl_dists.avg_dists [0];
     const double dtot = the_dist.di + the_dist.dj + the_dist.d;
     const size_t ntot = the_dist.ni + the_dist.nj + 1;
     const double average = dtot / static_cast <double> (ntot);
