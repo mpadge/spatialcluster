@@ -2,6 +2,8 @@
 #'
 #' Full spatially-constrained clustering.
 #'
+#' @param linkage Either \code{"single"} or \code{"average"}. For covariance
+#' clustering, use \code{"single"} with `shortest = FALSE`.
 #' @inheritParams scl_redcap
 #'
 #' @family clustering_fns
@@ -18,7 +20,8 @@ scl_full <- function (xy,
                       shortest = TRUE,
                       nnbs = 6L) {
 
-    linkage <- scl_linkage_type (linkage)
+    linkage <- match.arg (tolower (linkage), c ("single", "average"))
+
     if (methods::is (xy, "scl")) {
         message ("scl_full is for initial cluster construction; ",
                  "passing to scl_recluster")

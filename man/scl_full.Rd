@@ -19,8 +19,8 @@ columns.}
 parameter for conditions under which actual number may be less than this
 value.}
 
-\item{linkage}{One of \code{"single"}, \code{"average"}, or
-\code{"complete"}; see Note.}
+\item{linkage}{Either \code{"single"} or \code{"average"}. For covariance
+clustering, use \code{"single"} with `shortest = FALSE`.}
 
 \item{shortest}{If \code{TRUE}, the \code{dmat} is interpreted as distances
 such that lower values are preferentially selected; if \code{FALSE}, then
