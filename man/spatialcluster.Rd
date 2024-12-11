@@ -2,10 +2,23 @@
 % Please edit documentation in R/spatialcluster-package.r
 \docType{package}
 \name{spatialcluster}
+\alias{spatialcluster-package}
 \alias{spatialcluster}
 \title{spatialcluster.}
 \description{
 R port of redcap (Regionalization with dynamically constrained agglomerative
 clustering and partitioning).
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mpadge/spatialcluster}
+  \item Report bugs at \url{https://github.com/mpadge/spatialcluster/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Mark Padgham \email{mark.padgham@email.com}
+
 }
 \concept{package}

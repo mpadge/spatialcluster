@@ -5,11 +5,10 @@
 #'
 #' @name spatialcluster
 #' @family package
-#' @docType package
 #' @importFrom magrittr %>% %<>%
 #' @importFrom Rcpp evalCpp
 #' @useDynLib spatialcluster, .registration = TRUE
-NULL
+"_PACKAGE"
 
 #' Pipe operator
 #'
