@@ -6,20 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>spatialcluster • spatialcluster</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="spatialcluster">
-<meta property="og:description" content="spatialcluster">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -33,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.006</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.011</span>
       </span>
     </div>
 
@@ -50,7 +49,7 @@
 <li>
   <a href="https://github.com/mpadge/spatialcluster/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -61,7 +60,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -70,9 +69,9 @@
                         <h4 data-toc-skip class="author">Mark
 Padgham</h4>
             
-            <h4 data-toc-skip class="date">2022-11-10</h4>
+            <h4 data-toc-skip class="date">2024-12-11</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mpadge/spatialcluster/blob/HEAD/vignettes/spatialcluster.Rmd" class="external-link"><code>vignettes/spatialcluster.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mpadge/spatialcluster/blob/main/vignettes/spatialcluster.Rmd" class="external-link"><code>vignettes/spatialcluster.Rmd</code></a></small>
       <div class="hidden name"><code>spatialcluster.Rmd</code></div>
 
     </div>
@@ -148,14 +147,31 @@ and a (possibly different) set of destinations.</p>
 <p>Such flow data can - and indeed often are - directly submitted to
 clustering routines, through constructing some suitably-scaled metric of
 distance as the inverse of flow. In spatial systems, however, flows from
-some point <span class="math inline">\(A\)</span> to another point <span class="math inline">\(B\)</span> are often closely related to flows from
-some point <span class="math inline">\(A^\prime\)</span> near <span class="math inline">\(A\)</span> to some <span class="math inline">\(B^\prime\)</span> near <span class="math inline">\(B\)</span>, with similarity positively related to
-the proximity of <span class="math inline">\(A^\prime\)</span> to <span class="math inline">\(A\)</span> and <span class="math inline">\(B^\prime\)</span> to <span class="math inline">\(B\)</span>. This is nothing other than a
-definition of “autocorrelation”. (It is also implicitly tautological, as
-are most definitions of this phenomenon.) Clustering with directly
-observed flows alone ignores the effects of autocorrelation, and thus
-introduces a host of well-recognised issues arising through doing
-so.</p>
+some point
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+to another point
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+are often closely related to flows from some point
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>′</mi></msup><annotation encoding="application/x-tex">A^\prime</annotation></semantics></math>
+near
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+to some
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>B</mi><mi>′</mi></msup><annotation encoding="application/x-tex">B^\prime</annotation></semantics></math>
+near
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>,
+with similarity positively related to the proximity of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>′</mi></msup><annotation encoding="application/x-tex">A^\prime</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>B</mi><mi>′</mi></msup><annotation encoding="application/x-tex">B^\prime</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>.
+This is nothing other than a definition of “autocorrelation”. (It is
+also implicitly tautological, as are most definitions of this
+phenomenon.) Clustering with directly observed flows alone ignores the
+effects of autocorrelation, and thus introduces a host of
+well-recognised issues arising through doing so.</p>
 <p>Flow matrices may be converted into covariance matrices through
 populating the upper or lower triangle with pair-wise covariances (or
 through copying one triangle to the other to generate a symmetrical
@@ -164,10 +180,13 @@ flow matrix to yield covariances in flows <em>from</em> each point, or
 between the columns to yield covariances in flows <em>to</em> each
 point. Of course, both may be combined through, for example, filling the
 upper triangle of a covariance matrix with row-wise covariances, and the
-lower triangle with column-wise covariances. The value <span class="math inline">\(C_{ij}\)</span> will then represent the covariance
-in flow <em>from</em> i and flow <em>from</em> j, while <span class="math inline">\(C_{ji}\)</span> will represent the covariance in
-flow <em>to</em> i and flow <em>to</em> j. Such compound covariance
-matrices will not be symmetrical.</p>
+lower triangle with column-wise covariances. The value
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>C</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">C_{ij}</annotation></semantics></math>
+will then represent the covariance in flow <em>from</em> i and flow
+<em>from</em> j, while
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>C</mi><mrow><mi>j</mi><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">C_{ji}</annotation></semantics></math>
+will represent the covariance in flow <em>to</em> i and flow <em>to</em>
+j. Such compound covariance matrices will not be symmetrical.</p>
 <p>Both forms of population covariance matrices are explicitly
 demonstrated in the empirical application below, revealing the
 usefulness of considering and comparing both forms of covariance
@@ -273,7 +292,7 @@ spatial clusters.
 <span><span class="co">##  0  1  2  3  4 </span></span>
 <span><span class="co">##  4 17  9  7 12 </span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## Available fields: cluster, eps, minPts, dist, borderPoints</span></span></code></pre>
+<span><span class="co">## Available fields: cluster, eps, minPts, metric, borderPoints</span></span></code></pre>
 The result shows the appropriate number of five clusters. Further
 insight can be gained through visually inspecting the clusters in both
 the non-spatial and spatial domains. Doing so reveals (Fig. 2) that the
@@ -393,9 +412,11 @@ constructing MSTs via the three forms of linkage remains largely
 identical, with minimal distances simply replaced by maximal
 covariances. Tree bi-section becomes a slightly different, and
 computationally simpler, procedure, replacing the previous measure of
-intra-cluster homogeneity (<span class="math inline">\(\sum_i (X_i -
-\overline{X} ^ 2\)</span>) with a simple maximum (<span class="math inline">\(\sum_i X_i\)</span>). Application to the two forms
-of matrix remains otherwise identical.</p>
+intra-cluster homogeneity
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>i</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>−</mo><msup><mover><mi>X</mi><mo accent="true">¯</mo></mover><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\sum_i (X_i - \overline{X} ^ 2</annotation></semantics></math>)
+with a simple maximum
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>i</mi></msub><msub><mi>X</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\sum_i X_i</annotation></semantics></math>).
+Application to the two forms of matrix remains otherwise identical.</p>
 </div>
 </div>
 <div class="section level2">
@@ -411,32 +432,41 @@ nearest-neighbour relationships in a given data set.</p>
 <p>Each point or object within a typical planar (effectively
 two-dimensional) data set may have on average just under three nearest
 neighbours if these are calculated with a triangulation, or potentially
-up to <span class="math inline">\(k\)</span> for some <span class="math inline">\(k\)</span>-nearest neighbours scheme. Each point
-in a minimal-spanning tree generally has an average of between two and
-three neighbours (one for terminal nodes; two for non-branching nodes;
-three for branching nodes). It may accordingly be presumed that reducing
-a full set of neighbours to an MST reduces average numbers of edges per
-node from <span class="math inline">\(\gtrapprox 3\)</span> to <span class="math inline">\(\sim 2.5\)</span>. The loss in computational
-complexity produced through using all neighbouring nodes instead of an
-MST is thus likely to be only around 20%. Moreover, if a clustering
-algorithm scales sub-linearly with <span class="math inline">\(N\)</span>, as many do, this loss is likely to be
-even less pronounced with increasing <span class="math inline">\(N\)</span>.</p>
+up to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+for some
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-nearest
+neighbours scheme. Each point in a minimal-spanning tree generally has
+an average of between two and three neighbours (one for terminal nodes;
+two for non-branching nodes; three for branching nodes). It may
+accordingly be presumed that reducing a full set of neighbours to an MST
+reduces average numbers of edges per node from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⪆</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">\gtrapprox 3</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mn>2.5</mn></mrow><annotation encoding="application/x-tex">\sim 2.5</annotation></semantics></math>.
+The loss in computational complexity produced through using all
+neighbouring nodes instead of an MST is thus likely to be only around
+20%. Moreover, if a clustering algorithm scales sub-linearly with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>,
+as many do, this loss is likely to be even less pronounced with
+increasing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>.</p>
 <p>The exact clustering algorithm proceeds through the following steps,
 looping until all data objects have been allocated to a cluster, and
 beginning with both <code>i = 0</code> and <code>clnum = 0</code>. The
 primary data is an array of edges (<code>edge</code>) sorted by
 increasing distance.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fl">1.</span>  Select edge [i] connecting nodes a and b.</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fl">2.</span>  i<span class="sc">++</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fl">3.</span>  <span class="cf">if</span> both a and b are already <span class="cf">in</span> clusters<span class="sc">:</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        continue to <span class="cf">next</span> iteration</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> neither node is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cluster</span> (clnum) <span class="ot">=</span> <span class="fu">create_new_cluster</span> (<span class="fu">c</span> (a, b))</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        clnum<span class="sc">++</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only a is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (a, <span class="fu">get_cluster_number</span> (b))</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only b is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (b, <span class="fu">get_cluster_number</span> (a))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fl">1.</span>  Select edge [i] connecting nodes a and b.</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fl">2.</span>  i<span class="sc">++</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fl">3.</span>  <span class="cf">if</span> both a and b are already <span class="cf">in</span> clusters<span class="sc">:</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>        continue to <span class="cf">next</span> iteration</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> neither node is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>        <span class="fu">cluster</span> (clnum) <span class="ot">=</span> <span class="fu">create_new_cluster</span> (<span class="fu">c</span> (a, b))</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>        clnum<span class="sc">++</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only a is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (a, <span class="fu">get_cluster_number</span> (b))</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only b is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (b, <span class="fu">get_cluster_number</span> (a))</span></code></pre></div>
 <p>This procedure allocates all nodes (data objects) to clusters. The
 number of resultant clusters can not be known in advance, and many
 clusters may be very small, comprising for example only a single edge
@@ -485,12 +515,23 @@ frequently modelled by spatial interaction models, which explain the
 aggregate numbers or densities of trips to and from those points, and
 their distance apart. The sizes of origin locations are the row sums of
 the OD matrix; the sizes of destinations the column sums. Respectively
-denoting the sizes of origin <span class="math inline">\(i\)</span> and
-destination <span class="math inline">\(j\)</span> by <span class="math inline">\(O_i\)</span> and <span class="math inline">\(D_j\)</span>, the canonical spatial interaction
-model is, <span class="math display">\[\begin{equation}
+denoting the sizes of origin
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+and destination
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>O</mi><mi>i</mi></msub><annotation encoding="application/x-tex">O_i</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>j</mi></msub><annotation encoding="application/x-tex">D_j</annotation></semantics></math>,
+the canonical spatial interaction model is,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mfrac><mrow><msub><mi>O</mi><mi>i</mi></msub><msub><mi>D</mi><mi>j</mi></msub><msup><mi>e</mi><mrow><mo>−</mo><mi>α</mi><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></msup></mrow><mrow><munder><mo>∑</mo><mi>m</mi></munder><msub><mi>O</mi><mi>m</mi></msub><munder><mo>∑</mo><mi>n</mi></munder><msub><mi>D</mi><mi>n</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">\begin{equation}
     S_{ij} = \frac{O_i D_j e ^ {-\alpha d_{ij}}} {\sum_m O_m \sum_n D_n}
-\end{equation}\]</span> where <span class="math inline">\(d_{ij}\)</span> denotes the distance between the
-points <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>.</p>
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">d_{ij}</annotation></semantics></math>
+denotes the distance between the points
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>.</p>
 <p>A spatial interaction model explains the portion of the OD matrix
 expected to arise based on individual locational importance and relative
 position alone. A spatial interaction model represents the portion of an
@@ -513,21 +554,22 @@ non-symmetrical matrix.</p>
 subtracted from covariance matrices calculated from directly observed
 data to quantify aggregate covariance beyond that expected from spatial
 interaction models alone. Standardised measures are derived here as
-relative deviations, <span class="math inline">\((C_{obs} - C_{SI}) /
-C_{SI}\)</span>. We use these resultant covariance matrices to discern
-spatial clusters within which observed interactions are anomalously
-high. An immediate advantage of this approach is that all pair-wise
-interactions for which observed covariances are merely equal to or less
-than those explained by spatial interaction may be removed (through
-replacing with <code>NA</code> or <code>NaN</code> values), so that
-clustering uses only those interactions which exceed neutrally expected
-values.</p>
+relative deviations,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo>−</mo><msub><mi>C</mi><mrow><mi>S</mi><mi>I</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><msub><mi>C</mi><mrow><mi>S</mi><mi>I</mi></mrow></msub></mrow><annotation encoding="application/x-tex">(C_{obs} -
+C_{SI}) / C_{SI}</annotation></semantics></math>. We use these resultant
+covariance matrices to discern spatial clusters within which observed
+interactions are anomalously high. An immediate advantage of this
+approach is that all pair-wise interactions for which observed
+covariances are merely equal to or less than those explained by spatial
+interaction may be removed (through replacing with <code>NA</code> or
+<code>NaN</code> values), so that clustering uses only those
+interactions which exceed neutrally expected values.</p>
 <p>Finally, note that covariances are the obverse of distances, and so
-need to be converted to some suitable distance metric such as <span class="math inline">\({\rm max} C - C_{ij}\)</span>. The resultant
-matrix can then be used to extract a set of (triangulated or otherwise
-nearest) neighbours which can be used to extract exact clusters. In
-summary, an OD matrix can be used to form a set of neighbouring edges
-through the following steps:</p>
+need to be converted to some suitable distance metric such as <span class="math inline">${\rm max} C - C_{ij}$</span>. The resultant matrix
+can then be used to extract a set of (triangulated or otherwise nearest)
+neighbours which can be used to extract exact clusters. In summary, an
+OD matrix can be used to form a set of neighbouring edges through the
+following steps:</p>
 <ol style="list-style-type: decimal">
 <li>Fit a spatial interaction model and derive corresponding model OD
 matrix;</li>
@@ -536,12 +578,14 @@ matrices, and for either or both origins and/or destinations;</li>
 <li>Subtract modelled from observed covariance matrix to obtain
 standardised covariance fractions beyond those expected from spatial
 interaction alone;</li>
-<li>(Optionally) Set all fractions <span class="math inline">\(\le
-0\)</span> to <code>NA</code>.</li>
-<li>Convert to distance metric, for example, <span class="math inline">\(C_{ij} \rightarrow {\rm max} C -
-C_{ij}\)</span>.</li>
+<li>(Optionally) Set all fractions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≤</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\le 0</annotation></semantics></math>
+to <code>NA</code>.</li>
+<li>Convert to distance metric, for example, <span class="math inline">$C_{ij} \rightarrow {\rm max} C -
+C_{ij}$</span>.</li>
 <li>Construct set of neighbouring edges via preferred algorithm (such as
-triangulation or <span class="math inline">\(k\)</span>-nearest
+triangulation or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-nearest
 neighbours), and including only those neighbours with
 non-<code>NA</code> distances.</li>
 <li>Use resultant edges to calculate exact clusters using chosen linkage
@@ -625,23 +669,34 @@ interaction processes alone. These processes are a specific form off
 autocorrelation, such that nearby points are expected to have more
 highly correlated values (here, of flow) than more distant points. A
 spatial interaction model will thus “predict” relatively similar values
-of flow towards two nearby points, <span class="math inline">\(a\)</span> and <span class="math inline">\(A^\prime\)</span>. Observed values may
-nevertheless be distinctly different for any range of particular and
-idiosyncratic reasons - <span class="math inline">\(a\)</span> may be an
-important destination for some spatially-defined sub-section of the
-population, while <span class="math inline">\(A^\prime\)</span> is
-important for some other, spatially distinct sub-population. Comparing
-net counts alone will nevertheless reveal a strong similarity between
-these two points.</p>
-<p>In contrast, covariances between <span class="math inline">\(a\)</span> and <span class="math inline">\(A^\prime\)</span> will only be high when patterns
-of flow from the entire population towards <span class="math inline">\(a\)</span> are similar to patterns of flow towards
-<span class="math inline">\(A^\prime\)</span>. The clusters discerned
-here are forced to be spatially-contiguous, and yet direct analyses of
-flows permits clusters to be formed based on processes which are
-potentially unrelated in space. In contrast, clusters discerned from
-analyses of covariance matrix must by definition reflect regions towards
-or away from which movement of the entire, spatially-structured
-population significantly covaries.</p>
+of flow towards two nearby points,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>′</mi></msup><annotation encoding="application/x-tex">A^\prime</annotation></semantics></math>.
+Observed values may nevertheless be distinctly different for any range
+of particular and idiosyncratic reasons -
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+may be an important destination for some spatially-defined sub-section
+of the population, while
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>′</mi></msup><annotation encoding="application/x-tex">A^\prime</annotation></semantics></math>
+is important for some other, spatially distinct sub-population.
+Comparing net counts alone will nevertheless reveal a strong similarity
+between these two points.</p>
+<p>In contrast, covariances between
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>′</mi></msup><annotation encoding="application/x-tex">A^\prime</annotation></semantics></math>
+will only be high when patterns of flow from the entire population
+towards
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+are similar to patterns of flow towards
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>′</mi></msup><annotation encoding="application/x-tex">A^\prime</annotation></semantics></math>.
+The clusters discerned here are forced to be spatially-contiguous, and
+yet direct analyses of flows permits clusters to be formed based on
+processes which are potentially unrelated in space. In contrast,
+clusters discerned from analyses of covariance matrix must by definition
+reflect regions towards or away from which movement of the entire,
+spatially-structured population significantly covaries.</p>
 <p>TODO: Now develop a proper mathematical argument for this</p>
 </div>
 <div class="section level2">
@@ -650,7 +705,7 @@ population significantly covaries.</p>
 <p>Plus extra refs:</p>
 <p><a href="http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da" class="external-link uri">http://www.kdd.org/kdd2017/papers/view/toeplitz-inverse-covariance-based-clustering-of-multivariate-time-series-da</a></p>
 <p><a href="https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov" class="external-link uri">https://www.rdocumentation.org/packages/multiwayvcov/versions/1.2.3/topics/cluster.vcov</a></p>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Assuncao2006" class="csl-entry">
 AssunÇão, R. M., M. C. Neves, G. Câmara, and C. Da Costa Freitas. 2006.
 <span>“Efficient Regionalization Techniques for Socio‐economic
@@ -702,9 +757,7 @@ https://doi.org/<a href="https://doi.org/10.1016/B978-008044910-4.00523-X" class
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -717,16 +770,16 @@ https://doi.org/<a href="https://doi.org/10.1016/B978-008044910-4.00523-X" class
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
