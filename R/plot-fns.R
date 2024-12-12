@@ -21,10 +21,12 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
             a <- alphahull::ashape (xyi, alpha = alpha)$edges %>%
                 data.frame ()
 
-            xy <- rbind (data.frame (ind = a$ind1, x = a$x1, y = a$y1),
-                         data.frame (ind = a$ind2, x = a$x2, y = a$y2)) %>%
-                    unique () %>%
-                    dplyr::arrange (ind)
+            xy <- rbind (
+                data.frame (ind = a$ind1, x = a$x1, y = a$y1),
+                data.frame (ind = a$ind2, x = a$x2, y = a$y2)
+            ) %>%
+                unique () %>%
+                dplyr::arrange (ind)
             inds <- data.frame (ind1 = a$ind1, ind2 = a$ind2)
             # Then just have to wrap those around xy:
             # TODO: Find a better way to do this!
@@ -38,7 +40,7 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
                     j <- which (inds$ind2 == utils::tail (ind_seq, n = 1))
                     ind_seq <- c (ind_seq, inds [j, 1])
                 }
-                inds <- inds [-j, , drop = FALSE] #nolint
+                inds <- inds [-j, , drop = FALSE] # nolint
             }
             xy <- xy [match (ind_seq, xy$ind), ]
             bdry [[length (bdry) + 1]] <- cbind (i, xy$x, xy$y)
@@ -62,7 +64,7 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
 #' set.seed (1)
 #' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
-#' dmat <- matrix (runif (n ^ 2), ncol = n)
+#' dmat <- matrix (runif (n^2), ncol = n)
 #' scl <- scl_redcap (xy, dmat, ncl = 4)
 #' plot (scl)
 #' # Connect clusters according to highest (\code{shortest = FALSE}) values of
@@ -104,14 +106,18 @@ plot.scl <- function (x, ..., hull_alpha = 1) {
     hull_aes <- ggplot2::aes (x = x, y = y, group = id)
     hull_width <- 0.5
     g <- ggplot2::ggplot (xy, ggplot2::aes (x = x, y = y)) +
-        ggplot2::geom_point (size = 5, color = xy$col,
-                             show.legend = FALSE) +
-        ggplot2::geom_polygon (data = hulls,
-                               mapping = hull_aes,
-                               colour = cl_cols$col [hulls$id],
-                               fill = cl_cols$col [hulls$id],
-                               alpha = 0.1,
-                               size = hull_width) +
+        ggplot2::geom_point (
+            size = 5, color = xy$col,
+            show.legend = FALSE
+        ) +
+        ggplot2::geom_polygon (
+            data = hulls,
+            mapping = hull_aes,
+            colour = cl_cols$col [hulls$id],
+            fill = cl_cols$col [hulls$id],
+            alpha = 0.1,
+            size = hull_width
+        ) +
         ggthemes::theme_solarized ()
 
     g
@@ -119,13 +125,16 @@ plot.scl <- function (x, ..., hull_alpha = 1) {
 
 check_hull_alpha <- function (a) {
 
-    if (length (a) > 1)
+    if (length (a) > 1) {
         stop ("hull_alpha must be a single value")
-    if (!is.numeric (a))
+    }
+    if (!is.numeric (a)) {
         stop ("hull_alpha must be numeric")
+    }
 
-    if (a <= 0 | a > 1)
+    if (a <= 0 || a > 1) {
         stop ("hull_alpha must be between 0 and 1")
+    }
 
     return (a)
 }
@@ -140,9 +149,12 @@ check_hull_alpha <- function (a) {
 #' @family plot_fns
 #' @export
 plot_merges <- function (x, root_tree = FALSE) {
-    if (!(methods::is (x, "scl") && x$pars$method == "full"))
-        stop ("plot_merges can only be applied to scl objects ",
-              "generated with method = full")
+    if (!(methods::is (x, "scl") && x$pars$method == "full")) {
+        stop (
+            "plot_merges can only be applied to scl objects ",
+            "generated with method = full"
+        )
+    }
 
     hc <- structure (class = "hclust", .Data = list ())
     merges <- convert_merges_to_hclust (x)
@@ -150,10 +162,11 @@ plot_merges <- function (x, root_tree = FALSE) {
     hc$height <- merges [, 3]
     hc$order <- x$ord + 1 # it's 0-indexed
     hc$labels <- x$ord
-    if (root_tree)
+    if (root_tree) {
         plot (stats::as.dendrogram (hc))
-    else
+    } else {
         plot (hc)
+    }
 }
 
 convert_merges_to_hclust <- function (x) {
@@ -163,7 +176,7 @@ convert_merges_to_hclust <- function (x) {
     mt <- apply (mt, 2, function (i) match (i, indx))
     merged <- d <- NULL
     map <- rep (NA, max (mt))
-    for (i in seq (nrow (mt))) {
+    for (i in seq_len (nrow (mt))) {
         m1 <- mt [i, 1]
         m2 <- mt [i, 2]
         if (!m1 %in% merged) {

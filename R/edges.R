@@ -11,11 +11,15 @@ scl_edges_tri <- function (xy, shortest = TRUE) {
         tripack::neighbours ()
 
     n <- length (nbs)
-    edges <- lapply (seq (n), function (i)
-                     cbind (i, nbs [[i]])) %>%
-            do.call (rbind, .)
-    edges <- tibble::tibble (from = edges [, 1],
-                             to = edges [, 2])
+    edges <- lapply (
+        seq (n),
+        function (i) cbind (i, nbs [[i]])
+    ) %>%
+        do.call (rbind, .)
+    edges <- tibble::tibble (
+        from = edges [, 1],
+        to = edges [, 2]
+    )
 
     dxy <- as.matrix (stats::dist (xy))
 
@@ -39,12 +43,18 @@ scl_edges_nn <- function (xy, nnbs, shortest = TRUE) {
     # Initially contruct with nnbs + 1, because the `d` matrix includes
     # self-distances of zero, which are subsequently removed.
     nnbs <- nnbs + 1
-    d <- apply (as.matrix (stats::dist (xy)), 2, function (i)
-                order (i, decreasing = !shortest) [seq_len (nnbs)])
+    d <- apply (
+        as.matrix (stats::dist (xy)),
+        2,
+        function (i) order (i, decreasing = !shortest) [seq_len (nnbs)]
+    )
 
-    edges <- tibble::tibble (from = rep (as.integer (colnames (d)),
-                                         each = nnbs),
-                             to = as.vector (d))
+    edges <- tibble::tibble (
+        from = rep (as.integer (colnames (d)),
+            each = nnbs
+        ),
+        to = as.vector (d)
+    )
     # rm self-edges:
     edges <- edges [which (edges$from != edges$to), ]
 
@@ -82,10 +92,12 @@ append_dist_to_edges <- function (edges, dmat, shortest) {
     index <- (edges$to - 1) * nrow (dmat) + edges$from
     edges$d <- dmat [index]
 
-    if (shortest)
-        edges %<>% dplyr::arrange (d) # lowest-to-highest
-    else
+    if (shortest) {
+        edges %<>% dplyr::arrange (d)
+    } # lowest-to-highest
+    else {
         edges %<>% dplyr::arrange (dplyr::desc (d))
+    }
 
     return (edges)
 }
@@ -102,15 +114,19 @@ append_dist_to_edges <- function (edges, dmat, shortest) {
 scl_edges_all <- function (xy, dmat, shortest = TRUE) {
 
     n <- nrow (dmat)
-    edges <- tibble::tibble (from = rep (seq (n), times = n),
-                             to = rep (seq (n), each = n),
-                             d = as.vector (dmat))
+    edges <- tibble::tibble (
+        from = rep (seq (n), times = n),
+        to = rep (seq (n), each = n),
+        d = as.vector (dmat)
+    )
     edges <- na.omit (edges)
 
-    if (shortest)
-        edges %<>% dplyr::arrange (d) # lowest-to-highest
-    else
+    if (shortest) {
+        edges %<>% dplyr::arrange (d)
+    } # lowest-to-highest
+    else {
         edges %<>% dplyr::arrange (dplyr::desc (d))
+    }
 
     return (edges)
 }
