@@ -1,6 +1,6 @@
-.PHONY: all build check document test
+.PHONY: all build check doc readme test
 
-all: doc build check
+all: doc readme build check
 
 build: doc
 	R CMD build .
@@ -15,6 +15,8 @@ clean:
 
 doc: clean
 	Rscript -e 'devtools::document()'
+
+readme:
 	Rscript -e 'rmarkdown::render("README.Rmd")'
 
 test:
