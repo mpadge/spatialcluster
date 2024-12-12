@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.013</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.015</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>The two main functions, <code><a href="reference/scl_redcap.html">scl_redcap()</a></code> and <code><a href="reference/scl_full.html">scl_full()</a></code>, implement different algorithms for spatial clustering. The former implements the algorithms of REDCAP collection of efficient yet approximate algorithms described in <a href="https://www.tandfonline.com/doi/abs/10.1080/13658810701674970" class="external-link">D. Guo’s 2008 paper, “Regionalization with dynamically constrained agglomerative clustering and partitioning.”</a> (pdf available <a href="https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf" class="external-link">here</a>), yet also here allowing covariance matrices to be submitted to clustering routines. These algorithms are computationally efficient yet generate only <em>approximate</em> estimates of underlying clusters. The latter function, <code><a href="reference/scl_full.html">scl_full()</a></code>, trades computational efficiency for accuracy, through generating clustering schemes using all available data.</p>
+<p>The two main functions, <code><a href="reference/scl_redcap.html">scl_redcap()</a></code> and <code><a href="reference/scl_full.html">scl_full()</a></code>, implement different algorithms for spatial clustering. The former implements the REDCAP collection of efficient yet approximate algorithms described in <a href="https://www.tandfonline.com/doi/abs/10.1080/13658810701674970" class="external-link">D. Guo’s 2008 paper, “Regionalization with dynamically constrained agglomerative clustering and partitioning.”</a> (pdf available <a href="https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf" class="external-link">here</a>), with extension here to apply clustering to covariance matrices. These algorithms are computationally efficient yet generate only <em>approximate</em> estimates of underlying clusters. The second function, <code><a href="reference/scl_full.html">scl_full()</a></code>, trades computational efficiency for accuracy, through generating clustering schemes using all available data.</p>
 <p>In short:</p>
 <ul>
 <li>
