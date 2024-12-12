@@ -71,18 +71,17 @@ remotes::install_github ("mpadge/spatialcluster")
 ## Usage
 
 The two main functions, `scl_redcap()` and `scl_full()`, implement different
-algorithms for spatial clustering. The former implements the algorithms of
-REDCAP collection of efficient yet approximate algorithms described in [D.
-Guo's 2008 paper, "Regionalization with dynamically constrained agglomerative
-clustering and
+algorithms for spatial clustering. The former implements the REDCAP collection
+of efficient yet approximate algorithms described in [D. Guo's 2008 paper,
+"Regionalization with dynamically constrained agglomerative clustering and
 partitioning."](https://www.tandfonline.com/doi/abs/10.1080/13658810701674970)
 (pdf available
 [here](https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf)),
-yet also here allowing covariance matrices to be submitted to clustering
-routines. These algorithms are computationally efficient yet generate only
-*approximate* estimates of underlying clusters. The latter function,
-`scl_full()`, trades computational efficiency for accuracy, through generating
-clustering schemes using all available data.
+with extension here to apply clustering to covariance matrices. These
+algorithms are computationally efficient yet generate only *approximate*
+estimates of underlying clusters. The second function, `scl_full()`, trades
+computational efficiency for accuracy, through generating clustering schemes
+using all available data.
 
 In short:
 
