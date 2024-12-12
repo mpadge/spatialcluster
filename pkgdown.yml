@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   spatialcluster: spatialcluster.html
-last_built: 2024-12-12T17:12Z
+last_built: 2024-12-12T17:21Z
 urls:
   reference: https://mpadge.github.io/spatialcluster/reference
   article: https://mpadge.github.io/spatialcluster/articles
