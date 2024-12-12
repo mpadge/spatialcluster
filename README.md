@@ -36,9 +36,10 @@ The easiest way to install `spatialcluster` is be enabling the
 [corresponding `r-universe`](https://mpadge.r-universe.dev/):
 
 ``` r
-options(repos = c(
-                  mpadge = 'https://mpadge.r-universe.dev',
-                  CRAN = 'https://cloud.r-project.org'))
+options (repos = c (
+    mpadge = "https://mpadge.r-universe.dev",
+    CRAN = "https://cloud.r-project.org"
+))
 ```
 
 The package can then be installed as usual with,
@@ -52,11 +53,11 @@ following options:
 
 ``` r
 # install.packages("remotes")
-remotes::install_git("https://codeberg.org/mpadge/spatialcluster")
-remotes::install_git("https://git.sr.ht/~mpadge/spatialcluster")
-remotes::install_bitbucket("mpadge/spatialcluster")
-remotes::install_gitlab("mpadge/spatialcluster")
-remotes::install_github("mpadge/spatialcluster")
+remotes::install_git ("https://codeberg.org/mpadge/spatialcluster")
+remotes::install_git ("https://git.sr.ht/~mpadge/spatialcluster")
+remotes::install_bitbucket ("mpadge/spatialcluster")
+remotes::install_gitlab ("mpadge/spatialcluster")
+remotes::install_github ("mpadge/spatialcluster")
 ```
 
 ## Usage
@@ -96,7 +97,7 @@ Usage can be demonstrated with some simple fake data:
 set.seed (1)
 n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
-dmat <- matrix (runif (n ^ 2), ncol = n)
+dmat <- matrix (runif (n^2), ncol = n)
 ```
 
 The load the package and call the function:

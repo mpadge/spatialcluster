@@ -5,10 +5,10 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-"
+knitr::opts_chunk$set (
+    collapse = TRUE,
+    comment = "#>",
+    fig.path = "man/figures/README-"
 )
 ```
 
@@ -44,9 +44,10 @@ The easiest way to install `spatialcluster` is be enabling the [corresponding
 `r-universe`](https://mpadge.r-universe.dev/):
 
 ```{r r-univ, eval = FALSE}
-options(repos = c(
-                  mpadge = 'https://mpadge.r-universe.dev',
-                  CRAN = 'https://cloud.r-project.org'))
+options (repos = c (
+    mpadge = "https://mpadge.r-universe.dev",
+    CRAN = "https://cloud.r-project.org"
+))
 ```
 
 The package can then be installed as usual with,
@@ -60,11 +61,11 @@ options:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("remotes")
-remotes::install_git("https://codeberg.org/mpadge/spatialcluster")
-remotes::install_git("https://git.sr.ht/~mpadge/spatialcluster")
-remotes::install_bitbucket("mpadge/spatialcluster")
-remotes::install_gitlab("mpadge/spatialcluster")
-remotes::install_github("mpadge/spatialcluster")
+remotes::install_git ("https://codeberg.org/mpadge/spatialcluster")
+remotes::install_git ("https://git.sr.ht/~mpadge/spatialcluster")
+remotes::install_bitbucket ("mpadge/spatialcluster")
+remotes::install_gitlab ("mpadge/spatialcluster")
+remotes::install_github ("mpadge/spatialcluster")
 ```
 
 ## Usage
@@ -102,7 +103,7 @@ Usage can be demonstrated with some simple fake data:
 set.seed (1)
 n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
-dmat <- matrix (runif (n ^ 2), ncol = n)
+dmat <- matrix (runif (n^2), ncol = n)
 ```
 
 The load the package and call the function:
