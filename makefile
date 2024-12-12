@@ -1,6 +1,6 @@
 .PHONY: all build check document test
 
-all: document build check
+all: doc build check
 
 build: doc
 	R CMD build .
