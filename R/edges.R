@@ -6,8 +6,14 @@
 #' @noRd
 scl_edges_tri <- function (xy, shortest = TRUE) {
 
-    nbs <- dplyr::select (xy, c (x, y)) %>%
-        tripack::tri.mesh () %>%
+    if (!inherits (xy, "data.frame")) {
+        xy <- as.data.frame (xy)
+    }
+    if (ncol (xy) > 2) {
+        xy <- dplyr::select (xy, c (x, y))
+    }
+    names (xy) <- c ("x", "y")
+    nbs <- tripack::tri.mesh (xy) |>
         tripack::neighbours ()
 
     n <- length (nbs)
