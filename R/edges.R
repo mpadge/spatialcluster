@@ -20,8 +20,9 @@ scl_edges_tri <- function (xy, shortest = TRUE) {
     edges <- lapply (
         seq (n),
         function (i) cbind (i, nbs [[i]])
-    ) %>%
-        do.call (rbind, .)
+    )
+    edges <- do.call (rbind, edges)
+
     edges <- tibble::tibble (
         from = edges [, 1],
         to = edges [, 2]
