@@ -49,6 +49,12 @@ scl_edges_tri <- function (xy, shortest = TRUE) {
 #'
 #' @return A `tibble` of `from` and `to` vertex indices for the minimal spanning
 #' tree edges, along with corresponding spatial distances calculated from 'xy'.
+#'
+#' @examples
+#' set.seed (1)
+#' n <- 100
+#' xy <- matrix (runif (2 * n), ncol = 2)
+#' scl_edges_nn (xy, nnbs = 3L)
 #' @noRd
 scl_edges_nn <- function (xy, nnbs, shortest = TRUE) {
 
