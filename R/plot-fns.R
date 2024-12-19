@@ -116,7 +116,7 @@ plot.scl <- function (x, ..., hull_alpha = 1) {
             colour = cl_cols$col [hulls$id],
             fill = cl_cols$col [hulls$id],
             alpha = 0.1,
-            size = hull_width
+            linewidth = hull_width
         ) +
         ggthemes::theme_solarized ()
 
