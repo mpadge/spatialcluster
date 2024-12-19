@@ -3,6 +3,11 @@
 #' Generate triangulated nearest-neighbour edges between a set of input points
 #'
 #' @inheritParams scl_redcap
+#' @examples
+#' set.seed (1)
+#' n <- 100
+#' xy <- matrix (runif (2 * n), ncol = 2)
+#' edges <- scl_edges_tri (xy)
 #' @noRd
 scl_edges_tri <- function (xy, shortest = TRUE) {
 
