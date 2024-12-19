@@ -86,8 +86,8 @@ scl_edges_nn <- function (xy, nnbs, shortest = TRUE) {
         from = rep (seq_len (n), n),
         to = rep (seq_len (n), each = n),
         d = as.vector (dxy)
-    ) %>%
-        dplyr::arrange (d, from, to) %>%
+    ) |>
+        dplyr::arrange (d, from, to) |>
         dplyr::filter (from != to)
 
     mst <- scl_spantree_ord1 (edges_all)
