@@ -111,10 +111,10 @@ append_dist_to_edges <- function (edges, dmat, shortest) {
     edges$d <- dmat [index]
 
     if (shortest) {
-        edges %<>% dplyr::arrange (d)
+        edges <- dplyr::arrange (edges, d)
     } # lowest-to-highest
     else {
-        edges %<>% dplyr::arrange (dplyr::desc (d))
+        edges <- dplyr::arrange (edges, dplyr::desc (d))
     }
 
     return (edges)
@@ -140,10 +140,10 @@ scl_edges_all <- function (xy, dmat, shortest = TRUE) {
     edges <- na.omit (edges)
 
     if (shortest) {
-        edges %<>% dplyr::arrange (d)
+        edges <- dplyr::arrange (edges, d)
     } # lowest-to-highest
     else {
-        edges %<>% dplyr::arrange (dplyr::desc (d))
+        edges <- dplyr::arrange (edges, dplyr::desc (d))
     }
 
     return (edges)
