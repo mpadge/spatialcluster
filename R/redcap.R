@@ -46,7 +46,6 @@
 #' default \code{full_order = TRUE} be used at all times.
 #'
 #' @family clustering_fns
-#' @export
 #' @examples
 #' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
@@ -58,6 +57,8 @@
 #' # using 'full_order = FALSE' constructs clusters from first-order
 #' # relationships only; not recommended, but possible nevertheless:
 #' scl <- scl_redcap (xy, dmat, ncl = 4, full_order = FALSE)
+#'
+#' @export
 scl_redcap <- function (xy,
                         dmat,
                         ncl,

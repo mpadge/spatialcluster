@@ -84,6 +84,7 @@ scl <- scl_redcap (xy, dmat, ncl = 4, shortest = FALSE)
 # using 'full_order = FALSE' constructs clusters from first-order
 # relationships only; not recommended, but possible nevertheless:
 scl <- scl_redcap (xy, dmat, ncl = 4, full_order = FALSE)
+
 }
 \seealso{
 Other clustering_fns: 
