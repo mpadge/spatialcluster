@@ -8,15 +8,17 @@
 #' @noRd
 scl_tbl <- function (xy) {
     if (!inherits (xy, "data.frame")) {
-        if (!is.numeric (xy))
+        if (!is.numeric (xy)) {
             stop ("coordinates must be numeric")
-        if (is.vector (xy))
+        }
+        if (is.vector (xy)) {
             stop ("coordinates require at least 2 columns")
+        }
         xy <- data.frame (xy)
     }
     xi <- grep ("^x|^lon", names (xy), ignore.case = TRUE)
     yi <- grep ("^y|^lat", names (xy), ignore.case = TRUE)
-    if (length (xi) == 1 & length (yi) == 1) {
+    if (length (xi) == 1L && length (yi) == 1L) {
         names (xy) [xi] <- "x"
         names (xy) [yi] <- "y"
     } else if (ncol (xy) == 2) {
@@ -36,8 +38,9 @@ scl_tbl <- function (xy) {
 scl_linkage_type <- function (linkage) {
     linkages <- c ("single", "average", "complete", "full")
     i <- grep (linkage, linkages, ignore.case = TRUE)
-    if (length (i) == 0)
+    if (length (i) == 0L) {
         stop ("linkage must be one of (single, average, complete, full)")
+    }
 
     return (linkages [i])
 }
