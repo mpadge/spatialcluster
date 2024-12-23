@@ -172,9 +172,9 @@ tree_nodes <- function (tree) {
     node <- NULL # suppress no visible binding note
 
     res <- tibble::tibble (node = c (tree$from, tree$to),
-                           cluster = rep (tree$cluster, 2)) %>%
-        dplyr::distinct () %>%
-        dplyr::arrange (node) %>%
+                           cluster = rep (tree$cluster, 2)) |>
+        dplyr::distinct () |>
+        dplyr::arrange (node) |>
         dplyr::filter (!is.na (cluster))
 
     # remove clusters with < 3 members:
@@ -217,12 +217,12 @@ scl_recluster_redcap <- function (scl, ncl, shortest = TRUE, quiet = FALSE) {
 
     from <- to <- d <- NULL # no visible binding messages
 
-    tree_full <- scl$tree %>% dplyr::select (from, to, d)
+    tree_full <- scl$tree |> dplyr::select (from, to, d)
 
     if (shortest)
-        tree_full %<>% dplyr::arrange (d)
+        tree_full <- dplyr::arrange (tree_full, d)
     else
-        tree_full %<>% dplyr::arrange (dplyr::desc (d))
+        tree_full <- dplyr::arrange (tree_full, dplyr::desc (d))
 
     tree_full$cluster <- rcpp_cut_tree (tree_full, ncl,
                                         shortest = shortest,
