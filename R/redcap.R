@@ -46,10 +46,11 @@
 #' default \code{full_order = TRUE} be used at all times.
 #'
 #' @family clustering_fns
+#'
 #' @examples
 #' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
-#' dmat <- matrix (runif (n ^ 2), ncol = n)
+#' dmat <- matrix (runif (n^2), ncol = n)
 #' scl <- scl_redcap (xy, dmat, ncl = 4)
 #' # Those clusters will by default be constructed by connecting edges with the
 #' # lowest (\code{shortest}) values of \code{dmat}, and will differ from
@@ -73,12 +74,17 @@ scl_redcap <- function (xy,
 
     if (methods::is (xy, "scl")) {
 
-        if (!identical (xy$pars$method, "redcap"))
-            stop ("scl_redcap can pass to scl_recluster only for scl objects",
-                  " previously generated with scl_redcap")
+        if (!identical (xy$pars$method, "redcap")) {
+            stop (
+                "scl_redcap can pass to scl_recluster only for scl objects",
+                " previously generated with scl_redcap"
+            )
+        }
 
-        message ("scl_redcap is for initial cluster construction; ",
-                 "passing to scl_recluster")
+        message (
+            "scl_redcap is for initial cluster construction; ",
+            "passing to scl_recluster"
+        )
 
         scl_recluster_redcap (xy, ncl = ncl, shortest = shortest)
 
@@ -127,8 +133,10 @@ scl_redcap <- function (xy,
 
                 } else {
 
-                    stop ("linkage must be one of ",
-                          "(single, average, complete)")
+                    stop (
+                        "linkage must be one of ",
+                        "(single, average, complete)"
+                    )
                 }
             }
 
@@ -150,15 +158,21 @@ scl_redcap <- function (xy,
 
         # meta-data:
         clo <- c ("single", "full") [match (full_order, c (FALSE, TRUE))]
-        pars <- list (method = "redcap",
-                      ncl = ncl,
-                      cl_order = clo,
-                      linkage = linkage)
+        pars <- list (
+            method = "redcap",
+            ncl = ncl,
+            cl_order = clo,
+            linkage = linkage
+        )
 
-        res <- structure (list (tree = tree,
-                            nodes = dplyr::bind_cols (tree_nodes (tree), xy),
-                            pars = pars),
-                          class = "scl")
+        res <- structure (
+            list (
+                tree = tree,
+                nodes = dplyr::bind_cols (tree_nodes (tree), xy),
+                pars = pars
+            ),
+            class = "scl"
+        )
 
         res <- scl_statistics (res)
 
@@ -171,8 +185,10 @@ tree_nodes <- function (tree) {
 
     node <- NULL # suppress no visible binding note
 
-    res <- tibble::tibble (node = c (tree$from, tree$to),
-                           cluster = rep (tree$cluster, 2)) |>
+    res <- tibble::tibble (
+        node = c (tree$from, tree$to),
+        cluster = rep (tree$cluster, 2)
+    ) |>
         dplyr::distinct () |>
         dplyr::arrange (node) |>
         dplyr::filter (!is.na (cluster))
@@ -193,24 +209,29 @@ tree_nodes <- function (tree) {
 #' @return Modified \code{scl} object in which \code{tree} is re-cut into
 #' \code{ncl} clusters.
 #' @family clustering_fns
-#' @export
+#'
 #' @examples
 #' n <- 100
 #' xy <- matrix (runif (2 * n), ncol = 2)
-#' dmat <- matrix (runif (n ^ 2), ncol = n)
+#' dmat <- matrix (runif (n^2), ncol = n)
 #' scl <- scl_redcap (xy, dmat, ncl = 4)
 #' plot (scl)
 #' scl <- scl_recluster (scl, ncl = 5)
 #' plot (scl)
+#'
+#' @export
 scl_recluster <- function (scl, ncl, shortest = TRUE, quiet = FALSE) {
 
-    if (!methods::is (scl, "scl"))
-        stop ("scl_recluster can only be applied to 'scl' objects ",
-              "returned from scl_redcap")
-    else if (identical (scl$pars$method, "redcap"))
+    if (!methods::is (scl, "scl")) {
+        stop (
+            "scl_recluster can only be applied to 'scl' objects ",
+            "returned from scl_redcap"
+        )
+    } else if (identical (scl$pars$method, "redcap")) {
         scl_recluster_redcap (scl = scl, ncl = ncl, shortest = shortest)
-    else if (identical (scl$pars$method, "full"))
+    } else if (identical (scl$pars$method, "full")) {
         scl_recluster_full (scl = scl, ncl = ncl)
+    }
 }
 
 scl_recluster_redcap <- function (scl, ncl, shortest = TRUE, quiet = FALSE) {
@@ -219,21 +240,29 @@ scl_recluster_redcap <- function (scl, ncl, shortest = TRUE, quiet = FALSE) {
 
     tree_full <- scl$tree |> dplyr::select (from, to, d)
 
-    if (shortest)
+    if (shortest) {
         tree_full <- dplyr::arrange (tree_full, d)
-    else
+    } else {
         tree_full <- dplyr::arrange (tree_full, dplyr::desc (d))
+    }
 
     tree_full$cluster <- rcpp_cut_tree (tree_full, ncl,
-                                        shortest = shortest,
-                                        quiet = quiet) + 1
+        shortest = shortest,
+        quiet = quiet
+    ) + 1
 
     pars <- scl$pars
     pars$ncl <- ncl
 
-    structure (list (tree = tree_full,
-                     nodes = dplyr::bind_cols (tree_nodes (tree_full),
-                                               scl$nodes [, c ("x", "y")]),
-                     pars = pars),
-               class = "scl")
+    structure (
+        list (
+            tree = tree_full,
+            nodes = dplyr::bind_cols (
+                tree_nodes (tree_full),
+                scl$nodes [, c ("x", "y")]
+            ),
+            pars = pars
+        ),
+        class = "scl"
+    )
 }

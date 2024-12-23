@@ -76,7 +76,7 @@ default \code{full_order = TRUE} be used at all times.
 \examples{
 n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
-dmat <- matrix (runif (n ^ 2), ncol = n)
+dmat <- matrix (runif (n^2), ncol = n)
 scl <- scl_redcap (xy, dmat, ncl = 4)
 # Those clusters will by default be constructed by connecting edges with the
 # lowest (\code{shortest}) values of \code{dmat}, and will differ from

@@ -30,11 +30,12 @@ Re-cut a spatial cluster tree (\code{scl}) at a different number of clusters.
 \examples{
 n <- 100
 xy <- matrix (runif (2 * n), ncol = 2)
-dmat <- matrix (runif (n ^ 2), ncol = n)
+dmat <- matrix (runif (n^2), ncol = n)
 scl <- scl_redcap (xy, dmat, ncl = 4)
 plot (scl)
 scl <- scl_recluster (scl, ncl = 5)
 plot (scl)
+
 }
 \seealso{
 Other clustering_fns: 
