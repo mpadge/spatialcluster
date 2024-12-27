@@ -12,8 +12,8 @@
 #' @noRd
 scl_spantree_ord1 <- function (edges) {
 
-    tree <- rcpp_mst (edges) %>%
-        dplyr::arrange (from, to) %>%
+    tree <- rcpp_mst (edges) |>
+        dplyr::arrange (from, to) |>
         tibble::tibble ()
 
     return (tree)
@@ -103,14 +103,13 @@ scl_cuttree <- function (tree, edges, ncl, shortest,
             message ("Not enough clusters found; re-starting search.")
         }
 
-        tree_temp <- tree %>%
-            dplyr::left_join (edges, by = c ("from", "to")) %>%
-            dplyr::mutate (cluster = rcpp_cut_tree (
-                .,
-                ncl = ncl_trial,
-                shortest = shortest,
-                quiet = quiet
-            ) + 1)
+        tree_temp <- dplyr::left_join (tree, edges, by = c ("from", "to"))
+        tree_temp$cluster <- rcpp_cut_tree (
+            tree_temp,
+            ncl = ncl_trial,
+            shortest = shortest,
+            quiet = quiet
+        ) + 1L
         num_clusters <- length (which (table (tree_temp$cluster) > 2))
         if (!quiet) {
             message ("Total clusters found with > 2 members: ", num_clusters)
