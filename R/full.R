@@ -68,7 +68,7 @@ scl_full <- function (xy,
             edges,
             linkage = linkage,
             shortest = shortest
-        ) %>% data.frame ()
+        ) |> data.frame ()
 
         merges <- tibble::tibble (
             from = as.integer (merges$from),
@@ -97,7 +97,7 @@ scl_full <- function (xy,
 
         # tree at that point has initial cluster numbers which must be
         # re-aligned with clusters from the nodal merges:
-        tree <- edges %>% dplyr::select (from, to, d, cluster)
+        tree <- edges |> dplyr::select (from, to, d, cluster)
         tree$cluster <- tree$cl_fr <-
             nodes$cluster [match (tree$from, nodes$node)]
         tree$cl_to <- nodes$cluster [match (tree$to, nodes$node)]
@@ -171,9 +171,9 @@ full_cluster_nodes <- function (edges, merges, ncl) {
     nodes <- tibble::tibble (
         node = c (edges$from, edges$to),
         cluster = rep (edges$cluster, 2)
-    ) %>%
-        dplyr::distinct () %>%
-        dplyr::arrange (node) %>%
+    ) |>
+        dplyr::distinct () |>
+        dplyr::arrange (node) |>
         dplyr::filter (!is.na (cluster))
 
     # nodes can still be in multiple clusters, so these are set to NA
@@ -204,7 +204,7 @@ full_cluster_nodes <- function (edges, merges, ncl) {
 #' @noRd
 scl_recluster_full <- function (scl, ncl = ncl) {
 
-    xy <- scl$nodes %>% dplyr::select (x, y)
+    xy <- scl$nodes |> dplyr::select (x, y)
     num_clusters <- 0
     ncl_trial <- ncl
 
