@@ -7,9 +7,9 @@
 #' @noRd
 scl_statistics <- function (scl) {
 
-    tree <- scl$tree %>%
+    tree <- scl$tree |>
         dplyr::mutate (tf = paste0 (to, "-", from))
-    edges_in <- scl$tree [which (scl$tree$cluster >= 0), ] %>%
+    edges_in <- scl$tree [which (scl$tree$cluster >= 0), ] |>
         dplyr::mutate (tf = paste0 (to, "-", from))
     tree <- tree [which (!tree$tf %in% edges_in$tf), ]
     #t.test (edges_in$d, tree$d, alternative = "greater", var.equal = TRUE)
@@ -32,7 +32,7 @@ scl_statistics <- function (scl) {
                          names (res) <- c ("statistic", "parameter", "p.value")
                          return (res)
                      }
-                     , numeric (3)) %>%
+                     , numeric (3)) |>
         t ()
 
     scl$statistics <- list (tt_global = tt_global, tt_clusters = tt_cl)
