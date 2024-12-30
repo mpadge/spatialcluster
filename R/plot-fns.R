@@ -14,18 +14,18 @@ scl_ahulls <- function (nodes, alpha = 0.1) {
     bdry <- list ()
     for (i in clnums) {
         if (length (which (nodes$cluster == i)) > 2) {
-            xyi <- nodes %>%
-                dplyr::filter (cluster == i) %>%
+            xyi <- nodes |>
+                dplyr::filter (cluster == i) |>
                 dplyr::select (x, y)
 
-            a <- alphahull::ashape (xyi, alpha = alpha)$edges %>%
+            a <- alphahull::ashape (xyi, alpha = alpha)$edges |>
                 data.frame ()
 
             xy <- rbind (
                 data.frame (ind = a$ind1, x = a$x1, y = a$y1),
                 data.frame (ind = a$ind2, x = a$x2, y = a$y2)
-            ) %>%
-                unique () %>%
+            ) |>
+                unique () |>
                 dplyr::arrange (ind)
             inds <- data.frame (ind1 = a$ind1, ind2 = a$ind2)
             # Then just have to wrap those around xy:
@@ -92,14 +92,14 @@ plot.scl <- function (x, ..., hull_alpha = 1) {
 
     # clnum in cl_cols is + 1 because xy below increases cluster numbers by 1 to
     # allocate cl_num == 1 to unassigned points
-    cl_cols <- grDevices::rainbow (nc) %>%
-        tibble::as_tibble () %>%
-        dplyr::mutate (cluster = seq (nc) + 1) %>%
+    cl_cols <- grDevices::rainbow (nc) |>
+        tibble::as_tibble () |>
+        dplyr::mutate (cluster = seq (nc) + 1) |>
         dplyr::rename (col = value)
 
-    xy <- x$nodes %>%
-        dplyr::mutate (cluster = ifelse (is.na (cluster), 1, cluster + 1)) %>%
-        dplyr::left_join (cl_cols, by = "cluster") %>%
+    xy <- x$nodes |>
+        dplyr::mutate (cluster = ifelse (is.na (cluster), 1, cluster + 1)) |>
+        dplyr::left_join (cl_cols, by = "cluster") |>
         dplyr::mutate (col = ifelse (is.na (col), "#333333FF", col))
 
     y <- id <- NULL # suppress no visible binding warnings
