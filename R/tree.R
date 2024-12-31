@@ -34,10 +34,13 @@ scl_spantree_ord1 <- function (edges) {
 scl_spantree_slk <- function (edges_all, edges_nn, shortest, quiet = FALSE) {
 
     clusters <- rcpp_slk (edges_all, edges_nn,
-        shortest = shortest, quiet = quiet) + 1
+        shortest = shortest, quiet = quiet
+    ) + 1
 
-    tibble::tibble (from = edges_nn$from [clusters],
-                    to = edges_nn$to [clusters])
+    tibble::tibble (
+        from = edges_nn$from [clusters],
+        to = edges_nn$to [clusters]
+    )
 }
 
 #' scl_spantree_alk
@@ -50,8 +53,10 @@ scl_spantree_slk <- function (edges_all, edges_nn, shortest, quiet = FALSE) {
 scl_spantree_alk <- function (edges, shortest, quiet = FALSE) {
 
     clusters <- rcpp_alk (edges, shortest = shortest, quiet = quiet) + 1
-    tibble::tibble (from = edges$from [clusters],
-                    to = edges$to [clusters])
+    tibble::tibble (
+        from = edges$from [clusters],
+        to = edges$to [clusters]
+    )
 }
 
 #' scl_spantree_clk
@@ -64,10 +69,13 @@ scl_spantree_alk <- function (edges, shortest, quiet = FALSE) {
 scl_spantree_clk <- function (edges_all, edges_nn, shortest, quiet = FALSE) {
 
     clusters <- rcpp_clk (edges_all, edges_nn,
-        shortest = shortest, quiet = quiet) + 1
+        shortest = shortest, quiet = quiet
+    ) + 1
 
-    tibble::tibble (from = edges_nn$from [clusters],
-                    to = edges_nn$to [clusters])
+    tibble::tibble (
+        from = edges_nn$from [clusters],
+        to = edges_nn$to [clusters]
+    )
 }
 
 #' scl_cuttree
@@ -115,8 +123,9 @@ scl_cuttree <- function (tree, edges, ncl, shortest,
             message ("Total clusters found with > 2 members: ", num_clusters)
         }
         ncl_trial <- ncl_trial + 1
-        if (ncl_trial >= nrow (tree) || iterate_ncl)
+        if (ncl_trial >= nrow (tree) || iterate_ncl) {
             break
+        }
     }
 
     return (tree_temp)
