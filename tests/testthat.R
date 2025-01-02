@@ -1,4 +1,4 @@
-library(testthat)
-library(spatialcluster)
+library (testthat)
+library (spatialcluster)
 
-test_check("spatialcluster")
+test_check ("spatialcluster")
