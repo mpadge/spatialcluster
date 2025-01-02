@@ -359,7 +359,7 @@ until all data objects have been allocated to a cluster, and beginning with both
 `i = 0` and `clnum = 0`. The primary data is an array of edges (`edge`) sorted
 by increasing distance.
 
-```{r, eval = FALSE}
+```{eval = FALSE}
 1.  Select edge [i] connecting nodes a and b.
 2.  i++
 3.  if both a and b are already in clusters:
