@@ -10,22 +10,19 @@
 
 namespace full_merge {
 
-struct OneCluster
-{
+struct OneCluster {
     int id;
     size_t n;
     double dist_sum, dist_max;
     std::vector <utils::OneEdge> edges;
 };
 
-struct OneMerge
-{
+struct OneMerge {
     int cli, clj;
     double merge_dist;
 };
 
-struct FullMergeDat
-{
+struct FullMergeDat {
     bool shortest;
     std::unordered_map <int, int> cl_remap;
     std::unordered_map <int, intset_t> cl_members;
@@ -34,16 +31,14 @@ struct FullMergeDat
     std::vector <OneMerge> merges;
 };
 
-struct OneDist
-{
+struct OneDist {
     int cli, clj;
     size_t ni, nj;
     double di, dj, d, value; 
     // di, dj are dist_sums, d is min dist of connecting edge
 };
 
-struct AvgDists
-{
+struct AvgDists {
     std::unordered_map <int, indxset_t> cl_map;
     std::deque <OneDist> avg_dists;
 };
