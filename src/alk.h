@@ -23,8 +23,7 @@
 
 namespace alk {
 
-struct ALKDat
-{
+struct ALKDat {
     bool shortest;
     size_t n;
 
