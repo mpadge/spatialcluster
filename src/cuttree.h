@@ -7,26 +7,22 @@ namespace cuttree {
 // clusters are of edges, so size = 2 => 3 nodes
 constexpr int MIN_CLUSTER_SIZE = 2;
 
-struct EdgeComponent
-{
+struct EdgeComponent {
     double d;
     int from, to, cluster_num;
 };
 
-struct TreeDat
-{
+struct TreeDat {
     std::vector <EdgeComponent> edges;
 };
 
-struct BestCut
-{
+struct BestCut {
     int pos, n1, n2;
     double ss_diff, ss1, ss2;
     std::unordered_set <int> nodes;
 };
 
-struct TwoSS // 2 sums-of-squares values
-{
+struct TwoSS { // 2 sums-of-squares values
     double ss1, ss2;
     int n1, n2; // sizes of clusters
 };
