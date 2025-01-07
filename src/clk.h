@@ -6,8 +6,7 @@
 
 namespace clk {
 
-struct CLKDat
-{
+struct CLKDat {
     bool shortest;
     size_t n;
 

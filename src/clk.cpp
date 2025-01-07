@@ -9,8 +9,7 @@ void clk::clk_init (clk::CLKDat &clk_dat,
         Rcpp::NumericVector d_full,
         Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
-        Rcpp::NumericVector d)
-{
+        Rcpp::NumericVector d) {
     size_t n = utils::sets_init (from, to, clk_dat.vert2index_map,
             clk_dat.index2vert_map, clk_dat.index2cl_map,
             clk_dat.cl2index_map);
@@ -18,8 +17,7 @@ void clk::clk_init (clk::CLKDat &clk_dat,
 
     clk_dat.edges_all.clear ();
     clk_dat.edges_all.resize (static_cast <size_t> (from_full.size ()));
-    for (int i = 0; i < from_full.size (); i++)
-    {
+    for (int i = 0; i < from_full.size (); i++) {
         utils::OneEdge here;
         here.from = from_full [i];
         here.to = to_full [i];
@@ -31,8 +29,7 @@ void clk::clk_init (clk::CLKDat &clk_dat,
 
     clk_dat.edges_nn.clear ();
     clk_dat.edges_nn.resize (static_cast <size_t> (from.size ()));
-    for (int i = 0; i < from.size (); i++)
-    {
+    for (int i = 0; i < from.size (); i++) {
         utils::OneEdge here;
         here.from = from [i];
         here.to = to [i];
@@ -42,21 +39,20 @@ void clk::clk_init (clk::CLKDat &clk_dat,
 
     // Get set of unique vertices, and store binary tree of edge distances
     intset_t vert_set;
-    for (int i = 0; i < from.size (); i++)
-    {
+    for (int i = 0; i < from.size (); i++) {
         vert_set.emplace (from [i]);
         vert_set.emplace (to [i]);
     }
     // Construct vert2index_map to map each unique vertex to an index
     index_t idx = 0;
-    for (auto v: vert_set)
+    for (auto v: vert_set) {
         clk_dat.vert2index_map.emplace (v, idx++);
+    }
 
     arma::uword nu = static_cast <arma::uword> (n);
     clk_dat.contig_mat = arma::zeros <arma::Mat <int> > (nu, nu);
     clk_dat.dmat.zeros (nu, nu);
-    for (int i = 0; i < from.length (); i++)
-    {
+    for (int i = 0; i < from.length (); i++) {
         arma::uword vf = static_cast <arma::uword> (
                                         clk_dat.vert2index_map.at (from [i])),
                     vt = static_cast <arma::uword> (
@@ -70,8 +66,7 @@ void clk::clk_init (clk::CLKDat &clk_dat,
 //'
 //' @param ei The i'th edge of the full sorted list of edge weights
 //' @noRd
-size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
-{
+size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i) {
     // find shortest _all edges that connects the two clusters
     utils::OneEdge ei = clk_dat.edges_all [i];
     const size_t u = clk_dat.vert2index_map.at (ei.from),
@@ -83,11 +78,11 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
     // u and v:
     size_t mmin = INFINITE_INT, lmin = INFINITE_INT, the_edge = INFINITE_INT;
     double dlim = INFINITE_DOUBLE;
-    if (!clk_dat.shortest)
+    if (!clk_dat.shortest) {
         dlim = -dlim;
+    }
 
-    for (size_t j = 0; j < clk_dat.edges_nn.size (); j++)
-    {
+    for (size_t j = 0; j < clk_dat.edges_nn.size (); j++) {
         utils::OneEdge ej = clk_dat.edges_nn [j];
         size_t m = clk_dat.vert2index_map.at (ej.from),
                l = clk_dat.vert2index_map.at (ej.to);
@@ -96,16 +91,16 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
                     (clk_dat.index2cl_map.at (m) == cl_v &&
                      clk_dat.index2cl_map.at (l) == cl_u)) &&
                 ((clk_dat.shortest && ej.dist < dlim) ||
-                 (!clk_dat.shortest && ej.dist > dlim)))
-        {
+                 (!clk_dat.shortest && ej.dist > dlim))) {
             the_edge = j;
             mmin = m;
             lmin = l;
             dlim = ej.dist;
         }
     }
-    if (fabs (dlim) == INFINITE_DOUBLE)
+    if (fabs (dlim) == INFINITE_DOUBLE) {
         Rcpp::stop ("minimal distance not able to be found");
+    }
 
     const int merge_to_id = clk_dat.index2cl_map.at (lmin);
     utils::merge_clusters (clk_dat.contig_mat,
@@ -114,11 +109,9 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
             clk_dat.index2cl_map.at (mmin),
             merge_to_id);
 
-    for (auto cl: clk_dat.cl2index_map)
-    {
+    for (auto cl: clk_dat.cl2index_map) {
         if (cl.first != static_cast <int> (lmin) ||
-                cl.first != static_cast <int> (mmin))
-        {
+                cl.first != static_cast <int> (mmin)) {
             arma::uword clu = static_cast <arma::uword> (cl.first),
                         lu = static_cast <arma::uword> (lmin),
                         mu = static_cast <arma::uword> (mmin);
@@ -126,13 +119,13 @@ size_t clk::clk_step (clk::CLKDat &clk_dat, size_t i)
                   dm = clk_dat.dmat (clu, mu);
             double dtemp = dl;
             if ((clk_dat.shortest && dm < dl) ||
-                    (!clk_dat.shortest && dm > dl))
+                    (!clk_dat.shortest && dm > dl)) {
                 dtemp = dm;
+            }
             clk_dat.dmat (clu, lu) = dtemp;
 
             if (clk_dat.contig_mat (clu, lu) == 1 ||
-                    clk_dat.contig_mat (clu, mu) == 1)
-            {
+                    clk_dat.contig_mat (clu, mu) == 1) {
                 clk_dat.contig_mat (clu, lu) = 1;
             }
         }
@@ -178,17 +171,17 @@ Rcpp::IntegerVector rcpp_clk (
     clk::CLKDat clk_dat;
     clk_dat.shortest = shortest;
     clk::clk_init (clk_dat, from_full, to_full, d_full, from, to, d);
-    if (clk_dat.shortest)
+    if (clk_dat.shortest) {
         clk_dat.dmat.fill (INFINITE_DOUBLE);
-    else
+    } else {
         clk_dat.dmat.fill (-INFINITE_DOUBLE);
+    }
 
     const size_t n = clk_dat.edges_all.size ();
     const bool really_quiet = !(!quiet && n > (100 * 100));
 
     std::vector <size_t> treevec;
-    for (size_t i = 0; i < n; i++)
-    {
+    for (size_t i = 0; i < n; i++) {
         Rcpp::checkUserInterrupt ();
 
         utils::OneEdge ei = clk_dat.edges_all [i];
@@ -200,20 +193,17 @@ Rcpp::IntegerVector rcpp_clk (
         if (clk_dat.index2cl_map.at (u) != clk_dat.index2cl_map.at (v) &&
                 clk_dat.contig_mat (u, v) == 1 &&
                 ((clk_dat.shortest && ei.dist < clk_dat.dmat (u, v)) ||
-                 (!clk_dat.shortest && ei.dist > clk_dat.dmat (u, v))))
-        {
+                 (!clk_dat.shortest && ei.dist > clk_dat.dmat (u, v)))) {
             size_t the_edge = clk_step (clk_dat, i);
             treevec.push_back (the_edge);
         }
-        if (!really_quiet && i % 100 == 0)
-        {
+        if (!really_quiet && i % 100 == 0) {
             Rcpp::Rcout << "\rBuilding tree: " << i << " / " << n;
             Rcpp::Rcout.flush ();
         }
     }
 
-    if (!really_quiet)
-    {
+    if (!really_quiet) {
         Rcpp::Rcout << "\rBuilding tree: " << n << " / " << n <<
             " -> done" << std::endl;
     }
