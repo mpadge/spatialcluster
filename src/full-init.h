@@ -11,8 +11,7 @@
 
 namespace full_init {
 
-struct FullInitDat
-{
+struct FullInitDat {
     bool shortest;
     size_t n;
 
