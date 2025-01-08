@@ -4,8 +4,7 @@ namespace utils {
 
 bool strfound (const std::string str, const std::string target);
 
-struct OneEdge
-{
+struct OneEdge {
     int from, to;
     double dist;
 };
