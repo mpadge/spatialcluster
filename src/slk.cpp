@@ -15,8 +15,7 @@ Rcpp::IntegerVector rcpp_slk (
         const Rcpp::DataFrame gr_full,
         const Rcpp::DataFrame gr,
         const bool shortest,
-        const bool quiet)
-{
+        const bool quiet) {
     Rcpp::IntegerVector from_full_ref = gr_full ["from"];
     Rcpp::IntegerVector to_full_ref = gr_full ["to"];
     Rcpp::NumericVector d_full = gr_full ["d"];
@@ -63,21 +62,18 @@ Rcpp::IntegerVector rcpp_slk (
 
     indxset_t the_tree;
     size_t e = 0; // edge number in gr_full
-    while (the_tree.size () < (n - 1)) // tree has n - 1 edges
-    {
+    while (the_tree.size () < (n - 1)) {// tree has n - 1 edges
         Rcpp::checkUserInterrupt ();
 
         index_t ifrom = vert2index_map.at (from_full (e)),
                 ito = vert2index_map.at (to_full (e));
         if (index2cl_map.find (ifrom) != index2cl_map.end () &&
-                index2cl_map.find (ito) != index2cl_map.end ())
-        {
+                index2cl_map.find (ito) != index2cl_map.end ()) {
             int cfrom = index2cl_map.at (ifrom),
                 cto = index2cl_map.at (ito);
             if (cfrom != cto &&
                     contig_mat (static_cast <arma::uword> (ifrom),
-                                static_cast <arma::uword> (ito)) > 0)
-            {
+                                static_cast <arma::uword> (ito)) > 0) {
                 size_t ishort = utils::find_shortest_connection (from, to,
                         vert2index_map, d_mat, cl2index_map, cfrom, cto,
                         shortest);
@@ -85,24 +81,20 @@ Rcpp::IntegerVector rcpp_slk (
                 utils::merge_clusters (contig_mat,
                         index2cl_map, cl2index_map, cfrom, cto);
                 e = 0;
-            } else
-            {
+            } else {
                 e++;
             }
-        } else
-        {
+        } else {
             e++;
         }
-        if (!really_quiet && the_tree.size () % 100 == 0)
-        {
+        if (!really_quiet && the_tree.size () % 100 == 0) {
             Rcpp::Rcout << "\rBuilding tree: " << the_tree.size () << " / " <<
                 n - 1;
             Rcpp::Rcout.flush ();
         }
     }
 
-    if (!really_quiet)
-    {
+    if (!really_quiet) {
         Rcpp::Rcout << "\rBuilding tree: " << the_tree.size () << " / " <<
             n - 1 << " -> done" << std::endl;
     }
