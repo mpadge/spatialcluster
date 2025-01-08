@@ -2,13 +2,11 @@
 
 std::vector <MSTEdge> mst (Rcpp::IntegerVector from,
         Rcpp::IntegerVector to,
-        Rcpp::NumericVector d)
-{
+        Rcpp::NumericVector d) {
     const size_t n = static_cast <size_t> (from.size ());
 
     std::vector <MSTEdge> edges (n);
-    for (size_t i = 0; i < n; i++)
-    {
+    for (size_t i = 0; i < n; i++) {
         MSTEdge ei;
         ei.from = from (i);
         ei.to = to (i);
@@ -17,29 +15,26 @@ std::vector <MSTEdge> mst (Rcpp::IntegerVector from,
     }
 
     std::vector <size_t> cl_id (n);
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++) {
         cl_id [i] = i;
+    }
 
     std::sort (edges.begin (), edges.end ());
 
     std::vector <MSTEdge> result;
 
-    for (MSTEdge e : edges)
-    {
+    for (MSTEdge e : edges) {
         const size_t cl_from = cl_id [static_cast <size_t> (e.from)],
             cl_to = cl_id [static_cast <size_t> (e.to)];
 
-        if (cl_from != cl_to)
-        {
+        if (cl_from != cl_to) {
             result.push_back (e);
 
             const size_t cl_min = std::min (cl_from, cl_to),
                   cl_max = std::max (cl_from, cl_to);
 
-            for (size_t i = 0; i < n; i++)
-            {
-                if (cl_id [i] == cl_max)
-                {
+            for (size_t i = 0; i < n; i++) {
+                if (cl_id [i] == cl_max) {
                     cl_id [i] = cl_min;
                 }
             }
@@ -56,8 +51,7 @@ std::vector <MSTEdge> mst (Rcpp::IntegerVector from,
 //'
 //' @noRd
 // [[Rcpp::export]]
-Rcpp::DataFrame rcpp_mst (Rcpp::DataFrame input)
-{
+Rcpp::DataFrame rcpp_mst (Rcpp::DataFrame input) {
     Rcpp::IntegerVector from = input ["from"];
     Rcpp::IntegerVector to = input ["to"];
     Rcpp::NumericVector d = input ["d"];
@@ -68,8 +62,7 @@ Rcpp::DataFrame rcpp_mst (Rcpp::DataFrame input)
     Rcpp::IntegerVector to_out (tree.size ());
     Rcpp::NumericVector d_out (tree.size ());
     size_t i = 0;
-    for (auto t: tree)
-    {
+    for (auto t: tree) {
         from_out (i) = t.from;
         to_out (i) = t.to;
         d_out (i) = t.dist;
