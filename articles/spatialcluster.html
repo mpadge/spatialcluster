@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.030</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.014</span>
       </span>
     </div>
 
@@ -456,17 +456,17 @@ looping until all data objects have been allocated to a cluster, and
 beginning with both <code>i = 0</code> and <code>clnum = 0</code>. The
 primary data is an array of edges (<code>edge</code>) sorted by
 increasing distance.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fl">1.</span>  Select edge [i] connecting nodes a and b.</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fl">2.</span>  i<span class="sc">++</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fl">3.</span>  <span class="cf">if</span> both a and b are already <span class="cf">in</span> clusters<span class="sc">:</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>        continue to <span class="cf">next</span> iteration</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> neither node is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>        <span class="fu">cluster</span> (clnum) <span class="ot">=</span> <span class="fu">create_new_cluster</span> (<span class="fu">c</span> (a, b))</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>        clnum<span class="sc">++</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only a is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (a, <span class="fu">get_cluster_number</span> (b))</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> only b is <span class="cf">in</span> a cluster<span class="sc">:</span></span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>        <span class="fu">set_cluster_number</span> (b, <span class="fu">get_cluster_number</span> (a))</span></code></pre></div>
+<pre class="eval"><code>1.  Select edge [i] connecting nodes a and b.
+2.  i++
+3.  if both a and b are already in clusters:
+        continue to next iteration
+    else if neither node is in a cluster:
+        cluster (clnum) = create_new_cluster (c (a, b))
+        clnum++
+    else if only a is in a cluster:
+        set_cluster_number (a, get_cluster_number (b))
+    else if only b is in a cluster:
+        set_cluster_number (b, get_cluster_number (a))</code></pre>
 <p>This procedure allocates all nodes (data objects) to clusters. The
 number of resultant clusters can not be known in advance, and many
 clusters may be very small, comprising for example only a single edge
