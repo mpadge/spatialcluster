@@ -42,30 +42,28 @@ contiguous or adjacent points may be merged into the same cluster (Fig. 1).
 
 Almost all clustering routines have been developed for application to distance
 matrices. Distance-based clustering algorithms generally seek to aggregate
-objects into clusters that are maximally homogeneous. Clustering may also be
-performed on covariance or correlation matrices. The present work exclusively
-focusses on the former type because "any symmetric positive semi-definite matrix
-is a covariance matrix". The object of clustering covariance matrices is to
-maximise intra-cluster covariance while minimising inter-cluster covariance.
-Intra-cluster homogeneity is neither relevant nor important, and thus distinct
-implementations are generally required.
+objects into clusters that maximise the homogeneity of distances between points
+in each cluster. Clustering may also be performed on covariance or correlation
+matrices. The object of clustering covariance matrices is to maximise
+intra-cluster covariance while minimising inter-cluster covariance.
 
 Both the SKATER and REDCAP algorithms, for example, utilise as a measure of
 inter-cluster homogeneity the sums of squared deviations from mean values. The
 equivalent measure for covariance-based clustering is simply the sum of
 covariances. The present approach to covariance clustering extends beyond
-techniques generally considered under the umbrage of "correlation clustering".
+techniques generally considered under the term "correlation clustering".
 Correlation clustering is often applied in cases where an observation and
 reference matrix are available, with clusters defined as simply those groups for
 which observed correlations exceed reference correlations. The present approach
-also uses observation and reference matrices, while extending beyond traditional
+also uses observation and reference matrices, yet extends beyond traditional
 correlation clustering through tracing the subsequent hierarchy of merges of all
 clusters. This is particularly important in spatially-constrained clustering,
-for which sizes of clusters formed through simply correlation clustering
-techniques are generally very small.
+for which simple correlation clustering techniques are often not applicable, as
+they result in large numbers of very small clusters, with no way to merge those
+into larger clusters.
 
-The software accompanying this manuscript has accordingly been developed to
-accept both distance and covariance matrices as input. It includes a reference
+The software accompanying this manuscript has been developed to accept both
+distance and covariance matrices as input. It includes a reference
 implementation of the REDCAP algorithms adapted as described below for
 clustering covariance matrices.
 
