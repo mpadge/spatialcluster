@@ -130,6 +130,8 @@ names (scl)
   clusters and an overall global statistic for the clustering scheme as
   a whole.
 
+See the "_Get Started_" vignette for more details.
+
 ## A Cautionary Note
 
 The following plot compares the results of applying four different

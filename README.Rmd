@@ -131,6 +131,7 @@ names (scl)
 - `statsitics` returns the clustering statistics, both for individual clusters
   and an overall global statistic for the clustering scheme as a whole.
 
+See the "_Get Started_" vignette for more details.
 
 ## A Cautionary Note
 
