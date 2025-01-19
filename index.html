@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialcluster</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.014</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.015</span>
       </span>
     </div>
 
@@ -70,7 +70,7 @@
 <div class="section level1">
 <div class="page-header"><h1 id="spatialcluster">spatialcluster<a class="anchor" aria-label="anchor" href="#spatialcluster"></a>
 </h1></div>
-<p>An <strong>R</strong> package for spatially-constrained clustering using either distance or covariance matrices. “<em>Spatially-constrained</em>” means that the data from which clusters are to be formed also map on to spatial reference points, and the constraint is that clusters must be spatially contiguous.</p>
+<p>An <strong>R</strong> package for spatially-constrained clustering using either distance or covariance matrices. “<em>Spatially-constrained</em>” means that the data from which clusters are to be formed also map on to spatial coordinates, and the constraint is that clusters must be spatially contiguous.</p>
 <p>The package includes both an implementation of the REDCAP collection of efficient yet approximate algorithms described in <a href="https://www.tandfonline.com/doi/abs/10.1080/13658810701674970" class="external-link">D. Guo’s 2008 paper, “Regionalization with dynamically constrained agglomerative clustering and partitioning.”</a> (pdf available <a href="https://pdfs.semanticscholar.org/ead1/7df8aaa1aed0e433b3ae1ec1ec5c7e785b2b.pdf" class="external-link">here</a>), with extension to covariance matrices, and a new technique for computing clusters using complete data sets. The package is also designed to analyse matrices of spatial interactions (counts, densities) between sets of origin and destination points. The spatial structure of interaction matrices is able to be statistically analysed to yield both global statistics for the overall spatial structure, and local statistics for individual clusters.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -104,13 +104,13 @@
 <li>
 <code><a href="reference/scl_redcap.html">scl_redcap()</a></code> should be used only where data are too large for <code><a href="reference/scl_full.html">scl_full()</a></code> to be run in a reasonable time.</li>
 </ul>
-<p>Both of these functions require three main arguments:</p>
+<p>For clustering a group of <code>n</code> points, both of these functions require three main arguments:</p>
 <ol style="list-style-type: decimal">
-<li>A rectangular matrix of coordinates of points to be clustered (<code>n</code> rows; at least 2 columns);</li>
+<li>A rectangular matrix of spatial coordinates of points to be clustered (<code>n</code> rows; at least 2 columns);</li>
 <li>An <code>n</code>-by-<code>n</code> square matrix quantifying relationships between those points;</li>
 <li>A single value (<code>ncl</code>) specifying the desired number of clusters.</li>
 </ol>
-<p>Usage can be demonstrated with some simple fake data:</p>
+<p>The following code demonstrates usage with randomly-generated data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span> <span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
@@ -122,7 +122,7 @@
 <span><span class="va">scl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scl_full.html">scl_full</a></span> <span class="op">(</span><span class="va">xy</span>, <span class="va">dmat</span>, ncl <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-full-single-1.png"><!-- --></p>
-<p>The <code>scl</code> object is a <code>list</code> with the following components:</p>
+<p>Both functions return a <code>list</code> with the following components:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span> <span class="op">(</span><span class="va">scl</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "tree"       "merges"     "ord"        "nodes"      "pars"      </span></span>
@@ -133,13 +133,13 @@
 <li>
 <code>merges</code> details increasing distances at which each pair of objects was merged into a single cluster.</li>
 <li>
-<code>ord</code> provides the …</li>
+<code>ord</code> provides the order of the merges (for <code><a href="reference/scl_full.html">scl_full()</a></code> only).</li>
 <li>
 <code>nodes</code> records the spatial coordinates of each point (node) of the input data.</li>
 <li>
 <code>pars</code> retains the parameters used to call the clustering function.</li>
 <li>
-<code>statsiticss</code> returns the clustering statistics, both for individual clusters and an overall global statistic for the clustering scheme as a whole.</li>
+<code>statsitics</code> returns the clustering statistics, both for individual clusters and an overall global statistic for the clustering scheme as a whole.</li>
 </ul>
 </div>
 <div class="section level2">
