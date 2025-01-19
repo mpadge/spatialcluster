@@ -12,8 +12,7 @@ WIP](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org
 An **R** package for spatially-constrained clustering using either
 distance or covariance matrices. “*Spatially-constrained*” means that
 the data from which clusters are to be formed also map on to spatial
-reference points, and the constraint is that clusters must be spatially
-contiguous.
+coordinates, and the constraint is that clusters must be spatially contiguous.
 
 The package includes both an implementation of the REDCAP collection of
 efficient yet approximate algorithms described in [D. Guo’s 2008 paper,
@@ -83,15 +82,16 @@ In short:
 - `scl_redcap()` should be used only where data are too large for
   `scl_full()` to be run in a reasonable time.
 
-Both of these functions require three main arguments:
+For clustering a group of `n` points, both of these functions require three
+main arguments:
 
-1.  A rectangular matrix of coordinates of points to be clustered (`n`
-    rows; at least 2 columns);
+1.  A rectangular matrix of spatial coordinates of points to be clustered 
+    (`n` rows; at least 2 columns);
 2.  An `n`-by-`n` square matrix quantifying relationships between those
     points;
 3.  A single value (`ncl`) specifying the desired number of clusters.
 
-Usage can be demonstrated with some simple fake data:
+The following code demonstrates usage with randomly-generated data:
 
 ``` r
 set.seed (1)
@@ -110,7 +110,7 @@ plot (scl)
 
 ![](man/figures/README-full-single-1.png)<!-- -->
 
-The `scl` object is a `list` with the following components:
+Both functions return a `list` with the following components:
 
 ``` r
 names (scl)
@@ -122,11 +122,11 @@ names (scl)
   comparisons between objects.
 - `merges` details increasing distances at which each pair of objects
   was merged into a single cluster.
-- `ord` provides the …
+- `ord` provides the order of the merges (for `scl_full()` only).
 - `nodes` records the spatial coordinates of each point (node) of the
   input data.
 - `pars` retains the parameters used to call the clustering function.
-- `statsiticss` returns the clustering statistics, both for individual
+- `statsitics` returns the clustering statistics, both for individual
   clusters and an overall global statistic for the clustering scheme as
   a whole.
 
